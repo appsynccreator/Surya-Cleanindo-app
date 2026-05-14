@@ -12,6 +12,8 @@ const CACHE_FILES = [
   '/index.html',
   '/icon-192.png',
   '/icon-512.png',
+  '/favicon-32.png',
+  '/favicon.ico',
   '/manifest.json'
 ];
 
@@ -57,4 +59,11 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// Handle skip waiting message dari pwaUpdate()
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
