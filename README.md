@@ -186,12 +186,6 @@ Aplikasi menggunakan **14 sheet** dalam satu Google Spreadsheet:
 
 Buka URL deployment di browser. Login menggunakan akun default:
 
-| Role | Username | Password |
-|------|----------|----------|
-| Owner | `owner` | `admin123` |
-| Admin | `admin` | `admin123` |
-| Staff | `staff1` | `staff123` |
-
 > ⚠️ **Segera ganti password default** setelah login pertama kali melalui menu Manajemen User.
 
 ---
