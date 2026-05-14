@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Surya Cleanindo • Management System</title>
+  <!-- Favicon SVG broom/cleanindo -->
+  <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAET0lEQVR4nO2X3W8UVRiHn3POzH7MdNtuP7YQsGAUCBH8uFCJF2BITLzwxqjBKy/9F7zVO/8AvfDGxBjQcEEkRk1MMIZoVCrhI5SWipaCtrTdbbttd2d25nx4sV1s0dhdQmxC/F1Nzjkz73N+73nfmRHOOccWSm5l8AcL4F7zeB8AmqHF1gA4QBCnmlvL9f8awGGcgHSSsfkL/FRRgMV2mIuOARzgcFjnSGoXYeFDqonkbFmAsx2noiOApuHgTIPG0mlE/XtoXGdbV5GxasL5SoIQdORC2wDN4JbZumG2/BVe9F0zWOMmw/mEUk5xcirFWoPowIa2AFobmovh+Pg1ivYCTleRqodE3yawYxzeluP8gmaknCBo34W2AKwDQcrbFw0lfiaXBZPOggxw3kO4+fd4bRj6s5IvZ1JMBy5sCmAdKAHXlmJO3RIc7R0FU0DgsPEE+cE3SKJf+WWhzN5un+srlpurpm0X2gIAOD2VglCUvAqJjsmF+8jWTnLRHOOEPEvWD3k4MKykgolVs3nkNXmbrliz8nJV44RD+iW8xheMd33M19WXGBDwwvAQJyYjzpUFoSeZi+19BFhT4CkqtRV+ky9zrvoY1cZOXtm/hx15+HG2xqdThr3dGSwO1UE3aLsMDw34mDji2Mgj5HtfpceLeedCmfPzdXqzkh5fYh0YB8Nh+wBisw+S1mQ5ijnw2RJzDcHuguH3WOFLxa48/PBigU8mY45PweNFePepgO6Mf6dx/Zs2dUAAzsFgPssHh/JgLDeWfXp8xc4Aalbx/kTMm/sCdoea14cV3RkP20bwthxoyTqQwnLqxipvjdS5HgnynqTgS3p9x+fPh2wLPAq+AiHbPgV3ANbbdfd1ywntwBOwkqacmY4YW3b4Ep7o9XhmIEtP1muWrWha61zzfinWb2Lj89c5YHHWNSdEK7S8y0eJc813wsbxtbUbhizNdihw1iCEBCFoaEPW+6v4vBbVubmIb6eXeXogwJdwZiai4AmKWcFAVmGAnPI5sj3go4lFBrKS/X1ZbkdweX6VZ4cCJlc1oVLM1FMGc4I/IksxI4hSjVKK/pzPzZWEozsLHOzLY926PiBwXFs2ONfA4FjUEpRgV85HA6OLKZGOeLLfZyG1bA8U39yOMU5R1oqRSoPxquHRgmK0atnT7aENXKkaSjlJ6Fmmawm+gpma5mDfWipaKainKZWGJVCwmlpCG5NYCDMe2oKUEm0MgS+YrlssjlQ7fAGpc/RmIPA9Yu3IYFlJNYVsBoGjHFuCMGRHoLi6lHCgmAMh7z4DG3X50iVGr1xhcGiIrjCkUimjU02iNYPFXnK5HEuLC8SNBOcsUSOhq6tAqTTI1bFxCmFIT7FIvV6n1N/Hc4eP8E+NYUMVtBY458A5Uq2bRxnQWiOVwlMKa11zjQApFc5ZBAKHQyAwRuP5PgIwxgACP+MjhbhTCX8D2Co9OH9G/wPcq/4EfjIOvbauhkkAAAAASUVORK5CYII=">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#166534">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --green-900: #0d3b22; --green-800: #14532d; --green-700: #166534; --green-600: #16a34a;
+      --green-500: #22c55e; --green-400: #4ade80; --green-100: #dcfce7; --green-50: #f0fdf4;
+      --blue-700: #1d4ed8; --blue-600: #2563eb; --blue-500: #3b82f6; --blue-100: #dbeafe;
+      --red-600: #dc2626; --red-500: #ef4444; --red-100: #fee2e2;
+      --amber-500: #f59e0b; --amber-100: #fef3c7;
+      --teal-600: #0d9488; --teal-500: #14b8a6; --teal-100: #ccfbf1;
+      --purple-600: #7c3aed; --purple-100: #ede9fe;
+      --orange-500: #f97316; --orange-100: #ffedd5;
+      --gray-900: #111827; --gray-800: #1f2937; --gray-700: #374151; --gray-600: #4b5563;
+      --gray-500: #6b7280; --gray-400: #9ca3af; --gray-200: #e5e7eb; --gray-100: #f3f4f6;
+      --gray-50: #f9fafb; --white: #ffffff;
+      --sidebar-w: 240px; --radius: 10px; --radius-sm: 6px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 10px 28px rgba(0,0,0,.06);
+      --font: 'Plus Jakarta Sans', sans-serif; --mono: 'JetBrains Mono', monospace;
+      --transition: all .2s ease;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);font-size:13.5px;line-height:1.5;}
+    input,select,textarea,button{font-family:inherit;font-size:inherit;}
+    a{text-decoration:none;color:inherit;}
+    ::-webkit-scrollbar{width:4px;height:4px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
+    /* LOGIN */
+    #loginPage{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(145deg,#0d3b22 0%,#166534 60%,#0f4a25 100%);align-items:center;justify-content:center;}
+    #loginPage.active{display:flex;}
+    .login-card{background:rgba(255,255,255,.97);border-radius:20px;padding:40px 32px;width:100%;max-width:400px;box-shadow:0 32px 64px rgba(0,0,0,.4);animation:fadeUp .4s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .login-logo{text-align:center;margin-bottom:28px;}
+    .login-logo .icon{display:inline-flex;width:64px;height:64px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:16px;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 20px rgba(22,101,52,.4);}
+    .login-logo .icon i{font-size:28px;color:white;}
+    .login-logo h1{font-size:20px;font-weight:800;color:#14532d;letter-spacing:-.5px;}
+    .login-logo p{font-size:11px;color:var(--gray-500);margin-top:2px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+    .form-control{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);outline:none;transition:var(--transition);}
+    .form-control:focus{border-color:var(--green-500);box-shadow:0 0 0 3px rgba(34,197,94,.15);background:white;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;transition:var(--transition);white-space:nowrap;}
+    .btn-primary{background:linear-gradient(135deg,#166534,#16a34a);color:white;width:100%;padding:12px;}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(22,101,52,.35);}
+    .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;display:none;margin-bottom:14px;}
+    .alert.show{display:flex;align-items:center;gap:8px;}
+    .alert-danger{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+    .alert-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+
+    /* APP SHELL */
+    #appShell{display:none;height:100%;flex-direction:column;}
+    #appShell.active{display:flex;}
+    .topbar{height:52px;background:white;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:100;}
+    .topbar .menu-toggle{display:none;width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:var(--gray-600);font-size:17px;}
+    .topbar .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:#14532d;}
+    .topbar .brand .b-icon{width:28px;height:28px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+    .topbar .brand .b-icon i{color:white;font-size:12px;}
+    .topbar .spacer{flex:1;}
+    .topbar .user-badge{display:flex;align-items:center;gap:7px;padding:5px 10px;background:var(--gray-50);border-radius:99px;border:1px solid var(--gray-200);font-size:12px;cursor:pointer;transition:var(--transition);}
+    .topbar .user-badge:hover{background:var(--green-50);border-color:var(--green-200);}
+    .topbar .user-badge .avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;}
+    .avatar.owner{background:linear-gradient(135deg,#7c3aed,#a855f7);}
+    .avatar.admin{background:linear-gradient(135deg,#166534,#22c55e);}
+    .avatar.staff{background:linear-gradient(135deg,#0d9488,#14b8a6);}
+    .btn-logout{padding:6px 12px;border:none;background:var(--gray-100);border-radius:6px;cursor:pointer;color:var(--gray-600);font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;}
+    .btn-logout:hover{background:#fef2f2;color:#dc2626;}
+    /* User profile popup */
+    .user-popup{display:none;position:absolute;top:52px;right:12px;background:white;border:1px solid var(--gray-200);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:500;min-width:200px;overflow:hidden;animation:fadeUp .15s ease;}
+    .user-popup.open{display:block;}
+    .user-popup-header{padding:14px 16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-bottom:1px solid var(--gray-100);}
+    .user-popup-name{font-weight:800;font-size:13px;color:#14532d;}
+    .user-popup-role{font-size:10px;color:var(--gray-500);margin-top:1px;}
+    .user-popup-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;transition:var(--transition);font-size:13px;font-weight:500;color:var(--gray-700);}
+    .user-popup-item:hover{background:var(--gray-50);}
+    .user-popup-item.danger{color:#dc2626;}
+    .user-popup-item.danger:hover{background:#fef2f2;}
+    /* Confirm modal */
+    .confirm-modal{background:white;border-radius:16px;width:100%;max-width:360px;box-shadow:0 24px 48px rgba(0,0,0,.2);animation:modalIn .2s ease;padding:24px;}
+    .confirm-modal h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+    .confirm-modal p{font-size:13px;color:var(--gray-600);margin-bottom:20px;}
+    .confirm-modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+    @media(max-width:768px){
+      .topbar .btn-logout-desktop{display:none !important;}
+    }
+
+    .app-body{display:flex;flex:1;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:white;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:var(--transition);}
+
+    /* SIDEBAR ICON COLORS */
+    .nav-item i.c-green{color:#16a34a;}
+    .nav-item i.c-teal{color:#0d9488;}
+    .nav-item i.c-blue{color:#2563eb;}
+    .nav-item i.c-amber{color:#d97706;}
+    .nav-item i.c-purple{color:#7c3aed;}
+    .nav-item i.c-red{color:#dc2626;}
+    .nav-item i.c-orange{color:#ea580c;}
+    .nav-item i.c-cyan{color:#0891b2;}
+
+    /* Bottom nav */
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--gray-200);padding:6px 4px;justify-content:space-around;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:5px 8px;font-size:9px;font-weight:600;color:var(--gray-500);transition:var(--transition);cursor:pointer;border-radius:10px;min-width:52px;}
+    .bottom-nav-item i{font-size:19px;}
+    .bottom-nav-item.active{color:var(--green-600);background:var(--green-50);}
+    /* More menu drawer */
+    .more-drawer{display:none;position:fixed;bottom:70px;left:0;right:0;background:white;border-top:1px solid var(--gray-200);border-radius:20px 20px 0 0;z-index:300;padding:16px 12px 8px;box-shadow:0 -8px 32px rgba(0,0,0,0.12);animation:slideUp .2s ease;}
+    .more-drawer.open{display:block;}
+    .more-drawer-overlay{display:none;position:fixed;inset:0;z-index:299;}
+    .more-drawer-overlay.open{display:block;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    .more-drawer h5{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+    .more-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;transition:var(--transition);font-size:13px;font-weight:600;color:var(--gray-700);}
+    .more-item:hover,.more-item:active{background:var(--green-50);color:var(--green-700);}
+    .more-item i{width:20px;text-align:center;font-size:16px;}
+    @media(max-width:768px){
+      .sidebar{display:none !important;}
+      .bottom-nav{display:flex;}
+      .main-content{padding-bottom:76px !important;}
+      .topbar .menu-toggle{display:none !important;}
+    }
+    .sidebar-section{padding:10px 12px 2px;font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-top:6px;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--gray-600);font-weight:500;font-size:13px;}
+    .nav-item:hover{background:var(--gray-50);}
+    .nav-item.active{background:var(--green-50);color:#14532d;font-weight:700;}
+    .nav-item i{width:18px;text-align:center;font-size:15px;flex-shrink:0;}
+
+    .main-content{flex:1;overflow-y:auto;padding:16px 20px;}
+    @media(max-width:768px){.main-content{padding:12px;}}
+    .page{display:none;}
+    .page.active{display:block;animation:fadeIn .2s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+    /* CARD LIST */
+    .card-list{display:flex;flex-direction:column;gap:12px;}
+    .data-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px;transition:var(--transition);}
+    .data-card:hover{box-shadow:var(--shadow-sm);}
+    .data-card .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--gray-200);}
+    .data-card .card-title{font-weight:800;font-size:14px;}
+    .data-card .card-badge{display:inline-flex;}
+    .data-card .card-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--gray-50);}
+    .data-card .card-row-label{font-weight:600;color:var(--gray-600);}
+    .data-card .card-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+
+    /* DASHBOARD */
+    .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;height:calc(100vh - 100px);}
+    @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;height:auto;}}
+    .dash-left,.dash-right{display:flex;flex-direction:column;gap:10px;}
+    .welcome-mini{background:linear-gradient(135deg,#14532d,#166534);border-radius:var(--radius);padding:14px 18px;color:white;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .welcome-mini h3{font-size:15px;font-weight:700;}
+    .welcome-mini p{font-size:11px;opacity:.8;}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+    .mini-stat{background:white;border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;}
+    .mini-stat .ms-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+    .mini-stat .ms-val{font-size:16px;font-weight:800;font-family:var(--mono);}
+    .mini-stat .ms-label{font-size:10px;color:var(--gray-500);}
+    .card{background:white;border-radius:var(--radius);border:1px solid var(--gray-200);overflow:hidden;}
+    .card-header{padding:10px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;}
+    .card-body{padding:10px;}
+    .card-body.no-pad{padding:0;}
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    table th{background:var(--gray-50);padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--gray-200);}
+    table td{padding:8px 10px;border-bottom:1px solid var(--gray-100);font-size:12px;vertical-align:middle;}
+    table tr:hover td{background:var(--gray-50);}
+    table tr.row-clickable{cursor:pointer;}
+    @media(max-width:768px){.desktop-table{display:none;}}
+    .mobile-card-view{display:none;}
+    @media(max-width:768px){.mobile-card-view{display:block;}}
+
+    .ai-panel{background:white;border-radius:var(--radius);border:1px solid var(--gray-200);padding:12px;flex:1;display:flex;flex-direction:column;}
+    .ai-panel h4{font-size:12px;font-weight:700;color:var(--purple-600);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+    .ai-insight{font-size:11px;color:var(--gray-600);line-height:1.6;display:flex;flex-direction:column;gap:6px;}
+    .ai-insight .insight-item{display:flex;align-items:flex-start;gap:6px;padding:6px 8px;background:var(--gray-50);border-radius:6px;}
+    .ai-insight .insight-item i{color:var(--purple-600);margin-top:1px;}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;}
+    .badge-green{background:#dcfce7;color:#16a34a;}
+    .badge-blue{background:#dbeafe;color:#2563eb;}
+    .badge-red{background:#fee2e2;color:#dc2626;}
+    .badge-amber{background:#fef3c7;color:#b45309;}
+    .badge-teal{background:#ccfbf1;color:#0d9488;}
+    .badge-purple{background:#ede9fe;color:#7c3aed;}
+    .badge-gray{background:#f3f4f6;color:#6b7280;}
+    .badge-orange{background:#ffedd5;color:#ea580c;}
+
+    /* STATUS BADGES LARGE (jadwal) */
+    .status-tab{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;border:2px solid transparent;}
+    .status-open{background:#fff7ed;color:#ea580c;border-color:#fed7aa;}
+    .status-progress{background:#fef3c7;color:#b45309;border-color:#fde68a;}
+    .status-completed{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
+
+    /* BUTTONS */
+    .btn-sm{padding:6px 10px;font-size:11px;border-radius:5px;}
+    .btn-xs{padding:4px 8px;font-size:10px;border-radius:4px;}
+    .btn-success{background:#16a34a;color:white;border:none;cursor:pointer;}
+    .btn-success:hover{background:#15803d;}
+    .btn-outline{background:transparent;border:1.5px solid var(--gray-300);color:var(--gray-700);cursor:pointer;}
+    .btn-outline:hover{border-color:#16a34a;color:#16a34a;background:#f0fdf4;}
+    .btn-danger{background:#ef4444;color:white;border:none;cursor:pointer;}
+    .btn-info{background:#3b82f6;color:white;border:none;cursor:pointer;}
+    .btn-teal{background:#0d9488;color:white;border:none;cursor:pointer;}
+    .btn-purple{background:#7c3aed;color:white;border:none;cursor:pointer;}
+    .btn-amber{background:#d97706;color:white;border:none;cursor:pointer;}
+    .btn-orange{background:#ea580c;color:white;border:none;cursor:pointer;}
+
+    /* STATUS ACTION BUTTONS (for staff) */
+    .btn-progress{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;}
+    .btn-progress:hover{box-shadow:0 4px 12px rgba(245,158,11,.4);}
+    .btn-complete{background:linear-gradient(135deg,#16a34a,#15803d);color:white;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;}
+    .btn-complete:hover{box-shadow:0 4px 12px rgba(22,163,74,.4);}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:16px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 48px rgba(0,0,0,.2);animation:modalIn .2s ease;}
+    @keyframes modalIn{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
+    .modal.modal-lg{max-width:850px;}
+    .modal.modal-sm{max-width:420px;}
+    .modal-head{padding:14px 18px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .modal-head h3{font-size:15px;font-weight:800;}
+    .modal-close{width:28px;height:28px;border:none;background:var(--gray-100);border-radius:6px;cursor:pointer;color:var(--gray-500);font-size:14px;display:flex;align-items:center;justify-content:center;}
+    .modal-close:hover{background:#fef2f2;color:#dc2626;}
+    .modal-body{padding:16px;overflow-y:auto;}
+    .modal-foot{padding:12px 18px;border-top:1px solid var(--gray-200);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+    @media(max-width:768px){.form-grid{grid-template-columns:1fr;}}
+    .filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    @media(max-width:768px){.filter-bar{flex-direction:column;align-items:stretch;}.filter-bar .form-control{max-width:100%;}}
+    .filter-bar .form-control{max-width:150px;}
+
+    /* Responsive filter grid for invoice & jadwal */
+    .trx-filter-grid{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .trx-filter-grid .form-control{flex:1;min-width:110px;max-width:160px;}
+    .trx-filter-grid .btn{flex-shrink:0;}
+    @media(max-width:768px){
+      .trx-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+      .trx-filter-grid .form-control{max-width:100%;min-width:0;}
+      .trx-filter-grid input.form-control{grid-column:1/-1;}
+      .trx-filter-grid .btn{grid-column:1/-1;width:100%;}
+    }
+
+    .laundry-detail-table{width:100%;border-collapse:collapse;margin-top:6px;}
+    .laundry-detail-table th,.laundry-detail-table td{padding:6px 8px;border:1px solid var(--gray-200);font-size:12px;}
+
+    /* CHECKLIST */
+    .checklist-grid{display:flex;flex-direction:column;gap:0;}
+    .checklist-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #f0f0f0;border-radius:4px;}
+    .checklist-item:nth-child(odd){background:#fafafa;}
+    .checklist-label{font-size:12px;color:var(--gray-700);}
+    .checklist-value{font-weight:700;font-size:11px;padding:2px 8px;border-radius:99px;}
+    .checklist-yes{background:#dcfce7;color:#16a34a;}
+    .checklist-no{background:#fee2e2;color:#dc2626;}
+
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;gap:6px;padding:10px 14px;justify-content:center;border-top:1px solid var(--gray-100);}
+    .page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--gray-200);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray-600);background:white;transition:var(--transition);}
+    .page-btn:hover{border-color:var(--green-500);color:var(--green-600);}
+    .page-btn.active{background:var(--green-600);color:white;border-color:var(--green-600);}
+    .page-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .page-info{font-size:11px;color:var(--gray-500);padding:0 6px;}
+
+    /* TOAST */
+    .toast-container{position:fixed;bottom:80px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
+    .toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.15);animation:fadeUp .2s ease;background:white;border:1px solid var(--gray-200);min-width:220px;}
+    .toast.success{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
+    .toast.error{background:#fef2f2;border-color:#fecaca;color:#dc2626;}
+    .toast.warning{background:#fffbeb;border-color:#fde68a;color:#92400e;}
+    .toast-close{margin-left:auto;cursor:pointer;opacity:.6;}
+    .toast-close:hover{opacity:1;}
+    .empty-state{text-align:center;color:var(--gray-400);padding:24px;font-size:12px;}
+    .empty-state i{display:block;font-size:28px;margin-bottom:8px;}
+
+    /* MODAL MOBILE */
+    @media(max-width:768px){
+      .modal{max-height:95vh;}
+      .modal-body{padding:12px;}
+      table th,table td{padding:5px 7px;font-size:11px;}
+    }
+
+    /* READONLY LOCK INFO */
+    .lock-info{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:10px;}
+    .lock-info .lock-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);margin-bottom:8px;display:flex;align-items:center;gap:4px;}
+    .lock-info .lock-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .lock-info .lock-field{background:white;border-radius:6px;padding:8px;border:1px solid var(--gray-100);}
+    .lock-info .lock-field-label{font-size:10px;color:var(--gray-400);}
+    .lock-info .lock-field-val{font-weight:700;font-size:12px;margin-top:2px;}
+
+    /* PARAM INFO BOX */
+    .param-info-box{background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:10px;margin-top:8px;}
+    .param-info-box .param-kat{font-weight:700;font-size:11px;color:var(--green-700);margin-bottom:4px;}
+    .param-info-box .param-items{display:flex;flex-wrap:wrap;gap:4px;}
+    .param-info-box .param-chip{background:white;border:1px solid var(--green-200);border-radius:99px;padding:2px 10px;font-size:11px;color:var(--gray-700);}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon"><i class="fa-solid fa-broom"></i></div>
+      <h1>Surya Cleanindo</h1>
+      <p>Laundry • Cleaning • Pest Control</p>
+    </div>
+    <div class="alert alert-danger" id="loginAlert"><i class="fa-solid fa-circle-exclamation"></i><span id="loginAlertMsg"></span></div>
+    <div class="form-group"><label>Username</label><input class="form-control" id="loginUsername" placeholder="Username" autocomplete="username"></div>
+    <div class="form-group"><label>Password</label><input class="form-control" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"></div>
+    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+    <p style="text-align:center;color:var(--gray-400);font-size:10px;margin-top:14px;">© 2025 Surya Cleanindo</p>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="brand"><div class="b-icon"><i class="fa-solid fa-broom"></i></div><span>Surya Cleanindo</span></div>
+    <div class="spacer"></div>
+    <div id="topbarClock" style="font-size:11px;font-weight:600;color:var(--gray-600);text-align:right;line-height:1.4;margin-right:10px;"></div>
+    <div class="user-info" style="position:relative;display:flex;align-items:center;gap:8px;">
+      <div class="user-badge" onclick="toggleUserPopup()"><div class="avatar" id="topAvatar"></div><span id="topName">—</span><i class="fa-solid fa-chevron-down" style="font-size:9px;color:var(--gray-400);"></i></div>
+      <button class="btn-logout btn-logout-desktop" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+      <div class="user-popup" id="userPopup">
+        <div class="user-popup-header">
+          <div class="user-popup-name" id="popupName">—</div>
+          <div class="user-popup-role" id="popupRole">—</div>
+        </div>
+        <div class="user-popup-item danger" onclick="closeUserPopup();doLogout();"><i class="fa-solid fa-right-from-bracket"></i> Keluar</div>
+      </div>
+    </div>
+  </div>
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar">
+      <div style="padding:6px;">
+        <div class="sidebar-section">Utama</div>
+        <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high c-green"></i> Dashboard</div>
+        <div class="sidebar-section">Operasional</div>
+        <div class="nav-item" data-page="jadwal" onclick="navigate('jadwal')"><i class="fa-solid fa-calendar-check c-teal"></i> Jadwal Kunjungan</div>
+        <div class="nav-item nav-admin-owner-only" data-page="transaksi" onclick="navigate('transaksi')"><i class="fa-solid fa-file-invoice c-blue"></i> Invoice / Transaksi</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pengeluaran" onclick="navigate('pengeluaran')"><i class="fa-solid fa-arrow-trend-down c-red"></i> Pengeluaran</div>
+        <div class="sidebar-section nav-admin-owner-only">Master Data</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pelanggan" onclick="navigate('pelanggan')"><i class="fa-solid fa-users c-amber"></i> Pelanggan</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pricelist" onclick="navigate('pricelist')"><i class="fa-solid fa-tags c-green"></i> Pricelist</div>
+        <div class="nav-item nav-admin-owner-only" data-page="parameter" onclick="navigate('parameter')"><i class="fa-solid fa-sliders c-purple"></i> Parameter Checklist</div>
+        <div class="sidebar-section nav-owner-only">Sistem</div>
+        <div class="nav-item nav-owner-only" data-page="laporan" onclick="navigate('laporan')"><i class="fa-solid fa-chart-bar c-orange"></i> Laporan</div>
+        <div class="nav-item nav-owner-only" data-page="users" onclick="navigate('users')"><i class="fa-solid fa-user-gear c-purple"></i> Manajemen User</div>
+      </div>
+    </nav>
+    <!-- Bottom Nav (Mobile) -->
+    <div class="bottom-nav" id="bottomNav">
+      <button class="bottom-nav-item" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high"></i><span>Beranda</span></button>
+      <button class="bottom-nav-item" data-page="jadwal" onclick="navigate('jadwal')"><i class="fa-solid fa-calendar-check"></i><span>Jadwal</span></button>
+      <button class="bottom-nav-item nav-admin-owner-only" data-page="transaksi" onclick="navigate('transaksi')"><i class="fa-solid fa-file-invoice"></i><span>Invoice</span></button>
+      <button class="bottom-nav-item nav-admin-owner-only" data-page="pelanggan" onclick="navigate('pelanggan')"><i class="fa-solid fa-users"></i><span>Pelanggan</span></button>
+      <button class="bottom-nav-item" id="moreNavBtn" onclick="toggleMoreDrawer()"><i class="fa-solid fa-ellipsis"></i><span>Lainnya</span></button>
+    </div>
+    <!-- More Drawer -->
+    <div class="more-drawer-overlay" id="moreDrawerOverlay" onclick="closeMoreDrawer()"></div>
+    <div class="more-drawer" id="moreDrawer">
+      <h5>Menu Lainnya</h5>
+      <div id="moreDrawerItems"></div>
+    </div>
+    <main class="main-content" id="mainContent"></main>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ==================== STATE ====================
+let currentUser = null, currentToken = null;
+let pelangganCache = [], pricelistCache = {}, parameterCache = {}, jadwalCache = [], transaksiCache = [];
+let jadwalPage = 1, transaksiPage = 1;
+const PAGE_SIZE = 10;
+
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp ' + (Number(n)||0).toLocaleString('id-ID');
+const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+function fmtTgl(d){
+  if(!d) return '—';
+  const s=String(d);
+  // yyyy-MM-dd HH:mm:ss or yyyy-MM-dd
+  const parts=s.substring(0,10).split('-');
+  if(parts.length===3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return s.substring(0,10);
+}
+const toast = (msg, type='success') => {
+  const el = document.createElement('div'); el.className = 'toast '+type;
+  el.innerHTML = `<i class="fa-solid fa-${type==='success'?'circle-check':type==='error'?'circle-xmark':'triangle-exclamation'}"></i> ${msg}<span class="toast-close" onclick="this.parentElement.remove()">✕</span>`;
+  $('toastContainer').appendChild(el); setTimeout(()=>el.remove(), 4000);
+};
+function showLoading(){ const o=document.createElement('div'); o.id='_loader'; o.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:9998;display:flex;align-items:center;justify-content:center;'; o.innerHTML='<div style="width:36px;height:36px;border:3px solid #dcfce7;border-top-color:#16a34a;border-radius:50%;animation:spin .7s linear infinite;"></div>'; document.body.appendChild(o); }
+function hideLoading(){ const el=document.getElementById('_loader'); if(el) el.remove(); }
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+function toggleSidebar(){ $('sidebar').classList.toggle('open'); }
+
+async function call(fn, ...args){
+  return new Promise(resolve => {
+    google.script.run.withSuccessHandler(r => resolve(JSON.parse(r))).withFailureHandler(e => resolve({status:'error',message:e.message}))[fn](...args);
+  });
+}
+
+// ==================== AUTH ====================
+async function doLogin(){
+  const u=$('loginUsername').value.trim(), p=$('loginPassword').value;
+  if(!u||!p){ $('loginAlert').classList.add('show'); $('loginAlertMsg').textContent='Username & password wajib diisi.'; return; }
+  $('btnLogin').disabled=true; $('btnLogin').innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Memuat...';
+  const res = await call('login', u, p);
+  $('btnLogin').disabled=false; $('btnLogin').innerHTML='<i class="fa-solid fa-right-to-bracket"></i> Masuk';
+  if(res.status==='ok'){ currentUser=res.data; currentToken=res.data.token; localStorage.setItem('scms_token',currentToken); localStorage.setItem('scms_user',JSON.stringify(currentUser)); initApp(); }
+  else { $('loginAlert').classList.add('show'); $('loginAlertMsg').textContent=res.message; }
+}
+function initApp(){
+  $('loginPage').classList.remove('active'); $('appShell').classList.add('active');
+  $('topName').textContent=currentUser.nama; $('topAvatar').textContent=currentUser.nama.charAt(0).toUpperCase(); $('topAvatar').className='avatar '+currentUser.role.toLowerCase();
+  if($('popupName')) $('popupName').textContent=currentUser.nama;
+  if($('popupRole')) $('popupRole').textContent=currentUser.role;
+  applyRoleUI(); startClock(); buildMoreDrawer(); navigate('dashboard');
+  document.querySelectorAll('.bottom-nav-item').forEach(el=>{
+    if(el.classList.contains('nav-admin-owner-only') && !['Owner','Admin'].includes(currentUser.role)) el.style.display='none';
+    if(el.classList.contains('nav-owner-only') && currentUser.role!=='Owner') el.style.display='none';
+  });
+  // Close user popup on outside click
+  document.addEventListener('click', e=>{
+    const popup=$('userPopup'); const badge=document.querySelector('.user-badge');
+    if(popup&&badge&&!popup.contains(e.target)&&!badge.contains(e.target)) popup.classList.remove('open');
+  });
+}
+function toggleUserPopup(){ $('userPopup')?.classList.toggle('open'); }
+function closeUserPopup(){ $('userPopup')?.classList.remove('open'); }
+
+// ==================== CONFIRM MODAL ====================
+function showConfirm(msg, onYes, opts={}){
+  const existing=document.getElementById('_confirmModal'); if(existing) existing.remove();
+  const id='_confirmModal';
+  const html=`<div id="${id}" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+    <div class="confirm-modal">
+      <h3>${opts.title||'Konfirmasi'}</h3>
+      <p>${msg}</p>
+      <div class="modal-btns">
+        <button class="btn btn-sm btn-outline" onclick="document.getElementById('${id}').remove()">Batal</button>
+        <button class="btn btn-sm ${opts.danger?'btn-danger':'btn-success'}" id="_confirmYes">${opts.yesLabel||'Ya'}</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('_confirmYes').onclick=()=>{ document.getElementById(id)?.remove(); onYes(); };
+}
+function buildMoreDrawer(){
+  const r=currentUser.role;
+  const items=[];
+  if(['Owner','Admin'].includes(r)) items.push({page:'pengeluaran',icon:'fa-arrow-trend-down c-red',label:'Pengeluaran'});
+  if(['Owner','Admin'].includes(r)) items.push({page:'pricelist',icon:'fa-tags c-green',label:'Pricelist'});
+  if(['Owner','Admin'].includes(r)) items.push({page:'parameter',icon:'fa-sliders c-purple',label:'Parameter Checklist'});
+  if(r==='Owner') items.push({page:'laporan',icon:'fa-chart-bar c-orange',label:'Laporan'});
+  if(r==='Owner') items.push({page:'users',icon:'fa-user-gear c-purple',label:'Manajemen User'});
+  const el=$('moreDrawerItems'); if(!el) return;
+  el.innerHTML=items.map(it=>`<div class="more-item" data-page="${it.page}" onclick="navigate('${it.page}');closeMoreDrawer();"><i class="fa-solid ${it.icon}"></i>${it.label}</div>`).join('');
+  if(!items.length){ $('moreNavBtn').style.display='none'; }
+}
+function toggleMoreDrawer(){
+  const d=$('moreDrawer'), o=$('moreDrawerOverlay');
+  const isOpen=d.classList.contains('open');
+  if(isOpen){ d.classList.remove('open'); o.classList.remove('open'); }
+  else { d.classList.add('open'); o.classList.add('open'); }
+}
+function closeMoreDrawer(){ $('moreDrawer').classList.remove('open'); $('moreDrawerOverlay').classList.remove('open'); }
+async function doLogout(){
+  showConfirm('Yakin ingin keluar dari sistem?', async ()=>{
+    showLoading(); await call('logout',currentToken); hideLoading();
+    currentUser=null; currentToken=null; localStorage.clear();
+    $('appShell').classList.remove('active'); $('loginPage').classList.add('active');
+  }, {title:'Keluar', yesLabel:'Keluar', danger:true});
+}
+function applyRoleUI(){
+  const r=currentUser.role;
+  document.querySelectorAll('.nav-owner-only').forEach(e=>e.style.display=r==='Owner'?'':'none');
+  document.querySelectorAll('.nav-admin-only').forEach(e=>e.style.display=['Owner','Admin'].includes(r)?'':'none');
+  document.querySelectorAll('.nav-admin-owner-only').forEach(e=>e.style.display=['Owner','Admin'].includes(r)?'':'none');
+}
+
+// ==================== NAVIGATION ====================
+async function navigate(page){
+  $('sidebar')?.classList.remove('open');
+  closeMoreDrawer();
+  // Role staff only allowed on dashboard & jadwal
+  if(currentUser.role==='Staff' && !['dashboard','jadwal'].includes(page)) return;
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  document.querySelectorAll('.bottom-nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  document.querySelectorAll('.more-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  if(page==='dashboard') await renderDashboard();
+  else if(page==='jadwal') await renderJadwalPage();
+  else if(page==='transaksi') await renderTransaksiPage();
+  else if(page==='pelanggan') await renderPelangganPage();
+  else if(page==='pricelist') await renderPricelistPage();
+  else if(page==='parameter') await renderParameterPage();
+  else if(page==='pengeluaran') await renderPengeluaranPage();
+  else if(page==='laporan') await renderLaporanPage();
+  else if(page==='users') await renderUsersPage();
+}
+
+// ==================== CLOCK ====================
+function startClock(){
+  const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+  function tick(){
+    const now=new Date(), el=$('topbarClock'); if(!el) return;
+    el.innerHTML=`<span style="font-size:10px;">${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}</span><br><span style="font-family:var(--mono);font-weight:800;color:var(--green-700);">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}</span>`;
+  }
+  tick(); setInterval(tick,1000);
+}
+
+// ==================== HELPERS ====================
+function getPlgName(id){ const p=pelangganCache.find(x=>x.ID===id); return p?p.Nama:id; }
+function badgeJenis(j){
+  if(j==='Laundry') return '<span class="badge" style="background:#ede9fe;color:#7c3aed;">🧺 Laundry</span>';
+  if(j==='Cleaning') return '<span class="badge badge-blue">🧹 Cleaning</span>';
+  if(j==='Pest Control') return '<span class="badge badge-red">🐛 Pest</span>';
+  return `<span class="badge badge-gray">${j||'—'}</span>`;
+}
+function badgeStatus(s){ return s==='Lunas'?'<span class="badge badge-green">✔ Lunas</span>':'<span class="badge badge-amber">⏳ Belum Bayar</span>'; }
+function statusTab(s){
+  if(s==='Completed') return '<span class="status-tab status-completed">✅ Completed</span>';
+  if(s==='On Progress') return '<span class="status-tab status-progress">⚙ On Progress</span>';
+  return '<span class="status-tab status-open">📋 Open</span>';
+}
+function badgeJadwalStatus(s){
+  if(s==='Completed') return '<span class="badge badge-green">✅ Completed</span>';
+  if(s==='On Progress') return '<span class="badge badge-amber">⚙ On Progress</span>';
+  return '<span class="badge badge-orange">📋 Open</span>';
+}
+
+// ==================== PAGINATION ====================
+function renderPagination(containerId, total, currentPage, onPageChange){
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const c = $(containerId); if(!c) return;
+  if(totalPages <= 1){ c.innerHTML=''; return; }
+  let btns = `<button class="page-btn" onclick="${onPageChange}(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
+  const start = Math.max(1, currentPage-2), end = Math.min(totalPages, currentPage+2);
+  if(start>1) btns += `<button class="page-btn" onclick="${onPageChange}(1)">1</button>${start>2?'<span class="page-info">…</span>':''}`;
+  for(let i=start;i<=end;i++) btns += `<button class="page-btn ${i===currentPage?'active':''}" onclick="${onPageChange}(${i})">${i}</button>`;
+  if(end<totalPages) btns += `${end<totalPages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="${onPageChange}(${totalPages})">${totalPages}</button>`;
+  btns += `<button class="page-btn" onclick="${onPageChange}(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>›</button>`;
+  btns += `<span class="page-info">${((currentPage-1)*PAGE_SIZE)+1}–${Math.min(currentPage*PAGE_SIZE,total)} / ${total}</span>`;
+  c.innerHTML = btns;
+}
+
+// ==================== DASHBOARD ====================
+async function renderDashboard(){
+  showLoading();
+  const [dRes, trxRes, jRes] = await Promise.all([
+    call('getDashboard', currentToken),
+    call('getTransaksi', currentToken, {}),
+    call('getJadwal', currentToken, new Date().toISOString().slice(0,10))
+  ]);
+  hideLoading();
+  const d = dRes.status==='ok'?dRes.data:{};
+  const trx = trxRes.status==='ok'?trxRes.data:[];
+  const jadwal = jRes.status==='ok'?jRes.data:[];
+  transaksiCache = trx; jadwalCache = jadwal;
+  const totalTrx=trx.length, unpaid=trx.filter(t=>t.Status_Bayar==='Belum Bayar').length;
+  const jOpen=jadwal.filter(j=>j.Status==='Open').length, jProgress=jadwal.filter(j=>j.Status==='On Progress').length, jDone=jadwal.filter(j=>j.Status==='Completed').length;
+  const aiInsights=[
+    {icon:'fa-chart-line',text:`Total <b>${totalTrx}</b> transaksi. ${unpaid>0?`<b>${unpaid}</b> belum lunas.`:''}`},
+    {icon:'fa-calendar-day',text:`Jadwal hari ini: <b>${jOpen}</b> Open, <b>${jProgress}</b> On Progress, <b>${jDone}</b> Completed.`},
+    {icon:'fa-lightbulb',text:unpaid>totalTrx*.3?'⚠️ Piutang cukup tinggi. Follow-up pembayaran segera.':'✅ Rasio pembayaran baik. Pertahankan!'},
+  ];
+  $('mainContent').innerHTML = `
+    <div class="dash-grid">
+      <div class="dash-left">
+        <div class="welcome-mini"><div><h3>👋 Selamat datang, ${currentUser.nama.split(' ')[0]}</h3><p>${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p></div></div>
+        <div class="stats-row">
+          <div class="mini-stat"><div class="ms-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-file-invoice"></i></div><div><div class="ms-val">${d.totalTransaksi||0}</div><div class="ms-label">Total Invoice</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fff7ed;color:#ea580c;"><i class="fa-solid fa-door-open"></i></div><div><div class="ms-val">${d.jadwalOpen||0}</div><div class="ms-label">Jadwal Open</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-spinner"></i></div><div><div class="ms-val">${jProgress||0}</div><div class="ms-label">On Progress</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-clock"></i></div><div><div class="ms-val">${d.belumBayar||0}</div><div class="ms-label">Belum Bayar</div></div></div>
+        </div>
+        <div class="card" style="flex:1;overflow:auto;">
+          <div class="card-header"><span>📋 Transaksi Terbaru</span></div>
+          <div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Pelanggan</th><th>Jenis</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>${trx.slice(0,8).map(t=>`<tr class="row-clickable" onclick="showTransaksiDetail('${escHtml(t.ID)}')"><td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td><td>${escHtml(getPlgName(t.Pelanggan_ID))}</td><td>${badgeJenis(t.Jenis)}</td><td style="font-weight:700;">${rupiah(t.Total)}</td><td>${badgeStatus(t.Status_Bayar)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Belum ada transaksi</td></tr>'}</tbody></table></div>
+          <div class="mobile-card-view">${trx.slice(0,5).map(t=>`<div class="data-card" onclick="showTransaksiDetail('${escHtml(t.ID)}')"><div class="card-header"><span class="card-title">${escHtml(t.ID)}</span><span class="card-badge">${badgeJenis(t.Jenis)}</span></div><div class="card-row"><span class="card-row-label">Pelanggan</span><span>${escHtml(getPlgName(t.Pelanggan_ID))}</span></div><div class="card-row"><span class="card-row-label">Total</span><span>${rupiah(t.Total)}</span></div><div class="card-row"><span class="card-row-label">Status</span><span>${badgeStatus(t.Status_Bayar)}</span></div></div>`).join('')}</div></div>
+        </div>
+      </div>
+      <div class="dash-right">
+        <div class="ai-panel">
+          <h4><i class="fa-solid fa-robot" style="color:#7c3aed;"></i> AI Analysis</h4>
+          <div class="ai-insight">${aiInsights.map(i=>`<div class="insight-item"><i class="fa-solid ${i.icon}"></i><span>${i.text}</span></div>`).join('')}</div>
+          <div style="margin-top:auto;padding-top:8px;font-size:10px;color:var(--gray-400);text-align:center;">Data real-time</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span>📅 Jadwal Hari Ini</span></div>
+          <div class="card-body">${jadwal.length?jadwal.map(j=>`<div style="font-size:11px;padding:5px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;"><span><b>${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</b><br><span style="color:var(--gray-500);">${j.Jenis_Layanan||'—'}</span></span>${badgeJadwalStatus(j.Status)}</div>`).join(''):'<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Tidak ada</p></div>'}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================== JADWAL PAGE ====================
+async function renderJadwalPage(pg){
+  jadwalPage = pg || 1;
+  const isStaff = currentUser.role==='Staff';
+  const isAdminOwner = ['Admin','Owner'].includes(currentUser.role);
+  const thn = new Date().getFullYear();
+  const bulanOpts = '<option value="">Semua Bulan</option>'+['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===String(new Date().getMonth()+1).padStart(2,'0')?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
+  const tahunOpts = [thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
+  // Show skeleton/cached immediately
+  $('mainContent').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <h2 style="font-size:18px;font-weight:800;">📅 Jadwal Kunjungan</h2>
+        ${isAdminOwner ? `<button class="btn btn-sm btn-success" onclick="openJadwalAddModal()"><i class="fa-solid fa-plus"></i> Tambah</button>` : ''}
+      </div>
+      <div class="trx-filter-grid">
+        <input type="text" class="form-control" id="jadwalSearch" placeholder="Cari pelanggan..." oninput="filterJadwalTable()">
+        <select class="form-control" id="jadwalStatusFilter" onchange="filterJadwalTable()">
+          <option value="">Semua Status</option>
+          <option value="Open">Open</option>
+          <option value="On Progress">On Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <select class="form-control" id="jadwalBulanFilter" onchange="filterJadwalTable()">${bulanOpts}</select>
+        <select class="form-control" id="jadwalTahunFilter" onchange="filterJadwalTable()">${tahunOpts}</select>
+        <button class="btn btn-sm btn-outline" onclick="renderJadwalPage()" title="Refresh"><i class="fa-solid fa-refresh"></i></button>
+      </div>
+    </div>
+    <div class="card"><div class="card-body no-pad">
+      <div class="table-wrap desktop-table"><table><thead><tr><th>No</th><th>Tgl Schedule</th><th>Tgl Realisasi</th><th>Pelanggan</th><th>Jenis</th><th>Kategori</th><th>Periode</th><th>Status</th>${isAdminOwner?'<th>Aksi</th>':''}</tr></thead><tbody id="jadwalTableBody"></tbody></table>
+      <div class="pagination" id="jadwalPagination"></div></div>
+      <div class="mobile-card-view" id="jadwalCardContainer"></div>
+    </div></div>`;
+  // If cache exists, render immediately
+  if(jadwalCache.length) renderJadwalTableData();
+  // Fetch fresh data in background (no full-page loading spinner)
+  const [jRes, plgRes] = await Promise.all([
+    call('getJadwal', currentToken, 'all'),
+    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan', currentToken)
+  ]);
+  if(plgRes.status==='ok') pelangganCache = plgRes.data;
+  if(jRes.status==='ok') jadwalCache = jRes.data;
+  jadwalCache.sort((a,b)=>String(b.Tanggal_Schedule||b.Tanggal||'').localeCompare(String(a.Tanggal_Schedule||a.Tanggal||'')));
+  renderJadwalTableData();
+}
+
+let _jadwalFiltered = [];
+function filterJadwalTable(pg){
+  jadwalPage = pg || 1;
+  renderJadwalTableData();
+}
+function renderJadwalTableData(){
+  const q = ($('jadwalSearch')?.value||'').toLowerCase();
+  const sf = $('jadwalStatusFilter')?.value||'';
+  const bf = $('jadwalBulanFilter')?.value||'';
+  const tf = $('jadwalTahunFilter')?.value||'';
+  _jadwalFiltered = jadwalCache.filter(j=>{
+    const nama = (j.pelanggan?.Nama||j.Pelanggan_ID||'').toLowerCase();
+    const matchQ = !q || nama.includes(q) || (j.ID||'').toLowerCase().includes(q);
+    const matchS = !sf || j.Status===sf;
+    const tglStr = String(j.Tanggal_Schedule||j.Tanggal||'');
+    const matchB = !bf || tglStr.substring(5,7)===bf;
+    const matchT = !tf || tglStr.substring(0,4)===tf;
+    return matchQ && matchS && matchB && matchT;
+  });
+  const isAdminOwner = ['Admin','Owner'].includes(currentUser.role);
+  const start = (jadwalPage-1)*PAGE_SIZE;
+  const pageData = _jadwalFiltered.slice(start, start+PAGE_SIZE);
+  const tbody = $('jadwalTableBody');
+  if(tbody){
+    tbody.innerHTML = pageData.length
+      ? pageData.map((j,i)=>`
+        <tr class="row-clickable" onclick="openJadwalEditModal('${escHtml(j.ID)}')">
+          <td>${start+i+1}</td>
+          <td>${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</td>
+          <td>${j.Tanggal_Realisasi?'<span class="badge badge-green">'+fmtTgl(j.Tanggal_Realisasi)+'</span>':'<span class="badge badge-gray">—</span>'}</td>
+          <td><b>${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</b></td>
+          <td>${badgeJenis(j.Jenis_Layanan||'—')}</td>
+          <td><span class="badge badge-blue">${escHtml(j.Kategori_Layanan||'—')}</span></td>
+          <td>${escHtml(j.Periode||'—')}</td>
+          <td>${badgeJadwalStatus(j.Status)}</td>
+          ${isAdminOwner?`<td onclick="event.stopPropagation();">${getJadwalAdminBtns(j)}</td>`:''}
+        </tr>`).join('')
+      : `<tr><td colspan="${isAdminOwner?9:8}" class="empty-state">Belum ada jadwal</td></tr>`;
+  }
+  renderPagination('jadwalPagination', _jadwalFiltered.length, jadwalPage, 'filterJadwalTable');
+  // Mobile
+  const mc = $('jadwalCardContainer');
+  if(mc){
+    mc.innerHTML = pageData.map(j=>`
+      <div class="data-card" onclick="openJadwalEditModal('${escHtml(j.ID)}')">
+        <div class="card-header"><span class="card-title">${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</span>${badgeJadwalStatus(j.Status)}</div>
+        <div class="card-row"><span class="card-row-label">Tgl Schedule</span><span>${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</span></div>
+        ${j.Tanggal_Realisasi?`<div class="card-row"><span class="card-row-label">Realisasi</span><span class="badge badge-green">${fmtTgl(j.Tanggal_Realisasi)}</span></div>`:''}
+        <div class="card-row"><span class="card-row-label">Layanan</span><span>${badgeJenis(j.Jenis_Layanan||'—')}</span></div>
+        <div class="card-row"><span class="card-row-label">Kategori</span><span>${escHtml(j.Kategori_Layanan||'—')}</span></div>
+        ${isAdminOwner?`<div class="card-actions" onclick="event.stopPropagation();">${getJadwalAdminBtns(j)}</div>`:''}
+      </div>`).join('') || '<div class="empty-state">Belum ada jadwal</div>';
+  }
+}
+function getJadwalAdminBtns(j){
+  let b = '';
+  if(j.Transaksi_ID) b += `<button class="btn btn-xs btn-outline" title="Cetak Struk" onclick="event.stopPropagation();openPrintModal('${escHtml(j.Transaksi_ID)}')">🖨</button> `;
+  b += `<button class="btn btn-xs btn-danger" title="Hapus" onclick="event.stopPropagation();deleteJadwal('${escHtml(j.ID)}')"><i class="fa-solid fa-trash"></i></button>`;
+  return b;
+}
+
+// ==================== TAMBAH JADWAL MODAL (Admin/Owner) ====================
+async function openJadwalAddModal(){
+  await loadPelangganCache();
+  // Load params for info only
+  const html = `
+    <div id="jadwalAddOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal">
+        <div class="modal-head"><h3>➕ Tambah Jadwal</h3><button class="modal-close" onclick="document.getElementById('jadwalAddOverlay').remove()">✕</button></div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Tanggal Schedule</label><input type="date" class="form-control" id="fAddTgl" value="${new Date().toISOString().slice(0,10)}"></div>
+            <div class="form-group"><label>Pelanggan</label>
+              <select class="form-control" id="fAddPlg">${pelangganCache.map(p=>`<option value="${escHtml(p.ID)}">${escHtml(p.Nama)}</option>`).join('')}</select>
+            </div>
+            <div class="form-group"><label>Jenis Layanan</label>
+              <select class="form-control" id="fAddJenis" onchange="onAddJenisChange()">
+                <option>Cleaning</option><option>Pest Control</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Kategori Layanan</label>
+              <select class="form-control" id="fAddKategori" onchange="onAddKategoriChange()">
+                <option value="">-- Pilih Kategori --</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Periode (opsional)</label>
+              <select class="form-control" id="fAddPeriode">
+                <option value="">-- Tanpa Periode --</option>
+                <option>Harian</option><option>Mingguan</option><option>Bulanan</option>
+              </select>
+            </div>
+          </div>
+          <!-- Parameter: info only (read-only chips) -->
+          <div id="addParamInfoBox"></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('jadwalAddOverlay').remove()">Batal</button>
+          <button class="btn btn-sm btn-success" onclick="saveJadwalAdd()">💾 Simpan</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  onAddJenisChange();
+}
+let _addParams = [];
+async function onAddJenisChange(){
+  const jenis = $('fAddJenis')?.value;
+  const katSel = $('fAddKategori'); if(!katSel) return;
+  const jenisKey = jenis==='Pest Control'?'pest':'cleaning';
+  katSel.innerHTML='<option value="">-- Memuat... --</option>';
+  const res = await call('getParameter', currentToken, jenisKey);
+  _addParams = res.status==='ok'?res.data:[];
+  const kategoris=[...new Set(_addParams.map(p=>p.Kategori))];
+  katSel.innerHTML='<option value="">-- Pilih Kategori --</option>'+kategoris.map(k=>`<option>${escHtml(k)}</option>`).join('');
+  onAddKategoriChange();
+}
+function onAddKategoriChange(){
+  const kat = $('fAddKategori')?.value;
+  const box = $('addParamInfoBox'); if(!box) return;
+  if(!kat){ box.innerHTML=''; return; }
+  const items = _addParams.filter(p=>p.Kategori===kat);
+  if(!items.length){ box.innerHTML=''; return; }
+  box.innerHTML=`<div class="param-info-box">
+    <div class="param-kat">📋 Parameter Checklist — ${escHtml(kat)}</div>
+    <div class="param-items">${items.map(p=>`<span class="param-chip">${escHtml(p.Item)}</span>`).join('')}</div>
+    <div style="font-size:10px;color:var(--gray-400);margin-top:6px;"><i class="fa-solid fa-info-circle"></i> Checklist dapat diisi saat edit jadwal</div>
+  </div>`;
+}
+async function saveJadwalAdd(){
+  const data = {
+    Tanggal_Schedule: $('fAddTgl')?.value,
+    Pelanggan_ID: $('fAddPlg')?.value,
+    Jenis_Layanan: $('fAddJenis')?.value,
+    Kategori_Layanan: $('fAddKategori')?.value||'',
+    Periode: $('fAddPeriode')?.value||''
+  };
+  if(!data.Tanggal_Schedule||!data.Pelanggan_ID){ toast('Lengkapi data','error'); return; }
+  showLoading(); const res=await call('saveJadwal',currentToken,data); hideLoading();
+  if(res.status==='ok'){ toast('Jadwal ditambahkan'); document.getElementById('jadwalAddOverlay')?.remove(); renderJadwalPage(); }
+  else toast(res.message,'error');
+}
+
+// ==================== EDIT JADWAL MODAL ====================
+async function openJadwalEditModal(editId){
+  const j = jadwalCache.find(x=>x.ID===editId); if(!j) return;
+  const isStaff = currentUser.role==='Staff';
+  const isAdmin = currentUser.role==='Admin';
+  const isOwner = currentUser.role==='Owner';
+  const isCompleted = j.Status==='Completed';
+  const isOnProgress = j.Status==='On Progress';
+
+  // Admin & Owner: always view detail only
+  if(isAdmin || isOwner){ openJadwalDetail(editId); return; }
+
+  // Staff: load params & checklist
+  showLoading();
+  const jenis = j.Jenis_Layanan||'Cleaning';
+  const jenisKey = jenis==='Pest Control'?'pest':'cleaning';
+  const [paramRes, chkRes] = await Promise.all([
+    call('getParameter', currentToken, jenisKey),
+    call('getJadwalChecklist', currentToken, editId)
+  ]);
+  hideLoading();
+  const params = paramRes.status==='ok'?paramRes.data:[];
+  const existingChecklist = chkRes.status==='ok'?chkRes.data:{};
+
+  // Group params by kategori (filtered by kategori layanan if set)
+  const grouped={};
+  params.filter(p=>!j.Kategori_Layanan||p.Kategori===j.Kategori_Layanan).forEach(p=>{
+    if(!grouped[p.Kategori]) grouped[p.Kategori]=[];
+    grouped[p.Kategori].push(p.Item);
+  });
+
+  // Build checklist HTML (editable checkboxes)
+  let checklistHtml='';
+  if(Object.keys(grouped).length){
+    checklistHtml = Object.entries(grouped).map(([kat,items])=>`
+      <div style="margin-bottom:10px;">
+        <p style="font-weight:700;font-size:12px;color:var(--gray-700);margin-bottom:6px;">${escHtml(kat)}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;">
+          ${items.map(item=>{
+            const checked=(existingChecklist[kat]||[]).includes(item)?'checked':'';
+            return `<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;padding:4px 6px;background:white;border-radius:6px;border:1px solid var(--gray-100);">
+              <input type="checkbox" class="editChk" data-kat="${escHtml(kat)}" value="${escHtml(item)}" ${checked} style="accent-color:#16a34a;"> ${escHtml(item)}
+            </label>`;
+          }).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  // Foto dokumentasi section (editable)
+  const fotoSection=`
+    <div style="margin-top:12px;">
+      <div style="font-weight:700;font-size:13px;margin-bottom:6px;">📷 Foto Dokumentasi</div>
+      ${j.Foto_Dokumentasi?`<div style="margin-bottom:6px;"><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline">🔗 Lihat Foto</a></div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <label class="btn btn-xs btn-outline" style="cursor:pointer;"><i class="fa-solid fa-camera"></i> Kamera<input type="file" accept="image/*" capture="environment" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
+        <label class="btn btn-xs btn-outline" style="cursor:pointer;"><i class="fa-solid fa-image"></i> Galeri<input type="file" accept="image/*" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
+      </div>
+      <div id="fotoUploadStatus" style="font-size:11px;color:var(--gray-500);margin-top:4px;"></div>
+    </div>`;
+
+  const catatan=existingChecklist['__catatan__']||'';
+  const alamat=j.pelanggan?.Alamat_Lengkap||'';
+
+  // ── STAFF OPEN: hanya tampilkan info + tombol Mulai Progress
+  //    checklist & foto tersembunyi, muncul setelah klik Mulai
+  // ── STAFF ON PROGRESS: checklist + foto langsung tampil, tombol Simpan→Completed
+  // ── STAFF COMPLETED: tampil detail view saja (handled below)
+  if(isStaff && isCompleted){ openJadwalDetail(editId); return; }
+
+  const showWorkSection = isOnProgress; // show checklist+foto right away if On Progress
+
+  const html=`
+    <div id="jadwalEditOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal modal-lg">
+        <div class="modal-head">
+          <h3>Jadwal Kunjungan</h3>
+          <div style="display:flex;gap:6px;align-items:center;">${statusTab(j.Status)}<button class="modal-close" onclick="document.getElementById('jadwalEditOverlay').remove()">✕</button></div>
+        </div>
+        <div class="modal-body">
+          <!-- Info jadwal -->
+          <div class="lock-info" style="margin-bottom:12px;">
+            <div class="lock-label"><i class="fa-solid fa-lock"></i> Info Jadwal</div>
+            <div class="lock-grid">
+              <div class="lock-field"><div class="lock-field-label">Tanggal Schedule</div><div class="lock-field-val">${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</div></div>
+              <div class="lock-field"><div class="lock-field-label">Pelanggan</div><div class="lock-field-val">${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID||'—')}</div></div>
+              <div class="lock-field"><div class="lock-field-label">Jenis Layanan</div><div class="lock-field-val">${escHtml(jenis)}</div></div>
+              <div class="lock-field"><div class="lock-field-label">Kategori</div><div class="lock-field-val">${escHtml(j.Kategori_Layanan||'—')}</div></div>
+              <div class="lock-field"><div class="lock-field-label">Periode</div><div class="lock-field-val">${escHtml(j.Periode||'Tanpa Periode')}</div></div>
+              <div class="lock-field"><div class="lock-field-label">No. Jadwal</div><div class="lock-field-val" style="font-family:var(--mono);font-size:10px;">${escHtml(j.ID)}</div></div>
+            </div>
+            ${alamat?`<div style="margin-top:8px;padding:8px;background:white;border-radius:6px;border:1px solid var(--gray-100);display:flex;gap:6px;align-items:flex-start;"><i class="fa-solid fa-location-dot" style="color:#16a34a;margin-top:2px;flex-shrink:0;"></i><span style="font-size:12px;">${escHtml(alamat)}</span></div>`:''}
+          </div>
+
+          ${j.Status==='Open'?`
+          <!-- Open: hanya tombol Mulai Progress -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px;background:var(--amber-100);border-radius:10px;margin-bottom:8px;">
+            <i class="fa-solid fa-circle-info" style="color:#b45309;"></i>
+            <span style="font-size:12px;color:#92400e;flex:1;">Klik <b>Mulai Progress</b> untuk memulai pengerjaan dan mengisi checklist lapangan.</span>
+          </div>
+          <div style="text-align:center;padding:8px 0;">
+            <button class="btn-progress" onclick="staffMulaiProgress('${escHtml(editId)}')"><i class="fa-solid fa-play"></i> Mulai Progress</button>
+          </div>`:''}
+
+          <!-- Work section: checklist + foto (hidden when Open, shown when On Progress) -->
+          <div id="workSection" style="${showWorkSection?'':'display:none;'}">
+            <hr style="margin:12px 0;">
+            ${checklistHtml?`<div style="font-weight:800;font-size:13px;margin-bottom:10px;">✅ Checklist Parameter</div>${checklistHtml}`:''}
+            ${fotoSection}
+            <div class="form-group" style="margin-top:12px;"><label>Catatan Kunjungan</label><textarea class="form-control" id="editCatatan" rows="2">${escHtml(catatan)}</textarea></div>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('jadwalEditOverlay').remove()">Tutup</button>
+          ${isCompleted?`<button class="btn btn-sm btn-teal" onclick="kirimEmailJadwal('${editId}')"><i class="fa-solid fa-envelope"></i> Kirim Email</button>`:''}
+          ${isOnProgress?`<button class="btn btn-sm btn-success" onclick="saveChecklistAndComplete('${editId}')"><i class="fa-solid fa-check-circle"></i> Simpan & Selesai</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// Staff klik "Mulai Progress" → update status → tampilkan work section
+async function staffMulaiProgress(jadwalId){
+  showLoading();
+  const res = await call('updateJadwalStatus', currentToken, jadwalId, 'On Progress');
+  hideLoading();
+  if(res.status!=='ok'){ toast(res.message,'error'); return; }
+  // Update cache
+  const j = jadwalCache.find(x=>x.ID===jadwalId);
+  if(j) j.Status='On Progress';
+  // Show work section in modal, hide the Open-state info block
+  const ws=document.getElementById('workSection');
+  if(ws) ws.style.display='';
+  // Swap buttons in modal-foot
+  const foot=document.querySelector('#jadwalEditOverlay .modal-foot');
+  if(foot){
+    foot.innerHTML=`<button class="btn btn-sm btn-outline" onclick="document.getElementById('jadwalEditOverlay').remove()">Tutup</button>
+      <button class="btn btn-sm btn-success" onclick="saveChecklistAndComplete('${jadwalId}')"><i class="fa-solid fa-check-circle"></i> Simpan & Selesai</button>`;
+  }
+  // Update status badge in header
+  const head=document.querySelector('#jadwalEditOverlay .modal-head div');
+  if(head) head.innerHTML=statusTab('On Progress')+'<button class="modal-close" onclick="document.getElementById(\'jadwalEditOverlay\').remove()">✕</button>';
+  // Hide the Open-state info block
+  const openInfo=document.querySelector('#jadwalEditOverlay .modal-body > div[style*="amber"]');
+  if(openInfo) openInfo.remove();
+  const openBtn=document.querySelector('#jadwalEditOverlay .modal-body > div[style*="text-align:center"]');
+  if(openBtn) openBtn.remove();
+  toast('Status diperbarui: On Progress');
+}
+
+// Simpan checklist + otomatis Completed + isi tanggal realisasi
+async function saveChecklistAndComplete(jadwalId){
+  const data={};
+  document.querySelectorAll('.editChk').forEach(cb=>{
+    if(cb.checked){
+      const kat=cb.dataset.kat||'Umum';
+      if(!data[kat]) data[kat]=[];
+      data[kat].push(cb.value);
+    }
+  });
+  data['__catatan__']=$('editCatatan')?.value||'';
+  showLoading();
+  // 1. Simpan checklist
+  const chkRes=await call('saveJadwalChecklist',currentToken,jadwalId,JSON.stringify(data));
+  if(chkRes.status!=='ok'){ hideLoading(); toast(chkRes.message,'error'); return; }
+  // 2. Update status ke Completed (backend auto-isi Tanggal_Realisasi)
+  const stRes=await call('updateJadwalStatus',currentToken,jadwalId,'Completed');
+  hideLoading();
+  if(stRes.status==='ok'){
+    toast('Jadwal selesai & checklist tersimpan ✅');
+    document.getElementById('jadwalEditOverlay')?.remove();
+    renderJadwalPage();
+  } else toast(stRes.message,'error');
+}
+
+async function doUpdateStatus(id, status){
+  const doIt=async()=>{ showLoading(); const res=await call('updateJadwalStatus',currentToken,id,status); hideLoading(); if(res.status==='ok'){ toast('Status diperbarui: '+status); document.getElementById('jadwalEditOverlay')?.remove(); renderJadwalPage(); } else toast(res.message,'error'); };
+  if(status==='Completed') showConfirm('Tandai jadwal sebagai Completed? Status tidak bisa diubah kembali.', doIt, {title:'Selesaikan Jadwal', yesLabel:'Ya, Selesai', danger:false});
+  else doIt();
+}
+async function saveJadwalChecklist2(jadwalId){
+  const data={};
+  document.querySelectorAll('.editChk').forEach(cb=>{
+    if(cb.checked){ const kat=cb.dataset.kat||'Umum'; if(!data[kat]) data[kat]=[]; data[kat].push(cb.value); }
+  });
+  data['__catatan__']=$('editCatatan')?.value||'';
+  showLoading(); const res=await call('saveJadwalChecklist',currentToken,jadwalId,JSON.stringify(data)); hideLoading();
+  if(res.status==='ok'){ toast('Checklist disimpan'); showChecklistResult(jadwalId,data); } else toast(res.message,'error');
+}
+function showChecklistResult(jadwalId, data){
+  // Build YA/TIDAK result display
+  const overlay = document.getElementById('jadwalEditOverlay');
+  if(!overlay) return;
+  const j = jadwalCache.find(x=>x.ID===jadwalId); if(!j) return;
+  const jenis = j.Jenis_Layanan||'Cleaning';
+  const jenisKey = jenis==='Pest Control'?'pest':'cleaning';
+  // Get params from cache or reload
+  const allItems = [];
+  document.querySelectorAll('.editChk').forEach(cb=>{
+    allItems.push({ kat: cb.dataset.kat, item: cb.value, checked: cb.checked });
+  });
+  if(!allItems.length) return;
+  // Insert result after checklist section
+  let existing = overlay.querySelector('#checklistResultSection');
+  if(!existing){ existing=document.createElement('div'); existing.id='checklistResultSection'; overlay.querySelector('.modal-body').appendChild(existing); }
+  let html=`<hr style="margin:12px 0;"><div style="font-weight:800;margin-bottom:8px;">📋 Hasil Checklist</div><div class="checklist-grid">`;
+  allItems.forEach(({kat,item,checked})=>{
+    html+=`<div class="checklist-item"><span class="checklist-label">${escHtml(item)}</span><span class="checklist-value ${checked?'checklist-yes':'checklist-no'}">${checked?'✅ YA':'❌ TIDAK'}</span></div>`;
+  });
+  html+='</div>';
+  existing.innerHTML=html;
+  existing.scrollIntoView({behavior:'smooth'});
+}
+
+async function openJadwalDetail(jId){
+  const j = jadwalCache.find(x=>x.ID===jId); if(!j) return;
+  showLoading();
+  const chkRes = await call('getJadwalChecklist', currentToken, jId);
+  hideLoading();
+  const checklist = chkRes.status==='ok'?chkRes.data:{};
+  let checklistHtml='';
+  if(Object.keys(checklist).length){
+    checklistHtml='<div class="checklist-grid">';
+    Object.entries(checklist).filter(([k])=>k!=='__catatan__').forEach(([kat,items])=>{
+      if(Array.isArray(items)) items.forEach(item=>{
+        checklistHtml+=`<div class="checklist-item"><span class="checklist-label">${escHtml(item)}</span><span class="checklist-value checklist-yes">✅ YA</span></div>`;
+      });
+    });
+    checklistHtml+='</div>';
+    if(checklist['__catatan__']) checklistHtml+=`<div style="margin-top:8px;"><b>Catatan:</b><p style="font-size:12px;">${escHtml(checklist['__catatan__'])}</p></div>`;
+  }
+  const fotoSection=j.Foto_Dokumentasi?`<div style="margin-top:8px;"><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline">🔗 Lihat Foto Dokumentasi</a></div>`:'';
+  const isCompleted=j.Status==='Completed';
+  const html=`
+    <div id="detailJadwalOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal modal-sm">
+        <div class="modal-head"><h3>Detail Jadwal</h3><div style="display:flex;gap:6px;align-items:center;">${statusTab(j.Status)}<button class="modal-close" onclick="document.getElementById('detailJadwalOverlay').remove()">✕</button></div></div>
+        <div class="modal-body">
+          <div style="background:var(--green-50);border-radius:8px;padding:12px;margin-bottom:12px;">
+            <div style="font-size:14px;font-weight:800;color:#14532d;">${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</div>
+            ${j.pelanggan?.Alamat_Lengkap?`<div style="font-size:11px;color:var(--gray-600);margin-top:4px;display:flex;gap:5px;align-items:flex-start;"><i class="fa-solid fa-location-dot" style="color:#16a34a;flex-shrink:0;margin-top:2px;"></i><span>${escHtml(j.pelanggan.Alamat_Lengkap)}</span></div>`:''}
+            <div style="margin-top:6px;">${badgeJenis(j.Jenis_Layanan||'—')} ${badgeJadwalStatus(j.Status)}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+            <div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">TGL SCHEDULE</div><div style="font-weight:700;font-size:12px;">${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</div></div>
+            <div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">TGL REALISASI</div><div style="font-weight:700;font-size:12px;">${j.Tanggal_Realisasi?fmtTgl(j.Tanggal_Realisasi):'—'}</div></div>
+            <div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">KATEGORI</div><div style="font-weight:700;font-size:12px;">${escHtml(j.Kategori_Layanan||'—')}</div></div>
+            <div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">PERIODE</div><div style="font-weight:700;font-size:12px;">${escHtml(j.Periode||'—')}</div></div>
+          </div>
+          ${fotoSection}
+          ${checklistHtml?`<hr style="margin:10px 0;"><div style="font-weight:700;margin-bottom:6px;">✅ Checklist Parameter</div>${checklistHtml}`:''}
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('detailJadwalOverlay').remove()">Tutup</button>
+          ${isCompleted?`<button class="btn btn-sm btn-teal" onclick="kirimEmailJadwal('${jId}')"><i class="fa-solid fa-envelope"></i> Kirim Email</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function uploadFotoDetail(jadwalId, inputEl){
+  const file=inputEl?.files[0]; if(!file) return;
+  const statusEl=document.getElementById('fotoUploadStatus');
+  if(statusEl) statusEl.textContent='⏳ Memproses...';
+  try {
+    // Resize ke 400px max, quality 0.6 — hasilkan base64 sekecil mungkin
+    const dataUrl = await new Promise((ok2,fail)=>{
+      const rd=new FileReader();
+      rd.onerror=()=>fail(new Error('Gagal baca file'));
+      rd.onload=ev=>{
+        const img=new Image();
+        img.onerror=()=>fail(new Error('Gagal load gambar'));
+        img.onload=()=>{
+          const MAX=400; let w=img.width,h=img.height;
+          if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+          const cv=document.createElement('canvas');
+          cv.width=w; cv.height=h;
+          cv.getContext('2d').drawImage(img,0,0,w,h);
+          ok2(cv.toDataURL('image/jpeg',0.6));
+        };
+        img.src=ev.target.result;
+      };
+      rd.readAsDataURL(file);
+    });
+    const b64=dataUrl.split(',')[1];
+    if(statusEl) statusEl.textContent='⏳ Menyimpan ('+Math.round(b64.length/1024)+'KB)...';
+    showLoading();
+    const res=await call('uploadFotoJadwal',currentToken,jadwalId,b64,'image/jpeg');
+    hideLoading();
+    if(res.status==='ok'){
+      toast('Foto tersimpan ✅');
+      if(statusEl) statusEl.textContent='✅ Tersimpan';
+      const prev=document.getElementById('fotoPreviewInline');
+      if(prev) prev.innerHTML='<img src="'+dataUrl+'" style="max-width:100%;max-height:150px;border-radius:8px;margin-top:6px;">';
+      const j=jadwalCache.find(x=>x.ID===jadwalId); if(j) j.Foto_Dokumentasi=dataUrl;
+    } else {
+      if(statusEl) statusEl.textContent='❌ '+res.message;
+      toast('Gagal: '+res.message,'error');
+    }
+  } catch(e2){
+    hideLoading();
+    if(statusEl) statusEl.textContent='❌ '+e2.message;
+    toast('Error: '+e2.message,'error');
+  }
+}
+async function kirimEmailJadwal(jadwalId){
+  showLoading(); const res=await call('kirimEmailJadwal',currentToken,jadwalId); hideLoading();
+  toast(res.status==='ok'?res.data:res.message, res.status==='ok'?'success':'error');
+}
+async function deleteJadwal(id){ showConfirm('Hapus jadwal ini? Data tidak bisa dikembalikan.', async()=>{ showLoading(); await call('deleteJadwal',currentToken,id); hideLoading(); toast('Jadwal dihapus'); renderJadwalPage(); }, {title:'Hapus Jadwal', yesLabel:'Hapus', danger:true}); }
+
+// ==================== TRANSAKSI PAGE ====================
+async function renderTransaksiPage(pg){
+  transaksiPage = pg||1;
+  const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
+  const bulanOpts=['','01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${i===0?'Semua Bulan':['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i-1]}</option>`).join('');
+  const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
+  $('mainContent').innerHTML=`
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <h2>🧾 Invoice / Transaksi</h2>
+        <button class="btn btn-sm btn-success" onclick="openInvModal()"><i class="fa-solid fa-plus"></i> Tambah</button>
+      </div>
+      <div class="trx-filter-grid">
+        <select class="form-control" id="fJenis" onchange="applyTrxFilter()"><option value="">Semua Jenis</option><option>Laundry</option><option>Cleaning</option><option>Pest Control</option></select>
+        <select class="form-control" id="fStatus" onchange="applyTrxFilter()"><option value="">Semua Status</option><option>Belum Bayar</option><option>Lunas</option></select>
+        <select class="form-control" id="fBulan" onchange="applyTrxFilter()">${bulanOpts}</select>
+        <select class="form-control" id="fTahun" onchange="applyTrxFilter()">${tahunOpts}</select>
+        <button class="btn btn-sm btn-outline" onclick="loadTransaksiData()" title="Refresh data"><i class="fa-solid fa-refresh"></i></button>
+      </div>
+    </div>
+    <div class="card"><div class="card-body no-pad">
+      <div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Tgl</th><th>Pelanggan</th><th>Jenis</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="trxTableBody"></tbody></table>
+      <div class="pagination" id="trxPagination"></div></div>
+      <div class="mobile-card-view" id="trxCardContainer"></div>
+    </div></div>`;
+  if(transaksiCache.length){ _trxFiltered=transaksiCache; renderTrxTableData(); }
+  const [trxRes, plgRes] = await Promise.all([
+    call('getTransaksi',currentToken,{}),
+    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
+  ]);
+  if(plgRes.status==='ok') pelangganCache=plgRes.data;
+  if(trxRes.status==='ok') transaksiCache=trxRes.data;
+  transaksiCache.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
+  applyTrxFilter();
+}
+let _trxFiltered=[];
+function applyTrxFilter(pg){
+  transaksiPage = pg||1;
+  const jenis=$('fJenis')?.value||'';
+  const status=$('fStatus')?.value||'';
+  const bulan=$('fBulan')?.value||'';
+  const tahun=$('fTahun')?.value||'';
+  _trxFiltered = transaksiCache.filter(t=>{
+    const matchJ = !jenis || t.Jenis===jenis;
+    const matchS = !status || t.Status_Bayar===status;
+    const tglStr = String(t.Tanggal_Masuk||'');
+    const matchB = !bulan || tglStr.substring(5,7)===bulan;
+    const matchT = !tahun || tglStr.substring(0,4)===tahun;
+    return matchJ && matchS && matchB && matchT;
+  });
+  renderTrxTableData();
+}
+async function loadTransaksiData(){
+  showLoading();
+  const [trxRes, plgRes] = await Promise.all([
+    call('getTransaksi',currentToken,{}),
+    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
+  ]);
+  hideLoading();
+  if(plgRes.status==='ok') pelangganCache=plgRes.data;
+  if(trxRes.status==='ok') transaksiCache=trxRes.data;
+  transaksiCache.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
+  applyTrxFilter();
+}
+function renderTrxTableData(pg){
+  transaksiPage = pg||transaksiPage||1;
+  const start=(transaksiPage-1)*PAGE_SIZE;
+  const pageData=_trxFiltered.slice(start,start+PAGE_SIZE);
+  const tbody=$('trxTableBody');
+  if(tbody){
+    tbody.innerHTML=pageData.length
+      ?pageData.map(t=>{
+        const isPaid=t.Status_Bayar==='Lunas';
+        return `<tr class="row-clickable" onclick="showTransaksiDetail('${escHtml(t.ID)}')">
+          <td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td>
+          <td>${String(t.Tanggal_Masuk).substring(0,10)}</td>
+          <td>${escHtml(getPlgName(t.Pelanggan_ID))}</td>
+          <td>${badgeJenis(t.Jenis)}</td>
+          <td style="font-weight:700;">${rupiah(t.Total)}</td>
+          <td>${badgeStatus(t.Status_Bayar)}</td>
+          <td onclick="event.stopPropagation();">
+            <button class="btn btn-xs btn-outline" onclick="openPrintModal('${escHtml(t.ID)}')">🖨</button>
+            ${!isPaid?`<button class="btn btn-xs btn-info" onclick="toggleBayar('${escHtml(t.ID)}','${escHtml(t.Status_Bayar)}')">💰</button>`:''}
+            <button class="btn btn-xs btn-danger" onclick="deleteTx('${escHtml(t.ID)}')">🗑</button>
+          </td></tr>`;}).join('')
+      :'<tr><td colspan="7" class="empty-state">Tidak ada transaksi</td></tr>';
+  }
+  renderPagination('trxPagination',_trxFiltered.length,transaksiPage,'renderTrxTableData');
+  const cards=$('trxCardContainer');
+  if(cards){
+    cards.innerHTML=pageData.map(t=>`
+      <div class="data-card" onclick="showTransaksiDetail('${escHtml(t.ID)}')">
+        <div class="card-header"><span class="card-title">${escHtml(t.ID)}</span><span class="card-badge">${badgeJenis(t.Jenis)}</span></div>
+        <div class="card-row"><span class="card-row-label">Tanggal</span><span>${String(t.Tanggal_Masuk).substring(0,10)}</span></div>
+        <div class="card-row"><span class="card-row-label">Pelanggan</span><span>${escHtml(getPlgName(t.Pelanggan_ID))}</span></div>
+        <div class="card-row"><span class="card-row-label">Total</span><span>${rupiah(t.Total)}</span></div>
+        <div class="card-row"><span class="card-row-label">Status</span><span>${badgeStatus(t.Status_Bayar)}</span></div>
+        <div class="card-actions" onclick="event.stopPropagation();">
+          <button class="btn btn-xs btn-outline" onclick="openPrintModal('${escHtml(t.ID)}')">🖨</button>
+          ${t.Status_Bayar!=='Lunas'?`<button class="btn btn-xs btn-info" onclick="toggleBayar('${escHtml(t.ID)}','${escHtml(t.Status_Bayar)}')">Bayar</button>`:''}
+          <button class="btn btn-xs btn-danger" onclick="deleteTx('${escHtml(t.ID)}')">Hapus</button>
+        </div>
+      </div>`).join('')||'<div class="empty-state">Kosong</div>';
+  }
+}
+async function toggleBayar(id,st){ const ns=st==='Lunas'?'Belum Bayar':'Lunas'; showLoading(); await call('updateStatusBayar',currentToken,id,ns); hideLoading(); loadTransaksiData(); }
+async function deleteTx(id){ showConfirm('Hapus invoice ini? Data tidak bisa dikembalikan.', async()=>{ showLoading(); await call('deleteTransaksi',currentToken,id); hideLoading(); loadTransaksiData(); }, {title:'Hapus Invoice', yesLabel:'Hapus', danger:true}); }
+
+// ---- Detail Transaksi ----
+async function showTransaksiDetail(txId){
+  const tx=transaksiCache.find(t=>t.ID===txId); if(!tx) return;
+  showLoading(); const detRes=await call('getTransaksiDetail',currentToken,txId); hideLoading();
+  const details=detRes.status==='ok'?detRes.data:[];
+  const plg=pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{};
+  const html=`
+    <div id="txDetailOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal modal-sm">
+        <div class="modal-head"><h3>Detail Transaksi</h3><button class="modal-close" onclick="document.getElementById('txDetailOverlay').remove()">✕</button></div>
+        <div class="modal-body">
+          <p><b>ID:</b> <span style="font-family:var(--mono);font-size:11px;">${escHtml(tx.ID)}</span></p>
+          <p><b>Tanggal:</b> ${String(tx.Tanggal_Masuk).substring(0,10)}</p>
+          <p><b>Pelanggan:</b> ${escHtml(plg.Nama||tx.Pelanggan_ID)}</p>
+          <p><b>Jenis:</b> ${badgeJenis(tx.Jenis)}</p>
+          <p><b>Total:</b> <span style="font-weight:700;color:var(--green-700);">${rupiah(tx.Total)}</span></p>
+          <p><b>Status:</b> ${badgeStatus(tx.Status_Bayar)}</p>
+          <p><b>Catatan:</b> ${escHtml(tx.Catatan||'—')}</p>
+          <hr style="margin:10px 0;"><b>Detail Item:</b>
+          <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Jml</th><th>Harga</th><th>Subtotal</th></tr></thead><tbody>
+            ${details.map(d=>`<tr><td>${escHtml(d.Nama_Item)}</td><td>${d.Jumlah}</td><td>${rupiah(d.Harga)}</td><td>${rupiah(d.Subtotal)}</td></tr>`).join('')}
+          </tbody></table>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('txDetailOverlay').remove()">Tutup</button>
+          <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email Invoice</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+// ---- Transaksi Form ----
+async function openInvModal(jadwalId=null){
+  showLoading();
+  let defaultJenis='Laundry', prefillPelanggan=null;
+  if(jadwalId){ const j=jadwalCache.find(x=>x.ID===jadwalId); if(j){ defaultJenis=j.Jenis_Layanan||'Laundry'; prefillPelanggan=j.Pelanggan_ID; } }
+  const jenisKey={Laundry:'laundry',Cleaning:'cleaning','Pest Control':'pest'}[defaultJenis]||'laundry';
+  await Promise.all([loadPelangganCache(), loadPricelistCache(jenisKey)]);
+  hideLoading();
+  const prices=pricelistCache[jenisKey]||[];
+
+  document.body.insertAdjacentHTML('beforeend',`
+    <div id="invModalOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal modal-lg">
+        <div class="modal-head"><h3>🧾 ${jadwalId?'Invoice dari Jadwal':'Transaksi Baru'}</h3><button class="modal-close" onclick="document.getElementById('invModalOverlay').remove()">✕</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="invJadwalId" value="${jadwalId||''}">
+          <!-- Search Pelanggan -->
+          <div class="form-group">
+            <label>Pelanggan</label>
+            <div style="position:relative;">
+              <input type="text" class="form-control" id="invPlgSearch" placeholder="Ketik nama pelanggan..." oninput="filterInvPlg()" onclick="filterInvPlg()" autocomplete="off" value="${prefillPelanggan?escHtml(pelangganCache.find(p=>p.ID===prefillPelanggan)?.Nama||''):''}">
+              <div id="invPlgDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--gray-200);border-radius:6px;max-height:180px;overflow-y:auto;z-index:500;box-shadow:var(--shadow-md);"></div>
+            </div>
+            <input type="hidden" id="invPlgId" value="${prefillPelanggan||''}">
+            <div id="invPlgSelected" style="font-size:11px;color:var(--green-700);margin-top:3px;">${prefillPelanggan?'✅ '+escHtml(pelangganCache.find(p=>p.ID===prefillPelanggan)?.Nama||''):''}</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>Jenis Layanan</label>
+              <select class="form-control" id="invJenis" onchange="invJenisChange()">
+                ${['Laundry','Cleaning','Pest Control'].map(v=>`<option ${v===defaultJenis?'selected':''}>${v}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label>Status Bayar</label>
+              <select class="form-control" id="invStatus"><option value="Belum Bayar">Belum Bayar</option><option value="Lunas">Lunas</option></select>
+            </div>
+          </div>
+          <!-- Ref jadwal untuk Cleaning/Pest -->
+          <div id="invRefScheduleSection" style="${defaultJenis==='Laundry'?'display:none;':''}">
+            <div class="form-group">
+              <label>Referensi ID Jadwal <span style="font-weight:400;color:var(--gray-400)">(opsional)</span></label>
+              <div style="position:relative;">
+                <input type="text" class="form-control" id="invRefJadwalId" placeholder="Cari ID atau nama pelanggan..." oninput="filterInvJadwal()" onclick="filterInvJadwal()" value="${jadwalId||''}">
+                <div id="invRefJadwalDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--gray-200);border-radius:6px;max-height:200px;overflow-y:auto;z-index:500;box-shadow:var(--shadow-md);"></div>
+              </div>
+              <div id="invRefJadwalInfo" style="font-size:11px;color:var(--gray-500);margin-top:3px;"></div>
+              <button class="btn btn-xs btn-outline" onclick="tarikDataJadwal()" style="margin-top:4px;"><i class="fa-solid fa-download"></i> Tarik Data Jadwal</button>
+            </div>
+          </div>
+          <div id="invDetailContainer"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+            <div style="font-size:13px;font-weight:700;">Total: <span id="invTotalDisplay" style="font-size:15px;color:var(--green-700);">Rp 0</span></div>
+            <input type="hidden" id="invTotal" value="0">
+          </div>
+          <div class="form-group" style="margin-top:8px;"><label>Catatan</label><textarea class="form-control" id="invCatatan" rows="2"></textarea></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('invModalOverlay').remove()">Batal</button>
+          <button class="btn btn-sm btn-success" onclick="saveInv()">💾 Simpan Invoice</button>
+        </div>
+      </div>
+    </div>`);
+  renderInvDetailContainer(defaultJenis, prices);
+  window._invPrices=prices;
+  if(jadwalId){ $('invRefJadwalId').value=jadwalId; await tarikDataJadwal(); }
+}
+
+function filterInvPlg(){
+  const q=($('invPlgSearch')?.value||'').toLowerCase();
+  const dd=$('invPlgDropdown'); if(!dd) return;
+  const hits=q?pelangganCache.filter(p=>p.Nama.toLowerCase().includes(q)||String(p.Telepon||'').includes(q)):pelangganCache.slice(0,20);
+  if(!hits.length){dd.style.display='none';return;}
+  dd.innerHTML=hits.map(p=>`<div onclick="selectInvPlg('${escHtml(p.ID)}','${escHtml(p.Nama)}')" style="padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''"><b>${escHtml(p.Nama)}</b><span style="color:var(--gray-400);">${escHtml(p.Telepon||'')}</span></div>`).join('');
+  dd.style.display='block';
+}
+function selectInvPlg(id,nama){
+  $('invPlgId').value=id; $('invPlgSearch').value=nama; $('invPlgDropdown').style.display='none';
+  $('invPlgSelected').innerHTML='✅ '+escHtml(nama);
+}
+function filterInvJadwal(){
+  const q=($('invRefJadwalId')?.value||'').toLowerCase();
+  const dd=$('invRefJadwalDropdown'); if(!dd) return;
+  const jenis=$('invJenis')?.value||'';
+  const filtered=jadwalCache.filter(j=>{
+    if(j.Status!=='Completed') return false;
+    if(jenis&&j.Jenis_Layanan!==jenis) return false;
+    return !q||j.ID.toLowerCase().includes(q)||(j.pelanggan?.Nama||'').toLowerCase().includes(q);
+  }).slice(0,15);
+  if(!filtered.length){dd.style.display='none';return;}
+  dd.innerHTML=filtered.map(j=>`<div onclick="selectInvJadwal('${escHtml(j.ID)}','${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}','${escHtml(j.Pelanggan_ID)}')" style="padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--gray-100);" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''">
+    <b style="font-family:var(--mono);font-size:11px;">${escHtml(j.ID)}</b> — ${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}
+    <span class="badge badge-green">Completed</span>
+    <div style="font-size:10px;color:var(--gray-400);">${String(j.Tanggal_Schedule||'').substring(0,10)}</div>
+  </div>`).join('');
+  dd.style.display='block';
+}
+function selectInvJadwal(id, nama, pelangganId){
+  $('invRefJadwalId').value=id; $('invRefJadwalDropdown').style.display='none';
+  // Auto-fill pelanggan
+  if(pelangganId){
+    const plg=pelangganCache.find(p=>p.ID===pelangganId);
+    if(plg) selectInvPlg(plg.ID, plg.Nama);
+  }
+}
+async function tarikDataJadwal(){
+  const refId=$('invRefJadwalId')?.value?.trim(); if(!refId) return;
+  const infoEl=$('invRefJadwalInfo'); if(infoEl) infoEl.innerHTML='⏳ Memuat...';
+  showLoading(); const res=await call('getJadwalById',currentToken,refId); hideLoading();
+  if(res.status!=='ok'){ if(infoEl) infoEl.innerHTML='<span style="color:red;">❌ '+escHtml(res.message)+'</span>'; return; }
+  const j=res.data;
+  if(j.Status!=='Completed'){ if(infoEl) infoEl.innerHTML='<span style="color:orange;">⚠️ Jadwal belum Completed</span>'; return; }
+  if(j.Pelanggan_ID) selectInvPlg(j.Pelanggan_ID, j.pelanggan?.Nama||j.Pelanggan_ID);
+  $('invJenis').value=j.Jenis_Layanan||'Cleaning';
+  await invJenisChange();
+  if(infoEl) infoEl.innerHTML=`<span style="color:var(--green-700);">✅ Data jadwal: <b>${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</b> — ${j.Jenis_Layanan}</span>`;
+}
+function renderInvDetailContainer(jenis,prices){
+  const cont=$('invDetailContainer'); if(!cont) return;
+  const refSection=$('invRefScheduleSection');
+  if(refSection) refSection.style.display=jenis==='Laundry'?'none':'';
+  if(jenis==='Laundry'){
+    cont.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><b>Item Laundry</b><button class="btn btn-xs btn-success" onclick="addInvRow()" type="button"><i class="fa-solid fa-plus"></i> Tambah Item</button></div>
+      <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Harga</th><th>Jml</th><th>Subtotal</th><th></th></tr></thead><tbody id="invDetailTbody"></tbody></table>`;
+  } else {
+    cont.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><b>Kategori Layanan</b><button class="btn btn-xs btn-success" onclick="addInvKategori()" type="button"><i class="fa-solid fa-plus"></i> Tambah</button></div><div id="invKategoriList"></div>`;
+    addInvKategori(prices);
+  }
+  calcInvTotal();
+}
+let _invKatCounter=0;
+function addInvKategori(prices){
+  prices=prices||window._invPrices||[];
+  const list=$('invKategoriList'); if(!list) return;
+  const idx=_invKatCounter++;
+  const div=document.createElement('div');
+  div.id='invKat_'+idx;
+  div.style.cssText='border:1px solid var(--gray-200);border-radius:8px;padding:10px;margin-bottom:8px;';
+  div.innerHTML=`<div style="display:flex;gap:8px;align-items:flex-end;">
+    <div class="form-group" style="flex:1;margin:0;"><label style="font-size:10px;">Nama Pekerjaan</label><input type="text" class="form-control inv-kat-nama" placeholder="misal: Fogging..." oninput="calcInvTotal()"></div>
+    <div class="form-group" style="width:160px;margin:0;"><label style="font-size:10px;">Paket Harga</label>
+      <select class="form-control inv-kat-paket" onchange="onInvKatPaketChange(this)">
+        <option value="">-- Pilih / Manual --</option>
+        ${prices.map(p=>`<option value="${p.Harga||p.Harga_Satuan}" data-nama="${escHtml(p.Nama_Paket||p.Nama_Item)}">${escHtml(p.Nama_Paket||p.Nama_Item)} — ${rupiah(p.Harga||p.Harga_Satuan)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group" style="width:110px;margin:0;"><label style="font-size:10px;">Harga (Rp)</label><input type="number" class="form-control inv-kat-harga" value="0" oninput="calcInvTotal()" min="0"></div>
+    <button class="btn btn-xs btn-danger" onclick="document.getElementById('invKat_${idx}').remove();calcInvTotal();" type="button"><i class="fa-solid fa-trash"></i></button>
+  </div>`;
+  list.appendChild(div);
+}
+function onInvKatPaketChange(sel){
+  const val=parseFloat(sel.value)||0;
+  const row=sel.closest('div[id^="invKat_"]');
+  const hEl=row?.querySelector('.inv-kat-harga'); const nEl=row?.querySelector('.inv-kat-nama');
+  if(hEl) hEl.value=val;
+  if(nEl&&sel.value) nEl.value=sel.options[sel.selectedIndex].dataset.nama||nEl.value;
+  calcInvTotal();
+}
+async function invJenisChange(){
+  const jenis=$('invJenis').value;
+  const jenisKey={Laundry:'laundry',Cleaning:'cleaning','Pest Control':'pest'}[jenis];
+  if(!jenisKey) return;
+  showLoading(); await loadPricelistCache(jenisKey); hideLoading();
+  const prices=pricelistCache[jenisKey]||[];
+  window._invPrices=prices; _invKatCounter=0;
+  renderInvDetailContainer(jenis,prices);
+}
+function addInvRow(prices){
+  prices=prices||window._invPrices||[];
+  const tbody=$('invDetailTbody'); if(!tbody) return;
+  const opts=prices.map(p=>`<option value="${escHtml(p.Nama_Item||p.Nama_Paket)}" data-harga="${p.Harga_Satuan||p.Harga}">${escHtml(p.Nama_Item||p.Nama_Paket)}</option>`).join('');
+  const firstHarga=prices[0]?.Harga_Satuan||prices[0]?.Harga||0;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><select class="form-control" onchange="onInvItemChange(this)">${opts}</select></td>
+    <td><input class="form-control" type="number" value="${firstHarga}" readonly style="width:80px;"></td>
+    <td><input class="form-control" type="number" value="1" min="1" style="width:60px;" oninput="calcInvSubtotal(this)"></td>
+    <td class="inv-sub" style="text-align:right;">${rupiah(firstHarga)}</td>
+    <td><button class="btn btn-xs btn-danger" type="button" onclick="this.closest('tr').remove();calcInvTotal()"><i class="fa-solid fa-trash"></i></button></td>`;
+  tbody.appendChild(tr);
+  if(prices.length) onInvItemChange(tr.querySelector('select'));
+  calcInvTotal();
+}
+function onInvItemChange(sel){ const opt=sel.options[sel.selectedIndex]; const row=sel.closest('tr'); row.querySelectorAll('input')[0].value=opt.dataset.harga||0; calcInvSubtotal(row.querySelectorAll('input')[1]); }
+function calcInvSubtotal(inp){ const row=inp.closest('tr'); const h=parseFloat(row.querySelectorAll('input')[0].value)||0; const j=parseFloat(inp.value)||0; row.querySelector('.inv-sub').textContent=rupiah(h*j); calcInvTotal(); }
+function calcInvTotal(){
+  let t=0;
+  document.querySelectorAll('.inv-sub').forEach(el=>t+=parseFloat(String(el.textContent).replace(/[^0-9]/g,''))||0);
+  document.querySelectorAll('.inv-kat-harga').forEach(el=>t+=parseFloat(el.value)||0);
+  const el=$('invTotal'); if(el) el.value=t;
+  const disp=$('invTotalDisplay'); if(disp) disp.textContent=rupiah(t);
+}
+async function loadPricelistCache(jenis){ if(!jenis) return; const res=await call('getPricelist',currentToken,jenis); if(res.status==='ok') pricelistCache[jenis]=res.data; }
+async function saveInv(){
+  const jadwalId=$('invJadwalId').value, jenis=$('invJenis').value, pelangganId=$('invPlgId').value;
+  if(!pelangganId){ toast('Pilih pelanggan','error'); return; }
+  const details=[];
+  if(jenis==='Laundry'){
+    $('invDetailTbody')?.querySelectorAll('tr').forEach(tr=>{ const sel=tr.querySelector('select'),inps=tr.querySelectorAll('input'); if(!sel) return; const nama=sel.value,harga=parseFloat(inps[0]?.value)||0,jml=parseFloat(inps[1]?.value)||0; if(jml>0) details.push({Nama_Item:nama,Harga:harga,Jumlah:jml,Subtotal:harga*jml}); });
+    if(!details.length){ toast('Tambahkan item laundry','error'); return; }
+  } else {
+    $('invKategoriList')?.querySelectorAll('div[id^="invKat_"]').forEach(div=>{ const nama=div.querySelector('.inv-kat-nama')?.value?.trim(); const harga=parseFloat(div.querySelector('.inv-kat-harga')?.value)||0; if(nama&&harga>0) details.push({Nama_Item:nama,Harga:harga,Jumlah:1,Subtotal:harga}); });
+    if(!details.length){ toast('Tambahkan kategori layanan','error'); return; }
+  }
+  const txData={Pelanggan_ID:pelangganId,Jenis:jenis,Total:$('invTotal').value,Status_Bayar:$('invStatus').value,Catatan:$('invCatatan').value,Jadwal_ID:jadwalId||$('invRefJadwalId')?.value?.trim()};
+  showLoading();
+  const res=txData.Jadwal_ID?await call('createInvoiceFromJadwal',currentToken,txData,details):await call('saveTransaksi',currentToken,txData,details);
+  hideLoading();
+  if(res.status==='ok'){ toast('Invoice disimpan'); document.getElementById('invModalOverlay')?.remove(); if(jadwalId) renderJadwalPage(); else loadTransaksiData(); }
+  else toast(res.message,'error');
+}
+
+// ==================== PELANGGAN ====================
+async function loadPelangganCache(){ const res=await call('getPelanggan',currentToken); pelangganCache=res.status==='ok'?res.data:[]; }
+async function renderPelangganPage(){
+  await loadPelangganCache();
+  $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-size:18px;font-weight:800;">👥 Pelanggan</h2><button class="btn btn-sm btn-success" onclick="openPlgForm()">+ Tambah</button></div>
+  <div class="card"><div class="card-body no-pad">
+    <div class="table-wrap desktop-table"><table><thead><tr><th>Nama</th><th>Alamat</th><th>Telepon</th><th>Email</th><th>Aksi</th></tr></thead><tbody>${pelangganCache.map(p=>`<tr><td style="font-weight:600;">${escHtml(p.Nama)}</td><td>${escHtml(p.Alamat_Lengkap||'—')}</td><td>${escHtml(p.Telepon||'—')}</td><td>${escHtml(p.Email||'—')}</td><td><button class="btn btn-xs btn-outline" onclick="openPlgForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deletePlg('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Kosong</td></tr>'}</tbody></table></div>
+    <div class="mobile-card-view">${pelangganCache.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Nama)}</span></div><div class="card-row"><span class="card-row-label">Telepon</span><span>${escHtml(p.Telepon||'—')}</span></div><div class="card-row"><span class="card-row-label">Alamat</span><span>${escHtml(p.Alamat_Lengkap||'—')}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openPlgForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deletePlg('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')}</div>
+  </div></div>`;
+}
+function openPlgForm(id=null){
+  const p=id?pelangganCache.find(x=>x.ID===id):{};
+  const html=`<div id="plgModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Pelanggan</h3><button class="modal-close" onclick="document.getElementById('plgModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fPlgId" value="${p.ID||''}"><div class="form-grid"><div class="form-group"><label>Nama</label><input class="form-control" id="fPlgNama" value="${escHtml(p.Nama||'')}"></div><div class="form-group"><label>Telepon</label><input class="form-control" id="fPlgTelepon" value="${escHtml(p.Telepon||'')}"></div></div><div class="form-group"><label>Email</label><input class="form-control" type="email" id="fPlgEmail" value="${escHtml(p.Email||'')}"></div><div class="form-group"><label>Alamat</label><textarea class="form-control" id="fPlgAlamat">${escHtml(p.Alamat_Lengkap||'')}</textarea></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('plgModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="savePlg()">💾 Simpan</button></div></div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+async function savePlg(){ const d={ID:$('fPlgId').value,Nama:$('fPlgNama').value,Telepon:$('fPlgTelepon').value,Email:$('fPlgEmail').value,Alamat_Lengkap:$('fPlgAlamat').value}; showLoading(); const res=await call('savePelanggan',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('plgModal')?.remove(); renderPelangganPage(); } else toast(res.message,'error'); }
+async function deletePlg(id){ showConfirm('Hapus pelanggan ini?', async()=>{ showLoading(); await call('deletePelanggan',currentToken,id); hideLoading(); renderPelangganPage(); }, {title:'Hapus Pelanggan', yesLabel:'Hapus', danger:true}); }
+
+// ==================== PRICELIST ====================
+async function renderPricelistPage(){
+  const jenis=$('_priceJenis')?.value||'laundry';
+  showLoading(); const res=await call('getPricelist',currentToken,jenis); hideLoading();
+  const data=res.status==='ok'?res.data:[];
+  $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><h2 style="font-size:18px;">🏷 Pricelist</h2><div style="display:flex;gap:8px;"><select class="form-control" id="_priceJenis" onchange="renderPricelistPage()"><option value="laundry" ${jenis=='laundry'?'selected':''}>Laundry</option><option value="cleaning" ${jenis=='cleaning'?'selected':''}>Cleaning</option><option value="pest" ${jenis=='pest'?'selected':''}>Pest Control</option></select><button class="btn btn-sm btn-success" onclick="openPriceForm()">+ Tambah</button></div></div>
+  <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Nama</th><th>Harga</th><th>Satuan</th><th>Aksi</th></tr></thead><tbody>${data.map(p=>`<tr><td>${escHtml(p.Nama_Item||p.Nama_Paket)}</td><td>${rupiah(p.Harga_Satuan||p.Harga)}</td><td>${escHtml(p.Satuan||'—')}</td><td><button class="btn btn-xs btn-outline" onclick="openPriceForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deletePrice('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="mobile-card-view">${data.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Nama_Item||p.Nama_Paket)}</span></div><div class="card-row"><span class="card-row-label">Harga</span><span>${rupiah(p.Harga_Satuan||p.Harga)}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openPriceForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deletePrice('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')}</div></div></div>`;
+  window._priceJenis=jenis; window._priceData=data;
+}
+function openPriceForm(id=null){ const p=id?(window._priceData||[]).find(x=>x.ID===id):{}; const html=`<div id="priceModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Item</h3><button class="modal-close" onclick="document.getElementById('priceModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fPriceId" value="${p.ID||''}"><div class="form-group"><label>Nama</label><input class="form-control" id="fPriceNama" value="${escHtml(p.Nama_Item||p.Nama_Paket||'')}"></div><div class="form-group"><label>Harga</label><input class="form-control" type="number" id="fPriceHarga" value="${p.Harga_Satuan||p.Harga||''}"></div><div class="form-group"><label>Satuan</label><input class="form-control" id="fPriceSatuan" value="${escHtml(p.Satuan||'')}"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('priceModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="savePrice()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); }
+async function savePrice(){ const j=window._priceJenis||'laundry'; const d={ID:$('fPriceId').value,Nama_Item:$('fPriceNama').value,Nama_Paket:$('fPriceNama').value,Harga_Satuan:$('fPriceHarga').value,Harga:$('fPriceHarga').value,Satuan:$('fPriceSatuan').value}; showLoading(); const res=await call('savePricelist',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('priceModal')?.remove(); renderPricelistPage(); } else toast(res.message,'error'); }
+async function deletePrice(id){ showConfirm('Hapus item pricelist ini?', async()=>{ showLoading(); await call('deletePricelist',currentToken,window._priceJenis||'laundry',id); hideLoading(); renderPricelistPage(); }, {title:'Hapus Item', yesLabel:'Hapus', danger:true}); }
+
+// ==================== PARAMETER ====================
+async function renderParameterPage(){
+  const j=$('_paramJenis')?.value||'cleaning';
+  showLoading(); const res=await call('getParameter',currentToken,j); hideLoading();
+  const data=res.status==='ok'?res.data:[];
+  $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><h2 style="font-size:18px;">⚙ Parameter Checklist</h2><div style="display:flex;gap:8px;"><select class="form-control" id="_paramJenis" onchange="renderParameterPage()"><option value="cleaning" ${j=='cleaning'?'selected':''}>Cleaning</option><option value="pest" ${j=='pest'?'selected':''}>Pest Control</option></select><button class="btn btn-sm btn-success" onclick="openParamForm()">+ Tambah</button></div></div>
+  <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Kategori</th><th>Item</th><th>Aksi</th></tr></thead><tbody>${data.map(p=>`<tr><td><span class="badge badge-blue">${escHtml(p.Kategori)}</span></td><td>${escHtml(p.Item)}</td><td><button class="btn btn-xs btn-outline" onclick="openParamForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteParam('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="mobile-card-view">${data.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Kategori)}</span></div><div class="card-row"><span class="card-row-label">Item</span><span>${escHtml(p.Item)}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openParamForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deleteParam('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')}</div></div></div>`;
+  window._paramJenis=j; window._paramData=data;
+}
+function openParamForm(id=null){ const p=id?(window._paramData||[]).find(x=>x.ID===id):{}; const html=`<div id="paramModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Parameter</h3><button class="modal-close" onclick="document.getElementById('paramModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fParamId" value="${p.ID||''}"><div class="form-group"><label>Kategori</label><input class="form-control" id="fParamKat" value="${escHtml(p.Kategori||'')}" placeholder="misal: Jenis, Metode, Hama"></div><div class="form-group"><label>Item</label><input class="form-control" id="fParamItem" value="${escHtml(p.Item||'')}"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('paramModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveParam()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); }
+async function saveParam(){ const j=window._paramJenis||'cleaning'; const d={ID:$('fParamId').value,Kategori:$('fParamKat').value,Item:$('fParamItem').value}; showLoading(); const res=await call('saveParameter',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('paramModal')?.remove(); renderParameterPage(); } else toast(res.message,'error'); }
+async function deleteParam(id){ showConfirm('Hapus parameter ini?', async()=>{ showLoading(); await call('deleteParameter',currentToken,window._paramJenis||'cleaning',id); hideLoading(); renderParameterPage(); }, {title:'Hapus Parameter', yesLabel:'Hapus', danger:true}); }
+
+// ==================== PENGELUARAN ====================
+let pengeluaranCache=[];
+async function renderPengeluaranPage(){
+  const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
+  const bulanOpts=['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
+  const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
+  showLoading(); const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn}); hideLoading();
+  pengeluaranCache=res.status==='ok'?res.data:[];
+  const totalKlr=pengeluaranCache.reduce((s,p)=>s+(Number(p.Jumlah)||0),0);
+  $('mainContent').innerHTML=`
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <h2 style="font-size:18px;font-weight:800;">💸 Pengeluaran</h2>
+        <button class="btn btn-sm btn-success" onclick="openKlrForm()"><i class="fa-solid fa-plus"></i> Tambah</button>
+      </div>
+      <div class="trx-filter-grid">
+        <select class="form-control" id="fKlrJenis" onchange="loadPengeluaran()"><option value="">Semua Jenis</option><option>Laundry</option><option>Cleaning</option><option>Pest Control</option></select>
+        <select class="form-control" id="fKlrBulan" onchange="loadPengeluaran()">${bulanOpts}</select>
+        <select class="form-control" id="fKlrTahun" onchange="loadPengeluaran()">${tahunOpts}</select>
+        <button class="btn btn-sm btn-outline" onclick="loadPengeluaran()" title="Refresh"><i class="fa-solid fa-refresh"></i></button>
+      </div>
+    </div>
+    <div class="mini-stat" style="margin-bottom:12px;display:inline-flex;"><div class="ms-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-arrow-trend-down"></i></div><div><div class="ms-val">${rupiah(totalKlr)}</div><div class="ms-label">Total Pengeluaran</div></div></div>
+    <div class="card"><div class="card-body no-pad">
+      <div class="table-wrap desktop-table"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody id="klrTbody"></tbody></table></div>
+      <div class="mobile-card-view" id="klrCards"></div>
+    </div></div>`;
+  renderKlrTable();
+}
+async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value,bulan:$('fKlrBulan')?.value,tahun:$('fKlrTahun')?.value}; showLoading(); const res=await call('getPengeluaran',currentToken,filter); hideLoading(); pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
+function renderKlrTable(){
+  const tb=$('klrTbody');
+  if(tb) tb.innerHTML=pengeluaranCache.length?pengeluaranCache.map(p=>`<tr><td>${String(p.Tanggal).substring(0,10)}</td><td>${badgeJenis(p.Jenis)}</td><td>${escHtml(p.Keterangan||'—')}</td><td style="font-weight:700;color:#dc2626;">${rupiah(p.Jumlah)}</td><td><button class="btn btn-xs btn-outline" onclick="openKlrForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteKlr('${escHtml(p.ID)}')">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">Belum ada data</td></tr>';
+  const cards=$('klrCards');
+  if(cards) cards.innerHTML=pengeluaranCache.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Keterangan||'—')}</span>${badgeJenis(p.Jenis)}</div><div class="card-row"><span class="card-row-label">Tanggal</span><span>${String(p.Tanggal).substring(0,10)}</span></div><div class="card-row"><span class="card-row-label">Jumlah</span><span style="font-weight:800;color:#dc2626;">${rupiah(p.Jumlah)}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openKlrForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deleteKlr('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')||'<div class="empty-state">Kosong</div>';
+}
+function openKlrForm(id=null){
+  const p=id?pengeluaranCache.find(x=>x.ID===id):{};
+  const today=new Date().toISOString().slice(0,10);
+  document.body.insertAdjacentHTML('beforeend',`<div id="klrModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Pengeluaran</h3><button class="modal-close" onclick="document.getElementById('klrModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fKlrId" value="${p?.ID||''}"><div class="form-group"><label>Tanggal</label><input type="date" class="form-control" id="fKlrTgl" value="${p?.Tanggal?String(p.Tanggal).substring(0,10):today}"></div><div class="form-group"><label>Jenis Layanan</label><select class="form-control" id="fKlrJenisForm">${['Laundry','Cleaning','Pest Control'].map(v=>`<option ${p?.Jenis===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="form-group"><label>Keterangan</label><input class="form-control" id="fKlrKet" value="${escHtml(p?.Keterangan||'')}" placeholder="mis: Beli detergen..."></div><div class="form-group"><label>Jumlah (Rp)</label><input type="number" class="form-control" id="fKlrJml" value="${p?.Jumlah||''}" min="0"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('klrModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveKlr()">💾 Simpan</button></div></div></div>`);
+}
+async function saveKlr(){ const d={ID:$('fKlrId').value,Tanggal:$('fKlrTgl').value,Jenis:$('fKlrJenisForm').value,Keterangan:$('fKlrKet').value,Jumlah:$('fKlrJml').value}; if(!d.Jumlah||d.Jumlah<=0){toast('Jumlah harus diisi','error');return;} showLoading(); const res=await call('savePengeluaran',currentToken,d); hideLoading(); if(res.status==='ok'){toast('Disimpan');document.getElementById('klrModal')?.remove();loadPengeluaran();}else toast(res.message,'error'); }
+async function deleteKlr(id){ showConfirm('Hapus data pengeluaran ini?', async()=>{ showLoading(); await call('deletePengeluaran',currentToken,id); hideLoading(); loadPengeluaran(); }, {title:'Hapus Pengeluaran', yesLabel:'Hapus', danger:true}); }
+
+// ==================== LAPORAN ====================
+async function renderLaporanPage(){
+  const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
+  $('mainContent').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;"><h2 style="font-size:18px;font-weight:800;">📊 Laporan</h2><div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <select class="form-control" id="fLapBulan" style="max-width:110px;">${['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('')}</select>
+    <select class="form-control" id="fLapTahun" style="max-width:90px;">${[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('')}</select>
+    <button class="btn btn-sm btn-success" onclick="loadLaporan()"><i class="fa-solid fa-search"></i> Tampilkan</button>
+  </div></div><div id="laporanContent"><div class="empty-state"><i class="fa-solid fa-chart-bar"></i><p>Klik Tampilkan</p></div></div>`;
+  await loadLaporan();
+}
+async function loadLaporan(){
+  const bln=$('fLapBulan')?.value||String(new Date().getMonth()+1).padStart(2,'0');
+  const thn=$('fLapTahun')?.value||new Date().getFullYear();
+  showLoading(); const res=await call('getLaporan',currentToken,bln,thn); hideLoading();
+  const d=res.status==='ok'?res.data:{perJenis:[]};
+  const colorMap={Laundry:{bg:'#ede9fe',tc:'#7c3aed'},Cleaning:{bg:'#dbeafe',tc:'#2563eb'},'Pest Control':{bg:'#fee2e2',tc:'#dc2626'}};
+  const pctBar=(pct)=>{ const c=pct>=0?'#16a34a':'#dc2626'; const w=Math.min(Math.abs(pct),100); return `<div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:#f3f4f6;border-radius:99px;height:8px;overflow:hidden;"><div style="width:${w}%;background:${c};height:100%;border-radius:99px;"></div></div><span style="font-size:11px;font-weight:700;color:${c};">${pct>=0?'+':''}${pct}%</span></div>`; };
+  const perJenisHtml=(d.perJenis||[]).map(j=>{ const c=colorMap[j.jenis]||{bg:'#f3f4f6',tc:'#374151'}; return `<div style="border:1px solid var(--gray-200);border-radius:10px;padding:14px;background:white;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="padding:4px 12px;background:${c.bg};color:${c.tc};border-radius:99px;font-size:12px;font-weight:700;">${j.jenis}</span><span style="font-size:11px;color:var(--gray-500);">${j.jumlahTrx} transaksi</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"><div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">PENDAPATAN</div><div style="font-size:14px;font-weight:800;color:#16a34a;">${rupiah(j.pendapatan)}</div><div style="font-size:10px;color:var(--gray-400);">Lunas: ${rupiah(j.lunas)}</div></div><div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">PENGELUARAN</div><div style="font-size:14px;font-weight:800;color:#dc2626;">${rupiah(j.pengeluaran)}</div></div></div><div style="border-top:1px solid var(--gray-100);padding-top:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;margin-bottom:4px;">UNTUNG / RUGI</div><div style="font-size:15px;font-weight:800;color:${j.untungRugi>=0?'#16a34a':'#dc2626'};margin-bottom:4px;">${j.untungRugi>=0?'+':''}${rupiah(j.untungRugi)}</div>${pctBar(j.persen)}</div></div>`; }).join('');
+  $('laporanContent').innerHTML=`
+    <div class="stats-row" style="margin-bottom:12px;">
+      <div class="mini-stat"><div class="ms-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-coins"></i></div><div><div class="ms-val" style="font-size:13px;">${rupiah(d.totalPendapatan||0)}</div><div class="ms-label">Total Pendapatan</div></div></div>
+      <div class="mini-stat"><div class="ms-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-arrow-trend-down"></i></div><div><div class="ms-val" style="font-size:13px;">${rupiah(d.totalPengeluaran||0)}</div><div class="ms-label">Total Pengeluaran</div></div></div>
+      <div class="mini-stat"><div class="ms-icon" style="background:${(d.totalUntungRugi||0)>=0?'#dcfce7':'#fee2e2'};color:${(d.totalUntungRugi||0)>=0?'#16a34a':'#dc2626'};"><i class="fa-solid fa-scale-balanced"></i></div><div><div class="ms-val" style="font-size:13px;color:${(d.totalUntungRugi||0)>=0?'#16a34a':'#dc2626'};">${rupiah(d.totalUntungRugi||0)}</div><div class="ms-label">Untung/Rugi</div></div></div>
+      <div class="mini-stat"><div class="ms-icon" style="background:#dbeafe;color:#2563eb;"><i class="fa-solid fa-check-circle"></i></div><div><div class="ms-val" style="font-size:13px;">${rupiah(d.totalLunas||0)}</div><div class="ms-label">Sudah Lunas</div></div></div>
+    </div>
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:10px;">📈 Per Layanan</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:14px;">${perJenisHtml}</div>
+    <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">🧾 Detail Transaksi</h3>
+    <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Tgl</th><th>Jenis</th><th>Total</th><th>Status</th></tr></thead><tbody>${(d.detail||[]).map(t=>`<tr><td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td><td>${String(t.Tanggal_Masuk).substring(0,10)}</td><td>${badgeJenis(t.Jenis)}</td><td>${rupiah(t.Total)}</td><td>${badgeStatus(t.Status_Bayar)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Kosong</td></tr>'}</tbody></table></div></div></div>`;
+}
+
+// ==================== USERS ====================
+async function renderUsersPage(){
+  showLoading(); const res=await call('getUsers',currentToken); hideLoading();
+  const users=res.status==='ok'?res.data:[];
+  $('mainContent').innerHTML=`<h2 style="font-size:18px;margin-bottom:12px;">👥 Manajemen User</h2><button class="btn btn-sm btn-success" onclick="openUserForm()" style="margin-bottom:8px;">+ Tambah</button>
+  <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${users.map(u=>`<tr><td>${escHtml(u.Username)}</td><td>${escHtml(u.Nama_Lengkap)}</td><td>${u.Role}</td><td><button class="btn btn-xs btn-outline" onclick="openUserForm('${escHtml(u.ID)}')">✏️</button></td></tr>`).join('')}</tbody></table></div>
+  <div class="mobile-card-view">${users.map(u=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(u.Username)}</span></div><div class="card-row"><span class="card-row-label">Nama</span><span>${escHtml(u.Nama_Lengkap)}</span></div><div class="card-row"><span class="card-row-label">Role</span><span>${u.Role}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openUserForm('${escHtml(u.ID)}')">Edit</button></div></div>`).join('')}</div></div></div>`;
+  window._userData=users;
+}
+function openUserForm(id=null){ const u=id?(window._userData||[]).find(x=>x.ID===id):{}; const html=`<div id="userModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} User</h3><button class="modal-close" onclick="document.getElementById('userModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fUserId" value="${u.ID||''}"><div class="form-group"><label>Username</label><input class="form-control" id="fUserUsername" value="${escHtml(u.Username||'')}"></div><div class="form-group"><label>Password</label><input class="form-control" type="password" id="fUserPass" placeholder="${id?'Kosongkan jika tidak diubah':''}"></div><div class="form-group"><label>Nama</label><input class="form-control" id="fUserNama" value="${escHtml(u.Nama_Lengkap||'')}"></div><div class="form-group"><label>Role</label><select class="form-control" id="fUserRole"><option>Staff</option><option>Admin</option><option>Owner</option></select></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('userModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveUser()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); if(u.Role) $('fUserRole').value=u.Role; }
+async function saveUser(){ const d={ID:$('fUserId').value,Username:$('fUserUsername').value,Password:$('fUserPass').value,Nama_Lengkap:$('fUserNama').value,Role:$('fUserRole').value}; showLoading(); const res=await call('saveUser',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('userModal')?.remove(); renderUsersPage(); } else toast(res.message,'error'); }
+
+// ==================== PRINT & EMAIL ====================
+async function openPrintModal(txId){
+  showLoading();
+  const [txRes,detRes]=await Promise.all([call('getTransaksi',currentToken,{}),call('getTransaksiDetail',currentToken,txId)]);
+  hideLoading();
+  const tx=(txRes.status==='ok'?txRes.data:[]).find(t=>t.ID===txId);
+  if(!tx){ toast('Tidak ditemukan','error'); return; }
+  const plg=pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{};
+  const details=detRes.status==='ok'?detRes.data:[];
+  const detailList=details.map(d=>`<tr><td>${d.Nama_Item}</td><td>${d.Jumlah} x ${rupiah(d.Harga)}</td><td align="right">${rupiah(d.Subtotal)}</td></tr>`).join('');
+  const html=`<div id="printOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+    <div class="modal modal-sm">
+      <div class="modal-head"><h3>🧾 Struk Invoice</h3><button class="modal-close" onclick="document.getElementById('printOverlay').remove()">✕</button></div>
+      <div class="modal-body">
+        <div id="thermalPrint" style="display:block;font-family:monospace;font-size:11px;max-width:300px;margin:0 auto;">
+          <div style="text-align:center;"><b>🧹 SURYA CLEANINDO</b><br><span style="font-size:9px;">Laundry • Cleaning • Pest Control</span><br><br>${tx.ID}<br>${String(tx.Tanggal_Masuk).substring(0,16)}</div>
+          <hr>Pelanggan: ${escHtml(plg.Nama||tx.Pelanggan_ID)}<br>Layanan: ${tx.Jenis}
+          ${detailList?`<br><br><b>Detail:</b><table width="100%">${detailList}</table>`:''}
+          <hr><b>Total: ${rupiah(tx.Total)}</b><br>Status: ${tx.Status_Bayar}
+          <hr><small>Terima kasih!</small>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button><button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email</button><button class="btn btn-sm btn-success" onclick="window.print()">🖨 Cetak</button></div>
+    </div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+async function sendEmail(txId){ showLoading(); const res=await call('kirimEmailStruk',currentToken,txId); hideLoading(); toast(res.status==='ok'?res.data:res.message, res.status==='ok'?'success':'error'); }
+
+// ==================== INIT ====================
+window.onload=()=>{
+  const u=localStorage.getItem('scms_user'), t=localStorage.getItem('scms_token');
+  if(u&&t){ currentUser=JSON.parse(u); currentToken=t; call('getDashboard',currentToken).then(r=>{ if(r.status==='ok') initApp(); else localStorage.clear(); }); }
+  $('loginPassword')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+  window.addEventListener('resize',()=>{ if($('mainContent')&&currentUser){ const page=document.querySelector('.nav-item.active')?.dataset.page; if(page) navigate(page); } });
+};
+</script>
+</body>
+</html>
