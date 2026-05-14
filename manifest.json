@@ -2,9 +2,10 @@
   "name": "Surya Cleanindo Management System",
   "short_name": "SCMS",
   "description": "Sistem manajemen Surya Cleanindo - Laundry, Cleaning & Pest Control",
-  "start_url": "/",
+  "start_url": "https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#166534",
   "theme_color": "#166534",
   "orientation": "any",
   "icons": [
