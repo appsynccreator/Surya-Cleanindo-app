@@ -2,13 +2,21 @@
   "name": "Surya Cleanindo Management System",
   "short_name": "SCMS",
   "description": "Sistem manajemen Surya Cleanindo - Laundry, Cleaning & Pest Control",
-  "start_url": "https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#166534",
+  "background_color": "#ffffff",
   "theme_color": "#166534",
   "orientation": "any",
+  "lang": "id",
+  "categories": ["business", "productivity"],
   "icons": [
+    {
+      "src": "favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
@@ -20,6 +28,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jadwal Kunjungan",
+      "short_name": "Jadwal",
+      "description": "Lihat jadwal kunjungan hari ini",
+      "url": "/?page=jadwal",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Invoice / Transaksi",
+      "short_name": "Invoice",
+      "description": "Kelola invoice dan transaksi",
+      "url": "/?page=transaksi",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
