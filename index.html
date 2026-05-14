@@ -1640,6 +1640,15 @@ window.onload=()=>{
   $('loginPassword')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
   window.addEventListener('resize',()=>{ if($('mainContent')&&currentUser){ const page=document.querySelector('.nav-item.active')?.dataset.page; if(page) navigate(page); } });
 };
+
+// ==================== SERVICE WORKER (PWA) ====================
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg=>{ console.log('SW registered:', reg.scope); })
+      .catch(err=>{ console.log('SW failed:', err); });
+  });
+}
 </script>
 </body>
 </html>
