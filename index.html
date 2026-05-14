@@ -475,13 +475,28 @@ async function call(fn, ...args){
   try {
     const params = new URLSearchParams();
     params.append('fn', fn);
-    args.forEach((a, i) => params.append('arg' + i, typeof a === 'object' ? JSON.stringify(a) : String(a ?? '')));
-    const res = await fetch(GAS_URL + '?' + params.toString(), { redirect: 'follow' });
+    args.forEach((a, i) => {
+      if (a === null || a === undefined) {
+        params.append('arg' + i, 'null');
+      } else if (typeof a === 'object') {
+        params.append('arg' + i, JSON.stringify(a));
+      } else {
+        params.append('arg' + i, String(a));
+      }
+    });
+    const url = GAS_URL + '?' + params.toString();
+    const res = await fetch(url, { redirect: 'follow', mode: 'cors' });
     const text = await res.text();
+    // GAS kadang return HTML redirect, bukan JSON
+    if (text.trim().startsWith('<')) {
+      // Coba fetch ulang dengan no-cors jika dapat HTML
+      console.warn('[SCMS] GAS returned HTML, possible redirect issue');
+      return { status: 'error', message: 'GAS redirect/auth error. Pastikan Web App sudah di-deploy dengan akses "Anyone".' };
+    }
     try { return JSON.parse(text); }
-    catch(e) { return { status: 'error', message: 'Response parse error: ' + text.substring(0,200) }; }
+    catch(e) { return { status: 'error', message: 'Parse error: ' + text.substring(0,300) }; }
   } catch(e) {
-    return { status: 'error', message: 'Network error: ' + e.message };
+    return { status: 'error', message: 'Network: ' + e.message };
   }
 }
 
@@ -1584,6 +1599,7 @@ async function renderPengeluaranPage(){
   const bulanOpts=['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
   const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
   showLoading(); const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn}); hideLoading();
+  if(res.status!=='ok'){ toast('Error: '+res.message,'error'); }
   pengeluaranCache=res.status==='ok'?res.data:[];
   const totalKlr=pengeluaranCache.reduce((s,p)=>s+(Number(p.Jumlah)||0),0);
   $('mainContent').innerHTML=`
@@ -1606,7 +1622,7 @@ async function renderPengeluaranPage(){
     </div></div>`;
   renderKlrTable();
 }
-async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value,bulan:$('fKlrBulan')?.value,tahun:$('fKlrTahun')?.value}; showLoading(); const res=await call('getPengeluaran',currentToken,filter); hideLoading(); pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
+async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value||'',bulan:$('fKlrBulan')?.value||'',tahun:$('fKlrTahun')?.value||''}; showLoading(); const res=await call('getPengeluaran',currentToken,filter); hideLoading(); if(res.status!=='ok'){toast('Gagal load: '+res.message,'error');} pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
 function renderKlrTable(){
   const tb=$('klrTbody');
   if(tb) tb.innerHTML=pengeluaranCache.length?pengeluaranCache.map(p=>`<tr><td>${fmtTgl(p.Tanggal)}</td><td>${badgeJenis(p.Jenis)}</td><td>${escHtml(p.Keterangan||'—')}</td><td style="font-weight:700;color:#dc2626;">${rupiah(p.Jumlah)}</td><td><button class="btn btn-xs btn-outline" onclick="openKlrForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteKlr('${escHtml(p.ID)}')">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">Belum ada data</td></tr>';
@@ -1618,7 +1634,7 @@ function openKlrForm(id=null){
   const today=new Date().toISOString().slice(0,10);
   document.body.insertAdjacentHTML('beforeend',`<div id="klrModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Pengeluaran</h3><button class="modal-close" onclick="document.getElementById('klrModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fKlrId" value="${p?.ID||''}"><div class="form-group"><label>Tanggal</label><input type="date" class="form-control" id="fKlrTgl" value="${p?.Tanggal?String(p.Tanggal).substring(0,10):today}"></div><div class="form-group"><label>Jenis Layanan</label><select class="form-control" id="fKlrJenisForm">${['Laundry','Cleaning','Pest Control'].map(v=>`<option ${p?.Jenis===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="form-group"><label>Keterangan</label><input class="form-control" id="fKlrKet" value="${escHtml(p?.Keterangan||'')}" placeholder="mis: Beli detergen..."></div><div class="form-group"><label>Jumlah (Rp)</label><input type="number" class="form-control" id="fKlrJml" value="${p?.Jumlah||''}" min="0"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('klrModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveKlr()">💾 Simpan</button></div></div></div>`);
 }
-async function saveKlr(){ const d={ID:$('fKlrId').value,Tanggal:$('fKlrTgl').value,Jenis:$('fKlrJenisForm').value,Keterangan:$('fKlrKet').value,Jumlah:$('fKlrJml').value}; if(!d.Jumlah||d.Jumlah<=0){toast('Jumlah harus diisi','error');return;} showLoading(); const res=await call('savePengeluaran',currentToken,d); hideLoading(); if(res.status==='ok'){toast('Disimpan');document.getElementById('klrModal')?.remove();loadPengeluaran();}else toast(res.message,'error'); }
+async function saveKlr(){ const d={ID:$('fKlrId').value,Tanggal:$('fKlrTgl').value,Jenis:$('fKlrJenisForm').value,Keterangan:$('fKlrKet').value,Jumlah:Number($('fKlrJml').value)||0}; if(!d.Jumlah||d.Jumlah<=0){toast('Jumlah harus diisi','error');return;} showLoading(); const res=await call('savePengeluaran',currentToken,d); hideLoading(); if(res.status==='ok'){toast('Disimpan');document.getElementById('klrModal')?.remove();loadPengeluaran();}else toast(res.message,'error'); }
 async function deleteKlr(id){ showConfirm('Hapus data pengeluaran ini?', async()=>{ showLoading(); await call('deletePengeluaran',currentToken,id); hideLoading(); loadPengeluaran(); }, {title:'Hapus Pengeluaran', yesLabel:'Hapus', danger:true}); }
 
 // ==================== LAPORAN ====================
