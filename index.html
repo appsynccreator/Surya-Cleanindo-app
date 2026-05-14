@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+<script>
+// Redirect ke GAS jika dibuka dari GitHub Pages (bukan dari GAS)
+// Script ini sync dan di head - jadi jalan SEBELUM apapun di-render
+(function(){
+  if(typeof google==='undefined'||!google.script){
+    window.location.replace('https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec');
+  }
+})();
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Surya Cleanindo • Management System</title>
@@ -1630,11 +1639,7 @@ async function sendEmail(txId){ showLoading(); const res=await call('kirimEmailS
 
 // ==================== INIT ====================
 window.onload=()=>{
-  // Jika dibuka dari GitHub Pages (bukan GAS), redirect ke aplikasi GAS
-  if(typeof google === 'undefined' || typeof google.script === 'undefined'){
-    window.location.replace('https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec');
-    return;
-  }
+  // Redirect ditangani di <head> (early script)
   const u=localStorage.getItem('scms_user'), t=localStorage.getItem('scms_token');
   if(u&&t){ currentUser=JSON.parse(u); currentToken=t; call('getDashboard',currentToken).then(r=>{ if(r.status==='ok') initApp(); else localStorage.clear(); }); }
   $('loginPassword')?.addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
