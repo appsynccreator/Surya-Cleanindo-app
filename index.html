@@ -17,7 +17,7 @@
   <!-- iOS / Safari PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Surya Cleanindo">
+  <meta name="apple-mobile-web-app-title" content="SCMS">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
@@ -28,7 +28,7 @@
   <meta name="msapplication-config" content="none">
 
   <!-- General SEO/social -->
-  <meta name="application-name" content="Surya Cleanindo">
+  <meta name="application-name" content="SCMS">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -471,7 +471,26 @@ function toggleSidebar(){ $('sidebar').classList.toggle('open'); }
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec';
 
+// ── MODE DETEKSI ─────────────────────────────────────────────
+// Jika berjalan di dalam GAS (link /exec langsung), gunakan google.script.run
+// Jika berjalan di luar GAS (GitHub Pages, dsb), gunakan fetch
+const IS_GAS = (typeof google !== 'undefined' && google.script && google.script.run);
+
 async function call(fn, ...args){
+  if (IS_GAS) {
+    // ── MODE GAS: pakai google.script.run (paling reliable) ──
+    return new Promise(resolve => {
+      google.script.run
+        .withSuccessHandler(r => {
+          try { resolve(typeof r === 'string' ? JSON.parse(r) : r); }
+          catch(e) { resolve({ status: 'error', message: 'Parse: ' + r }); }
+        })
+        .withFailureHandler(e => resolve({ status: 'error', message: e.message }))
+        [fn](...args);
+    });
+  }
+
+  // ── MODE EXTERNAL: pakai fetch ke GAS URL ────────────────
   try {
     const params = new URLSearchParams();
     params.append('fn', fn);
@@ -484,19 +503,30 @@ async function call(fn, ...args){
         params.append('arg' + i, String(a));
       }
     });
+
     const url = GAS_URL + '?' + params.toString();
-    const res = await fetch(url, { redirect: 'follow', mode: 'cors' });
+    console.log('[SCMS] fetch →', fn, url.substring(0, 120));
+
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'omit',   // jangan kirim cookie Google → cegah auth redirect
+      cache: 'no-store'
+    });
+
     const text = await res.text();
-    // GAS kadang return HTML redirect, bukan JSON
+    console.log('[SCMS] response:', text.substring(0, 200));
+
+    if (!text || text.trim() === '') {
+      return { status: 'error', message: 'Server tidak merespons. Coba lagi.' };
+    }
     if (text.trim().startsWith('<')) {
-      // Coba fetch ulang dengan no-cors jika dapat HTML
-      console.warn('[SCMS] GAS returned HTML, possible redirect issue');
-      return { status: 'error', message: 'GAS redirect/auth error. Pastikan Web App sudah di-deploy dengan akses "Anyone".' };
+      return { status: 'error', message: 'GAS belum di-redeploy. Buka GAS → Deploy → Versi baru → Anyone.' };
     }
     try { return JSON.parse(text); }
-    catch(e) { return { status: 'error', message: 'Parse error: ' + text.substring(0,300) }; }
+    catch(e) { return { status: 'error', message: 'Response tidak valid: ' + text.substring(0, 150) }; }
   } catch(e) {
-    return { status: 'error', message: 'Network: ' + e.message };
+    console.error('[SCMS] fetch error:', e);
+    return { status: 'error', message: 'Koneksi gagal: ' + e.message };
   }
 }
 
@@ -1709,13 +1739,62 @@ async function openPrintModal(txId){
 async function sendEmail(txId){ showLoading(); const res=await call('kirimEmailStruk',currentToken,txId); hideLoading(); toast(res.status==='ok'?res.data:res.message, res.status==='ok'?'success':'error'); }
 
 
+// ==================== MANIFEST DINAMIS ====================
+// Generate manifest.json secara dinamis agar start_url selalu
+// cocok dengan URL aktual (penting untuk GitHub Pages subpath)
+function injectManifest() {
+  const base = location.href.replace(/[?#].*$/, '').replace(/\/[^\/]*$/, '/');
+  const manifest = {
+    name: "Surya Cleanindo Management System",
+    short_name: "SCMS",
+    description: "Sistem manajemen Surya Cleanindo - Laundry, Cleaning & Pest Control",
+    start_url: base,
+    scope: base,
+    display: "standalone",
+    background_color: "#ffffff",
+    theme_color: "#166534",
+    orientation: "any",
+    lang: "id",
+    prefer_related_applications: false,
+    icons: [
+      { src: base + "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: base + "icon-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: base + "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: base + "icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: base + "favicon-32.png", sizes: "32x32", type: "image/png", purpose: "any" }
+    ],
+    shortcuts: [
+      {
+        name: "Jadwal Kunjungan", short_name: "Jadwal",
+        url: base + "?page=jadwal",
+        icons: [{ src: base + "icon-192.png", sizes: "192x192" }]
+      },
+      {
+        name: "Invoice / Transaksi", short_name: "Invoice",
+        url: base + "?page=transaksi",
+        icons: [{ src: base + "icon-192.png", sizes: "192x192" }]
+      }
+    ]
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = blobUrl;
+  document.head.appendChild(link);
+  console.log('[SCMS] Manifest injected, start_url:', manifest.start_url);
+}
+// Jalankan segera
+injectManifest();
+
 // ==================== PWA: SERVICE WORKER & INSTALL ====================
 let _deferredPrompt = null;
 
 // Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
+    const swBase = location.href.replace(/[?#].*$/, '').replace(/\/[^\/]*$/, '/');
+    navigator.serviceWorker.register(swBase + 'sw.js', { scope: swBase })
       .then(reg => {
         console.log('[SCMS PWA] SW registered:', reg.scope);
         // Deteksi update tersedia
