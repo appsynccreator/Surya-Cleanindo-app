@@ -884,6 +884,892 @@ async function onAddJenisChange(){
   katSel.innerHTML='<option value="">-- Memuat... --</option>';
   const res = await call('getParameter', currentToken, jenisKey);
   _addParams = res.status==='ok'?res.data:[];
+  const kategoris=[...new Set(_addParams.map(p=>p.Kategori))];<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Surya Cleanindo • Management System</title>
+  <!-- ===================== FAVICON ===================== -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <!-- ===================== PWA ========================= -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#166534">
+
+  <!-- iOS / Safari PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SCMS">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+  <!-- Windows / Edge tile -->
+  <meta name="msapplication-TileImage" content="icon-192.png">
+  <meta name="msapplication-TileColor" content="#166534">
+  <meta name="msapplication-config" content="none">
+
+  <!-- General SEO/social -->
+  <meta name="application-name" content="SCMS">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --green-900: #0d3b22; --green-800: #14532d; --green-700: #166534; --green-600: #16a34a;
+      --green-500: #22c55e; --green-400: #4ade80; --green-100: #dcfce7; --green-50: #f0fdf4;
+      --blue-700: #1d4ed8; --blue-600: #2563eb; --blue-500: #3b82f6; --blue-100: #dbeafe;
+      --red-600: #dc2626; --red-500: #ef4444; --red-100: #fee2e2;
+      --amber-500: #f59e0b; --amber-100: #fef3c7;
+      --teal-600: #0d9488; --teal-500: #14b8a6; --teal-100: #ccfbf1;
+      --purple-600: #7c3aed; --purple-100: #ede9fe;
+      --orange-500: #f97316; --orange-100: #ffedd5;
+      --gray-900: #111827; --gray-800: #1f2937; --gray-700: #374151; --gray-600: #4b5563;
+      --gray-500: #6b7280; --gray-400: #9ca3af; --gray-200: #e5e7eb; --gray-100: #f3f4f6;
+      --gray-50: #f9fafb; --white: #ffffff;
+      --sidebar-w: 240px; --radius: 10px; --radius-sm: 6px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 10px 28px rgba(0,0,0,.06);
+      --font: 'Plus Jakarta Sans', sans-serif; --mono: 'JetBrains Mono', monospace;
+      --transition: all .2s ease;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);font-size:13.5px;line-height:1.5;}
+    input,select,textarea,button{font-family:inherit;font-size:inherit;}
+    a{text-decoration:none;color:inherit;}
+    ::-webkit-scrollbar{width:4px;height:4px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
+
+    /* LOGIN */
+    #loginPage{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(145deg,#0d3b22 0%,#166534 60%,#0f4a25 100%);align-items:center;justify-content:center;}
+    #loginPage.active{display:flex;}
+    .login-card{background:rgba(255,255,255,.97);border-radius:20px;padding:40px 32px;width:100%;max-width:400px;box-shadow:0 32px 64px rgba(0,0,0,.4);animation:fadeUp .4s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .login-logo{text-align:center;margin-bottom:28px;}
+    .login-logo .icon{display:inline-flex;width:64px;height:64px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:16px;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 8px 20px rgba(22,101,52,.4);}
+    .login-logo .icon i{font-size:28px;color:white;}
+    .login-logo h1{font-size:20px;font-weight:800;color:#14532d;letter-spacing:-.5px;}
+    .login-logo p{font-size:11px;color:var(--gray-500);margin-top:2px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:11px;font-weight:700;color:var(--gray-700);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px;}
+    .form-control{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);background:var(--gray-50);outline:none;transition:var(--transition);}
+    .form-control:focus{border-color:var(--green-500);box-shadow:0 0 0 3px rgba(34,197,94,.15);background:white;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;transition:var(--transition);white-space:nowrap;}
+    .btn-primary{background:linear-gradient(135deg,#166534,#16a34a);color:white;width:100%;padding:12px;}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(22,101,52,.35);}
+    .alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;display:none;margin-bottom:14px;}
+    .alert.show{display:flex;align-items:center;gap:8px;}
+    .alert-danger{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+    .alert-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;}
+
+    /* APP SHELL */
+    #appShell{display:none;height:100%;flex-direction:column;}
+    #appShell.active{display:flex;}
+    .topbar{height:52px;background:white;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:100;}
+    .topbar .menu-toggle{display:none;width:34px;height:34px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:var(--gray-600);font-size:17px;}
+    .topbar .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:#14532d;}
+    .topbar .brand .b-icon{width:28px;height:28px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+    .topbar .brand .b-icon i{color:white;font-size:12px;}
+    .topbar .spacer{flex:1;}
+    .topbar .user-badge{display:flex;align-items:center;gap:7px;padding:5px 10px;background:var(--gray-50);border-radius:99px;border:1px solid var(--gray-200);font-size:12px;cursor:pointer;transition:var(--transition);}
+    .topbar .user-badge:hover{background:var(--green-50);border-color:var(--green-200);}
+    .topbar .user-badge .avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;}
+    .avatar.owner{background:linear-gradient(135deg,#7c3aed,#a855f7);}
+    .avatar.admin{background:linear-gradient(135deg,#166534,#22c55e);}
+    .avatar.staff{background:linear-gradient(135deg,#0d9488,#14b8a6);}
+    .btn-logout{padding:6px 12px;border:none;background:var(--gray-100);border-radius:6px;cursor:pointer;color:var(--gray-600);font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;}
+    .btn-logout:hover{background:#fef2f2;color:#dc2626;}
+    /* User profile popup */
+    .user-popup{display:none;position:absolute;top:52px;right:12px;background:white;border:1px solid var(--gray-200);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:500;min-width:200px;overflow:hidden;animation:fadeUp .15s ease;}
+    .user-popup.open{display:block;}
+    .user-popup-header{padding:14px 16px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-bottom:1px solid var(--gray-100);}
+    .user-popup-name{font-weight:800;font-size:13px;color:#14532d;}
+    .user-popup-role{font-size:10px;color:var(--gray-500);margin-top:1px;}
+    .user-popup-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;transition:var(--transition);font-size:13px;font-weight:500;color:var(--gray-700);}
+    .user-popup-item:hover{background:var(--gray-50);}
+    .user-popup-item.danger{color:#dc2626;}
+    .user-popup-item.danger:hover{background:#fef2f2;}
+    /* Confirm modal */
+    .confirm-modal{background:white;border-radius:16px;width:100%;max-width:360px;box-shadow:0 24px 48px rgba(0,0,0,.2);animation:modalIn .2s ease;padding:24px;}
+    .confirm-modal h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+    .confirm-modal p{font-size:13px;color:var(--gray-600);margin-bottom:20px;}
+    .confirm-modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+    @media(max-width:768px){
+      .topbar .btn-logout-desktop{display:none !important;}
+    }
+
+    .app-body{display:flex;flex:1;overflow:hidden;}
+    .sidebar{width:var(--sidebar-w);background:white;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;transition:var(--transition);}
+
+    /* SIDEBAR ICON COLORS */
+    .nav-item i.c-green{color:#16a34a;}
+    .nav-item i.c-teal{color:#0d9488;}
+    .nav-item i.c-blue{color:#2563eb;}
+    .nav-item i.c-amber{color:#d97706;}
+    .nav-item i.c-purple{color:#7c3aed;}
+    .nav-item i.c-red{color:#dc2626;}
+    .nav-item i.c-orange{color:#ea580c;}
+    .nav-item i.c-cyan{color:#0891b2;}
+
+    /* Bottom nav */
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--gray-200);padding:6px 4px;justify-content:space-around;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:5px 8px;font-size:9px;font-weight:600;color:var(--gray-500);transition:var(--transition);cursor:pointer;border-radius:10px;min-width:52px;}
+    .bottom-nav-item i{font-size:19px;}
+    .bottom-nav-item.active{color:var(--green-600);background:var(--green-50);}
+    /* More menu drawer */
+    .more-drawer{display:none;position:fixed;bottom:70px;left:0;right:0;background:white;border-top:1px solid var(--gray-200);border-radius:20px 20px 0 0;z-index:300;padding:16px 12px 8px;box-shadow:0 -8px 32px rgba(0,0,0,0.12);animation:slideUp .2s ease;}
+    .more-drawer.open{display:block;}
+    .more-drawer-overlay{display:none;position:fixed;inset:0;z-index:299;}
+    .more-drawer-overlay.open{display:block;}
+    @keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    .more-drawer h5{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+    .more-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;transition:var(--transition);font-size:13px;font-weight:600;color:var(--gray-700);}
+    .more-item:hover,.more-item:active{background:var(--green-50);color:var(--green-700);}
+    .more-item i{width:20px;text-align:center;font-size:16px;}
+    @media(max-width:768px){
+      .sidebar{display:none !important;}
+      .bottom-nav{display:flex;}
+      .main-content{padding-bottom:76px !important;}
+      .topbar .menu-toggle{display:none !important;}
+    }
+    .sidebar-section{padding:10px 12px 2px;font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-top:6px;}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--gray-600);font-weight:500;font-size:13px;}
+    .nav-item:hover{background:var(--gray-50);}
+    .nav-item.active{background:var(--green-50);color:#14532d;font-weight:700;}
+    .nav-item i{width:18px;text-align:center;font-size:15px;flex-shrink:0;}
+
+    .main-content{flex:1;overflow-y:auto;padding:16px 20px;}
+    @media(max-width:768px){.main-content{padding:12px;}}
+    .page{display:none;}
+    .page.active{display:block;animation:fadeIn .2s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+    /* CARD LIST */
+    .card-list{display:flex;flex-direction:column;gap:12px;}
+    .data-card{background:white;border:1px solid var(--gray-200);border-radius:var(--radius);padding:12px;transition:var(--transition);}
+    .data-card:hover{box-shadow:var(--shadow-sm);}
+    .data-card .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px dashed var(--gray-200);}
+    .data-card .card-title{font-weight:800;font-size:14px;}
+    .data-card .card-badge{display:inline-flex;}
+    .data-card .card-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--gray-50);}
+    .data-card .card-row-label{font-weight:600;color:var(--gray-600);}
+    .data-card .card-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+
+    /* DASHBOARD */
+    .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;height:calc(100vh - 100px);}
+    @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;height:auto;}}
+    .dash-left,.dash-right{display:flex;flex-direction:column;gap:10px;}
+    .welcome-mini{background:linear-gradient(135deg,#14532d,#166534);border-radius:var(--radius);padding:14px 18px;color:white;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .welcome-mini h3{font-size:15px;font-weight:700;}
+    .welcome-mini p{font-size:11px;opacity:.8;}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+    @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+    .mini-stat{background:white;border-radius:var(--radius-sm);padding:10px 12px;border:1px solid var(--gray-200);display:flex;align-items:center;gap:10px;}
+    .mini-stat .ms-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+    .mini-stat .ms-val{font-size:16px;font-weight:800;font-family:var(--mono);}
+    .mini-stat .ms-label{font-size:10px;color:var(--gray-500);}
+    .card{background:white;border-radius:var(--radius);border:1px solid var(--gray-200);overflow:hidden;}
+    .card-header{padding:10px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;}
+    .card-body{padding:10px;}
+    .card-body.no-pad{padding:0;}
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    table th{background:var(--gray-50);padding:7px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--gray-200);}
+    table td{padding:8px 10px;border-bottom:1px solid var(--gray-100);font-size:12px;vertical-align:middle;}
+    table tr:hover td{background:var(--gray-50);}
+    table tr.row-clickable{cursor:pointer;}
+    @media(max-width:768px){.desktop-table{display:none;}}
+    .mobile-card-view{display:none;}
+    @media(max-width:768px){.mobile-card-view{display:block;}}
+
+    .ai-panel{background:white;border-radius:var(--radius);border:1px solid var(--gray-200);padding:12px;flex:1;display:flex;flex-direction:column;}
+    .ai-panel h4{font-size:12px;font-weight:700;color:var(--purple-600);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+    .ai-insight{font-size:11px;color:var(--gray-600);line-height:1.6;display:flex;flex-direction:column;gap:6px;}
+    .ai-insight .insight-item{display:flex;align-items:flex-start;gap:6px;padding:6px 8px;background:var(--gray-50);border-radius:6px;}
+    .ai-insight .insight-item i{color:var(--purple-600);margin-top:1px;}
+
+    /* BADGES */
+    .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;}
+    .badge-green{background:#dcfce7;color:#16a34a;}
+    .badge-blue{background:#dbeafe;color:#2563eb;}
+    .badge-red{background:#fee2e2;color:#dc2626;}
+    .badge-amber{background:#fef3c7;color:#b45309;}
+    .badge-teal{background:#ccfbf1;color:#0d9488;}
+    .badge-purple{background:#ede9fe;color:#7c3aed;}
+    .badge-gray{background:#f3f4f6;color:#6b7280;}
+    .badge-orange{background:#ffedd5;color:#ea580c;}
+
+    /* STATUS BADGES LARGE (jadwal) */
+    .status-tab{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;border:2px solid transparent;}
+    .status-open{background:#fff7ed;color:#ea580c;border-color:#fed7aa;}
+    .status-progress{background:#fef3c7;color:#b45309;border-color:#fde68a;}
+    .status-completed{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
+
+    /* BUTTONS */
+    .btn-sm{padding:6px 10px;font-size:11px;border-radius:5px;}
+    .btn-xs{padding:4px 8px;font-size:10px;border-radius:4px;}
+    .btn-success{background:#16a34a;color:white;border:none;cursor:pointer;}
+    .btn-success:hover{background:#15803d;}
+    .btn-outline{background:transparent;border:1.5px solid var(--gray-300);color:var(--gray-700);cursor:pointer;}
+    .btn-outline:hover{border-color:#16a34a;color:#16a34a;background:#f0fdf4;}
+    .btn-danger{background:#ef4444;color:white;border:none;cursor:pointer;}
+    .btn-info{background:#3b82f6;color:white;border:none;cursor:pointer;}
+    .btn-teal{background:#0d9488;color:white;border:none;cursor:pointer;}
+    .btn-purple{background:#7c3aed;color:white;border:none;cursor:pointer;}
+    .btn-amber{background:#d97706;color:white;border:none;cursor:pointer;}
+    .btn-orange{background:#ea580c;color:white;border:none;cursor:pointer;}
+
+    /* STATUS ACTION BUTTONS (for staff) */
+    .btn-progress{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;}
+    .btn-progress:hover{box-shadow:0 4px 12px rgba(245,158,11,.4);}
+    .btn-complete{background:linear-gradient(135deg,#16a34a,#15803d);color:white;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;}
+    .btn-complete:hover{box-shadow:0 4px 12px rgba(22,163,74,.4);}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);}
+    .modal-overlay.open{display:flex;}
+    .modal{background:white;border-radius:16px;width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 48px rgba(0,0,0,.2);animation:modalIn .2s ease;}
+    @keyframes modalIn{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
+    .modal.modal-lg{max-width:850px;}
+    .modal.modal-sm{max-width:420px;}
+    .modal-head{padding:14px 18px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+    .modal-head h3{font-size:15px;font-weight:800;}
+    .modal-close{width:28px;height:28px;border:none;background:var(--gray-100);border-radius:6px;cursor:pointer;color:var(--gray-500);font-size:14px;display:flex;align-items:center;justify-content:center;}
+    .modal-close:hover{background:#fef2f2;color:#dc2626;}
+    .modal-body{padding:16px;overflow-y:auto;}
+    .modal-foot{padding:12px 18px;border-top:1px solid var(--gray-200);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+    @media(max-width:768px){.form-grid{grid-template-columns:1fr;}}
+    .filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    @media(max-width:768px){.filter-bar{flex-direction:column;align-items:stretch;}.filter-bar .form-control{max-width:100%;}}
+    .filter-bar .form-control{max-width:150px;}
+
+    /* Responsive filter grid for invoice & jadwal */
+    .trx-filter-grid{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .trx-filter-grid .form-control{flex:1;min-width:110px;max-width:160px;}
+    .trx-filter-grid .btn{flex-shrink:0;}
+    @media(max-width:768px){
+      .trx-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+      .trx-filter-grid .form-control{max-width:100%;min-width:0;}
+      .trx-filter-grid input.form-control{grid-column:1/-1;}
+      .trx-filter-grid .btn{grid-column:1/-1;width:100%;}
+    }
+
+    .laundry-detail-table{width:100%;border-collapse:collapse;margin-top:6px;}
+    .laundry-detail-table th,.laundry-detail-table td{padding:6px 8px;border:1px solid var(--gray-200);font-size:12px;}
+
+    /* CHECKLIST */
+    .checklist-grid{display:flex;flex-direction:column;gap:0;}
+    .checklist-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-bottom:1px solid #f0f0f0;border-radius:4px;}
+    .checklist-item:nth-child(odd){background:#fafafa;}
+    .checklist-label{font-size:12px;color:var(--gray-700);}
+    .checklist-value{font-weight:700;font-size:11px;padding:2px 8px;border-radius:99px;}
+    .checklist-yes{background:#dcfce7;color:#16a34a;}
+    .checklist-no{background:#fee2e2;color:#dc2626;}
+
+    /* PAGINATION */
+    .pagination{display:flex;align-items:center;gap:6px;padding:10px 14px;justify-content:center;border-top:1px solid var(--gray-100);}
+    .page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--gray-200);border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;color:var(--gray-600);background:white;transition:var(--transition);}
+    .page-btn:hover{border-color:var(--green-500);color:var(--green-600);}
+    .page-btn.active{background:var(--green-600);color:white;border-color:var(--green-600);}
+    .page-btn:disabled{opacity:.4;cursor:not-allowed;}
+    .page-info{font-size:11px;color:var(--gray-500);padding:0 6px;}
+
+    /* TOAST */
+    .toast-container{position:fixed;bottom:80px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:6px;}
+    .toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.15);animation:fadeUp .2s ease;background:white;border:1px solid var(--gray-200);min-width:220px;}
+    .toast.success{background:#f0fdf4;border-color:#bbf7d0;color:#166534;}
+    .toast.error{background:#fef2f2;border-color:#fecaca;color:#dc2626;}
+    .toast.warning{background:#fffbeb;border-color:#fde68a;color:#92400e;}
+    .toast-close{margin-left:auto;cursor:pointer;opacity:.6;}
+    .toast-close:hover{opacity:1;}
+    .empty-state{text-align:center;color:var(--gray-400);padding:24px;font-size:12px;}
+    .empty-state i{display:block;font-size:28px;margin-bottom:8px;}
+
+    /* MODAL MOBILE */
+    @media(max-width:768px){
+      .modal{max-height:95vh;}
+      .modal-body{padding:12px;}
+      table th,table td{padding:5px 7px;font-size:11px;}
+    }
+
+    /* READONLY LOCK INFO */
+    .lock-info{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:12px;margin-bottom:10px;}
+    .lock-info .lock-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--gray-400);margin-bottom:8px;display:flex;align-items:center;gap:4px;}
+    .lock-info .lock-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .lock-info .lock-field{background:white;border-radius:6px;padding:8px;border:1px solid var(--gray-100);}
+    .lock-info .lock-field-label{font-size:10px;color:var(--gray-400);}
+    .lock-info .lock-field-val{font-weight:700;font-size:12px;margin-top:2px;}
+
+    /* PARAM INFO BOX */
+    .param-info-box{background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:10px;margin-top:8px;}
+    .param-info-box .param-kat{font-weight:700;font-size:11px;color:var(--green-700);margin-bottom:4px;}
+    .param-info-box .param-items{display:flex;flex-wrap:wrap;gap:4px;}
+    .param-info-box .param-chip{background:white;border:1px solid var(--green-200);border-radius:99px;padding:2px 10px;font-size:11px;color:var(--gray-700);}
+
+    /* ===================== PWA INSTALL BUTTON ===================== */
+    #pwaInstallBar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:linear-gradient(135deg,#14532d,#166534);color:white;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.25);animation:slideUp .3s ease;}
+    #pwaInstallBar.show{display:flex;}
+    #pwaInstallBar .pwa-text{flex:1;font-size:13px;font-weight:600;}
+    #pwaInstallBar .pwa-text small{display:block;font-size:10px;opacity:.8;font-weight:400;}
+    #pwaInstallBar .pwa-icon{font-size:22px;flex-shrink:0;}
+    #pwaInstallBar .btn-pwa-install{background:white;color:#166534;border:none;border-radius:8px;padding:8px 16px;font-weight:800;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+    #pwaInstallBar .btn-pwa-install:hover{background:#dcfce7;}
+    #pwaInstallBar .btn-pwa-dismiss{background:transparent;border:1px solid rgba(255,255,255,.4);color:white;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;flex-shrink:0;}
+    #pwaInstallBar .btn-pwa-dismiss:hover{background:rgba(255,255,255,.15);}
+    /* Update available banner */
+    #pwaUpdateBar{display:none;position:fixed;top:52px;left:0;right:0;z-index:9980;background:#1d4ed8;color:white;padding:8px 16px;align-items:center;gap:10px;font-size:12px;font-weight:600;}
+    #pwaUpdateBar.show{display:flex;}
+    #pwaUpdateBar .btn-pwa-update{background:white;color:#1d4ed8;border:none;border-radius:6px;padding:5px 12px;font-weight:700;font-size:11px;cursor:pointer;margin-left:auto;}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon" style="background:transparent;box-shadow:none;"><img src="data:image/png;base64,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" style="width:60px;height:60px;border-radius:12px;object-fit:contain;" alt="Surya Cleanindo"></div>
+      <h1>Surya Cleanindo</h1>
+      <p>Laundry • Cleaning • Pest Control</p>
+    </div>
+    <div class="alert alert-danger" id="loginAlert"><i class="fa-solid fa-circle-exclamation"></i><span id="loginAlertMsg"></span></div>
+    <div class="form-group"><label>Username</label><input class="form-control" id="loginUsername" placeholder="Username" autocomplete="username"></div>
+    <div class="form-group"><label>Password</label><input class="form-control" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"></div>
+    <button class="btn btn-primary" id="btnLogin" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> Masuk</button>
+    <p style="text-align:center;color:var(--gray-400);font-size:10px;margin-top:14px;">© 2025 Surya Cleanindo</p>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell">
+  <div class="topbar">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+    <div class="brand"><div class="b-icon" style="background:transparent;overflow:visible;"><img src="data:image/png;base64,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" style="width:28px;height:28px;object-fit:contain;border-radius:5px;" alt="SC"></div><span>Surya Cleanindo</span></div>
+    <div class="spacer"></div>
+    <div id="topbarClock" style="font-size:11px;font-weight:600;color:var(--gray-600);text-align:right;line-height:1.4;margin-right:10px;"></div>
+    <div class="user-info" style="position:relative;display:flex;align-items:center;gap:8px;">
+      <div class="user-badge" onclick="toggleUserPopup()"><div class="avatar" id="topAvatar"></div><span id="topName">—</span><i class="fa-solid fa-chevron-down" style="font-size:9px;color:var(--gray-400);"></i></div>
+      <button class="btn-logout btn-logout-desktop" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+      <div class="user-popup" id="userPopup">
+        <div class="user-popup-header">
+          <div class="user-popup-name" id="popupName">—</div>
+          <div class="user-popup-role" id="popupRole">—</div>
+        </div>
+        <div class="user-popup-item danger" onclick="closeUserPopup();doLogout();"><i class="fa-solid fa-right-from-bracket"></i> Keluar</div>
+      </div>
+    </div>
+  </div>
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar">
+      <div style="padding:6px;">
+        <div class="sidebar-section">Utama</div>
+        <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high c-green"></i> Dashboard</div>
+        <div class="sidebar-section">Operasional</div>
+        <div class="nav-item" data-page="jadwal" onclick="navigate('jadwal')"><i class="fa-solid fa-calendar-check c-teal"></i> Jadwal Kunjungan</div>
+        <div class="nav-item nav-admin-owner-only" data-page="transaksi" onclick="navigate('transaksi')"><i class="fa-solid fa-file-invoice c-blue"></i> Invoice / Transaksi</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pengeluaran" onclick="navigate('pengeluaran')"><i class="fa-solid fa-arrow-trend-down c-red"></i> Pengeluaran</div>
+        <div class="sidebar-section nav-admin-owner-only">Master Data</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pelanggan" onclick="navigate('pelanggan')"><i class="fa-solid fa-users c-amber"></i> Pelanggan</div>
+        <div class="nav-item nav-admin-owner-only" data-page="pricelist" onclick="navigate('pricelist')"><i class="fa-solid fa-tags c-green"></i> Pricelist</div>
+        <div class="nav-item nav-admin-owner-only" data-page="parameter" onclick="navigate('parameter')"><i class="fa-solid fa-sliders c-purple"></i> Parameter Checklist</div>
+        <div class="sidebar-section nav-owner-only">Sistem</div>
+        <div class="nav-item nav-owner-only" data-page="laporan" onclick="navigate('laporan')"><i class="fa-solid fa-chart-bar c-orange"></i> Laporan</div>
+        <div class="nav-item nav-owner-only" data-page="users" onclick="navigate('users')"><i class="fa-solid fa-user-gear c-purple"></i> Manajemen User</div>
+      </div>
+    </nav>
+    <!-- Bottom Nav (Mobile) -->
+    <div class="bottom-nav" id="bottomNav">
+      <button class="bottom-nav-item" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-gauge-high"></i><span>Beranda</span></button>
+      <button class="bottom-nav-item" data-page="jadwal" onclick="navigate('jadwal')"><i class="fa-solid fa-calendar-check"></i><span>Jadwal</span></button>
+      <button class="bottom-nav-item nav-admin-owner-only" data-page="transaksi" onclick="navigate('transaksi')"><i class="fa-solid fa-file-invoice"></i><span>Invoice</span></button>
+      <button class="bottom-nav-item nav-admin-owner-only" data-page="pelanggan" onclick="navigate('pelanggan')"><i class="fa-solid fa-users"></i><span>Pelanggan</span></button>
+      <button class="bottom-nav-item" id="moreNavBtn" onclick="toggleMoreDrawer()"><i class="fa-solid fa-ellipsis"></i><span>Lainnya</span></button>
+    </div>
+    <!-- More Drawer -->
+    <div class="more-drawer-overlay" id="moreDrawerOverlay" onclick="closeMoreDrawer()"></div>
+    <div class="more-drawer" id="moreDrawer">
+      <h5>Menu Lainnya</h5>
+      <div id="moreDrawerItems"></div>
+    </div>
+    <main class="main-content" id="mainContent"></main>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+
+<!-- ===================== PWA INSTALL BAR ===================== -->
+<div id="pwaInstallBar">
+  <span class="pwa-icon">📲</span>
+  <div class="pwa-text">
+    Install Surya Cleanindo
+    <small>Akses lebih cepat seperti aplikasi native</small>
+  </div>
+  <button class="btn-pwa-dismiss" onclick="pwaDismiss()">Nanti</button>
+  <button class="btn-pwa-install" onclick="pwaInstall()"><i class="fa-solid fa-download"></i> Install</button>
+</div>
+<div id="pwaUpdateBar">
+  <i class="fa-solid fa-rotate"></i> Versi baru tersedia!
+  <button class="btn-pwa-update" onclick="pwaUpdate()">Perbarui Sekarang</button>
+</div>
+
+<script>
+// ==================== STATE ====================
+let currentUser = null, currentToken = null;
+let pelangganCache = [], pricelistCache = {}, parameterCache = {}, jadwalCache = [], transaksiCache = [];
+let jadwalPage = 1, transaksiPage = 1;
+const PAGE_SIZE = 10;
+
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp ' + (Number(n)||0).toLocaleString('id-ID');
+const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+function fmtTgl(d){
+  if(!d) return '—';
+  const s=String(d);
+  // yyyy-MM-dd HH:mm:ss or yyyy-MM-dd
+  const parts=s.substring(0,10).split('-');
+  if(parts.length===3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return s.substring(0,10);
+}
+const toast = (msg, type='success') => {
+  const el = document.createElement('div'); el.className = 'toast '+type;
+  el.innerHTML = `<i class="fa-solid fa-${type==='success'?'circle-check':type==='error'?'circle-xmark':'triangle-exclamation'}"></i> ${msg}<span class="toast-close" onclick="this.parentElement.remove()">✕</span>`;
+  $('toastContainer').appendChild(el); setTimeout(()=>el.remove(), 4000);
+};
+function showLoading(){ const o=document.createElement('div'); o.id='_loader'; o.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:9998;display:flex;align-items:center;justify-content:center;'; o.innerHTML='<div style="width:36px;height:36px;border:3px solid #dcfce7;border-top-color:#16a34a;border-radius:50%;animation:spin .7s linear infinite;"></div>'; document.body.appendChild(o); }
+function hideLoading(){ const el=document.getElementById('_loader'); if(el) el.remove(); }
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+function toggleSidebar(){ $('sidebar').classList.toggle('open'); }
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbweuaL6O_JvMsnXJPBTuHMOhu-ngh2PaYRWUsup7tT6-Pch6iG-HiecAHaFYoHi_dh_/exec';
+
+// ── MODE DETEKSI ─────────────────────────────────────────────
+// Jika berjalan di dalam GAS (link /exec langsung), gunakan google.script.run
+// Jika berjalan di luar GAS (GitHub Pages, dsb), gunakan fetch
+const IS_GAS = (typeof google !== 'undefined' && google.script && google.script.run);
+
+async function call(fn, ...args){
+  if (IS_GAS) {
+    // ── MODE GAS: pakai google.script.run (paling reliable) ──
+    return new Promise(resolve => {
+      google.script.run
+        .withSuccessHandler(r => {
+          try { resolve(typeof r === 'string' ? JSON.parse(r) : r); }
+          catch(e) { resolve({ status: 'error', message: 'Parse: ' + r }); }
+        })
+        .withFailureHandler(e => resolve({ status: 'error', message: e.message }))
+        [fn](...args);
+    });
+  }
+
+  // ── MODE EXTERNAL: pakai fetch ke GAS URL ────────────────
+  try {
+    const params = new URLSearchParams();
+    params.append('fn', fn);
+    args.forEach((a, i) => {
+      if (a === null || a === undefined) {
+        params.append('arg' + i, 'null');
+      } else if (typeof a === 'object') {
+        params.append('arg' + i, JSON.stringify(a));
+      } else {
+        params.append('arg' + i, String(a));
+      }
+    });
+
+    const url = GAS_URL + '?' + params.toString();
+    console.log('[SCMS] fetch →', fn, url.substring(0, 120));
+
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'omit',   // jangan kirim cookie Google → cegah auth redirect
+      cache: 'no-store'
+    });
+
+    const text = await res.text();
+    console.log('[SCMS] response:', text.substring(0, 200));
+
+    if (!text || text.trim() === '') {
+      return { status: 'error', message: 'Server tidak merespons. Coba lagi.' };
+    }
+    if (text.trim().startsWith('<')) {
+      return { status: 'error', message: 'GAS belum di-redeploy. Buka GAS → Deploy → Versi baru → Anyone.' };
+    }
+    try { return JSON.parse(text); }
+    catch(e) { return { status: 'error', message: 'Response tidak valid: ' + text.substring(0, 150) }; }
+  } catch(e) {
+    console.error('[SCMS] fetch error:', e);
+    return { status: 'error', message: 'Koneksi gagal: ' + e.message };
+  }
+}
+
+// ==================== AUTH ====================
+async function doLogin(){
+  const u=$('loginUsername').value.trim(), p=$('loginPassword').value;
+  if(!u||!p){ $('loginAlert').classList.add('show'); $('loginAlertMsg').textContent='Username & password wajib diisi.'; return; }
+  $('btnLogin').disabled=true; $('btnLogin').innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Memuat...';
+  const res = await call('login', u, p);
+  $('btnLogin').disabled=false; $('btnLogin').innerHTML='<i class="fa-solid fa-right-to-bracket"></i> Masuk';
+  if(res.status==='ok'){ currentUser=res.data; currentToken=res.data.token; localStorage.setItem('scms_token',currentToken); localStorage.setItem('scms_user',JSON.stringify(currentUser)); initApp(); }
+  else { $('loginAlert').classList.add('show'); $('loginAlertMsg').textContent=res.message; }
+}
+function initApp(){
+  $('loginPage').classList.remove('active'); $('appShell').classList.add('active');
+  $('topName').textContent=currentUser.nama; $('topAvatar').textContent=currentUser.nama.charAt(0).toUpperCase(); $('topAvatar').className='avatar '+currentUser.role.toLowerCase();
+  if($('popupName')) $('popupName').textContent=currentUser.nama;
+  if($('popupRole')) $('popupRole').textContent=currentUser.role;
+  applyRoleUI(); startClock(); buildMoreDrawer(); navigate('dashboard');
+  document.querySelectorAll('.bottom-nav-item').forEach(el=>{
+    if(el.classList.contains('nav-admin-owner-only') && !['Owner','Admin'].includes(currentUser.role)) el.style.display='none';
+    if(el.classList.contains('nav-owner-only') && currentUser.role!=='Owner') el.style.display='none';
+  });
+  // Close user popup on outside click
+  document.addEventListener('click', e=>{
+    const popup=$('userPopup'); const badge=document.querySelector('.user-badge');
+    if(popup&&badge&&!popup.contains(e.target)&&!badge.contains(e.target)) popup.classList.remove('open');
+  });
+}
+function toggleUserPopup(){ $('userPopup')?.classList.toggle('open'); }
+function closeUserPopup(){ $('userPopup')?.classList.remove('open'); }
+
+// ==================== CONFIRM MODAL ====================
+function showConfirm(msg, onYes, opts={}){
+  const existing=document.getElementById('_confirmModal'); if(existing) existing.remove();
+  const id='_confirmModal';
+  const html=`<div id="${id}" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+    <div class="confirm-modal">
+      <h3>${opts.title||'Konfirmasi'}</h3>
+      <p>${msg}</p>
+      <div class="modal-btns">
+        <button class="btn btn-sm btn-outline" onclick="document.getElementById('${id}').remove()">Batal</button>
+        <button class="btn btn-sm ${opts.danger?'btn-danger':'btn-success'}" id="_confirmYes">${opts.yesLabel||'Ya'}</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('_confirmYes').onclick=()=>{ document.getElementById(id)?.remove(); onYes(); };
+}
+function buildMoreDrawer(){
+  const r=currentUser.role;
+  const items=[];
+  if(['Owner','Admin'].includes(r)) items.push({page:'pengeluaran',icon:'fa-arrow-trend-down c-red',label:'Pengeluaran'});
+  if(['Owner','Admin'].includes(r)) items.push({page:'pricelist',icon:'fa-tags c-green',label:'Pricelist'});
+  if(['Owner','Admin'].includes(r)) items.push({page:'parameter',icon:'fa-sliders c-purple',label:'Parameter Checklist'});
+  if(r==='Owner') items.push({page:'laporan',icon:'fa-chart-bar c-orange',label:'Laporan'});
+  if(r==='Owner') items.push({page:'users',icon:'fa-user-gear c-purple',label:'Manajemen User'});
+  const el=$('moreDrawerItems'); if(!el) return;
+  el.innerHTML=items.map(it=>`<div class="more-item" data-page="${it.page}" onclick="navigate('${it.page}');closeMoreDrawer();"><i class="fa-solid ${it.icon}"></i>${it.label}</div>`).join('');
+  if(!items.length){ $('moreNavBtn').style.display='none'; }
+}
+function toggleMoreDrawer(){
+  const d=$('moreDrawer'), o=$('moreDrawerOverlay');
+  const isOpen=d.classList.contains('open');
+  if(isOpen){ d.classList.remove('open'); o.classList.remove('open'); }
+  else { d.classList.add('open'); o.classList.add('open'); }
+}
+function closeMoreDrawer(){ $('moreDrawer').classList.remove('open'); $('moreDrawerOverlay').classList.remove('open'); }
+async function doLogout(){
+  showConfirm('Yakin ingin keluar dari sistem?', async ()=>{
+    showLoading(); await call('logout',currentToken); hideLoading();
+    currentUser=null; currentToken=null; localStorage.clear();
+    $('appShell').classList.remove('active'); $('loginPage').classList.add('active');
+  }, {title:'Keluar', yesLabel:'Keluar', danger:true});
+}
+function applyRoleUI(){
+  const r=currentUser.role;
+  document.querySelectorAll('.nav-owner-only').forEach(e=>e.style.display=r==='Owner'?'':'none');
+  document.querySelectorAll('.nav-admin-only').forEach(e=>e.style.display=['Owner','Admin'].includes(r)?'':'none');
+  document.querySelectorAll('.nav-admin-owner-only').forEach(e=>e.style.display=['Owner','Admin'].includes(r)?'':'none');
+}
+
+// ==================== NAVIGATION ====================
+async function navigate(page){
+  $('sidebar')?.classList.remove('open');
+  closeMoreDrawer();
+  // Role staff only allowed on dashboard & jadwal
+  if(currentUser.role==='Staff' && !['dashboard','jadwal'].includes(page)) return;
+  document.querySelectorAll('.nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  document.querySelectorAll('.bottom-nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  document.querySelectorAll('.more-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
+  if(page==='dashboard') await renderDashboard();
+  else if(page==='jadwal') await renderJadwalPage();
+  else if(page==='transaksi') await renderTransaksiPage();
+  else if(page==='pelanggan') await renderPelangganPage();
+  else if(page==='pricelist') await renderPricelistPage();
+  else if(page==='parameter') await renderParameterPage();
+  else if(page==='pengeluaran') await renderPengeluaranPage();
+  else if(page==='laporan') await renderLaporanPage();
+  else if(page==='users') await renderUsersPage();
+}
+
+// ==================== CLOCK ====================
+function startClock(){
+  const days=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+  function tick(){
+    const now=new Date(), el=$('topbarClock'); if(!el) return;
+    el.innerHTML=`<span style="font-size:10px;">${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}</span><br><span style="font-family:var(--mono);font-weight:800;color:var(--green-700);">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}</span>`;
+  }
+  tick(); setInterval(tick,1000);
+}
+
+// ==================== HELPERS ====================
+function getPlgName(id){ const p=pelangganCache.find(x=>x.ID===id); return p?p.Nama:id; }
+function badgeJenis(j){
+  if(j==='Laundry') return '<span class="badge" style="background:#ede9fe;color:#7c3aed;">🧺 Laundry</span>';
+  if(j==='Cleaning') return '<span class="badge badge-blue">🧹 Cleaning</span>';
+  if(j==='Pest Control') return '<span class="badge badge-red">🐛 Pest</span>';
+  return `<span class="badge badge-gray">${j||'—'}</span>`;
+}
+function badgeStatus(s){ return s==='Lunas'?'<span class="badge badge-green">✔ Lunas</span>':'<span class="badge badge-amber">⏳ Belum Bayar</span>'; }
+function statusTab(s){
+  if(s==='Completed') return '<span class="status-tab status-completed">✅ Completed</span>';
+  if(s==='On Progress') return '<span class="status-tab status-progress">⚙ On Progress</span>';
+  return '<span class="status-tab status-open">📋 Open</span>';
+}
+function badgeJadwalStatus(s){
+  if(s==='Completed') return '<span class="badge badge-green">✅ Completed</span>';
+  if(s==='On Progress') return '<span class="badge badge-amber">⚙ On Progress</span>';
+  return '<span class="badge badge-orange">📋 Open</span>';
+}
+
+// ==================== PAGINATION ====================
+function renderPagination(containerId, total, currentPage, onPageChange){
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const c = $(containerId); if(!c) return;
+  if(totalPages <= 1){ c.innerHTML=''; return; }
+  let btns = `<button class="page-btn" onclick="${onPageChange}(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
+  const start = Math.max(1, currentPage-2), end = Math.min(totalPages, currentPage+2);
+  if(start>1) btns += `<button class="page-btn" onclick="${onPageChange}(1)">1</button>${start>2?'<span class="page-info">…</span>':''}`;
+  for(let i=start;i<=end;i++) btns += `<button class="page-btn ${i===currentPage?'active':''}" onclick="${onPageChange}(${i})">${i}</button>`;
+  if(end<totalPages) btns += `${end<totalPages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="${onPageChange}(${totalPages})">${totalPages}</button>`;
+  btns += `<button class="page-btn" onclick="${onPageChange}(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>›</button>`;
+  btns += `<span class="page-info">${((currentPage-1)*PAGE_SIZE)+1}–${Math.min(currentPage*PAGE_SIZE,total)} / ${total}</span>`;
+  c.innerHTML = btns;
+}
+
+// ==================== DASHBOARD ====================
+async function renderDashboard(){
+  showLoading();
+  const [dRes, trxRes, jRes] = await Promise.all([
+    call('getDashboard', currentToken),
+    call('getTransaksi', currentToken, {}),
+    call('getJadwal', currentToken, new Date().toISOString().slice(0,10))
+  ]);
+  hideLoading();
+  const d = dRes.status==='ok'?dRes.data:{};
+  const trx = trxRes.status==='ok'?trxRes.data:[];
+  const jadwal = jRes.status==='ok'?jRes.data:[];
+  transaksiCache = trx; jadwalCache = jadwal;
+  const totalTrx=trx.length, unpaid=trx.filter(t=>t.Status_Bayar==='Belum Bayar').length;
+  const jOpen=jadwal.filter(j=>j.Status==='Open').length, jProgress=jadwal.filter(j=>j.Status==='On Progress').length, jDone=jadwal.filter(j=>j.Status==='Completed').length;
+  const aiInsights=[
+    {icon:'fa-chart-line',text:`Total <b>${totalTrx}</b> transaksi. ${unpaid>0?`<b>${unpaid}</b> belum lunas.`:''}`},
+    {icon:'fa-calendar-day',text:`Jadwal hari ini: <b>${jOpen}</b> Open, <b>${jProgress}</b> On Progress, <b>${jDone}</b> Completed.`},
+    {icon:'fa-lightbulb',text:unpaid>totalTrx*.3?'⚠️ Piutang cukup tinggi. Follow-up pembayaran segera.':'✅ Rasio pembayaran baik. Pertahankan!'},
+  ];
+  $('mainContent').innerHTML = `
+    <div class="dash-grid">
+      <div class="dash-left">
+        <div class="welcome-mini"><div><h3>👋 Selamat datang, ${currentUser.nama.split(' ')[0]}</h3><p>${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p></div></div>
+        <div class="stats-row">
+          <div class="mini-stat"><div class="ms-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-file-invoice"></i></div><div><div class="ms-val">${d.totalTransaksi||0}</div><div class="ms-label">Total Invoice</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fff7ed;color:#ea580c;"><i class="fa-solid fa-door-open"></i></div><div><div class="ms-val">${d.jadwalOpen||0}</div><div class="ms-label">Jadwal Open</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-spinner"></i></div><div><div class="ms-val">${jProgress||0}</div><div class="ms-label">On Progress</div></div></div>
+          <div class="mini-stat"><div class="ms-icon" style="background:#fef3c7;color:#d97706;"><i class="fa-solid fa-clock"></i></div><div><div class="ms-val">${d.belumBayar||0}</div><div class="ms-label">Belum Bayar</div></div></div>
+        </div>
+        <div class="card" style="flex:1;overflow:auto;">
+          <div class="card-header"><span>📋 Transaksi Terbaru</span></div>
+          <div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Pelanggan</th><th>Jenis</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>${trx.slice(0,8).map(t=>`<tr class="row-clickable" onclick="showTransaksiDetail('${escHtml(t.ID)}')"><td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td><td>${escHtml(getPlgName(t.Pelanggan_ID))}</td><td>${badgeJenis(t.Jenis)}</td><td style="font-weight:700;">${rupiah(t.Total)}</td><td>${badgeStatus(t.Status_Bayar)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Belum ada transaksi</td></tr>'}</tbody></table></div>
+          <div class="mobile-card-view">${trx.slice(0,5).map(t=>`<div class="data-card" onclick="showTransaksiDetail('${escHtml(t.ID)}')"><div class="card-header"><span class="card-title">${escHtml(t.ID)}</span><span class="card-badge">${badgeJenis(t.Jenis)}</span></div><div class="card-row"><span class="card-row-label">Pelanggan</span><span>${escHtml(getPlgName(t.Pelanggan_ID))}</span></div><div class="card-row"><span class="card-row-label">Total</span><span>${rupiah(t.Total)}</span></div><div class="card-row"><span class="card-row-label">Status</span><span>${badgeStatus(t.Status_Bayar)}</span></div></div>`).join('')}</div></div>
+        </div>
+      </div>
+      <div class="dash-right">
+        <div class="ai-panel">
+          <h4><i class="fa-solid fa-robot" style="color:#7c3aed;"></i> AI Analysis</h4>
+          <div class="ai-insight">${aiInsights.map(i=>`<div class="insight-item"><i class="fa-solid ${i.icon}"></i><span>${i.text}</span></div>`).join('')}</div>
+          <div style="margin-top:auto;padding-top:8px;font-size:10px;color:var(--gray-400);text-align:center;">Data real-time</div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span>📅 Jadwal Hari Ini</span></div>
+          <div class="card-body">${jadwal.length?jadwal.map(j=>`<div style="font-size:11px;padding:5px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;"><span><b>${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</b><br><span style="color:var(--gray-500);">${j.Jenis_Layanan||'—'}</span></span>${badgeJadwalStatus(j.Status)}</div>`).join(''):'<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Tidak ada</p></div>'}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================== JADWAL PAGE ====================
+async function renderJadwalPage(pg){
+  jadwalPage = pg || 1;
+  const isStaff = currentUser.role==='Staff';
+  const isAdminOwner = ['Admin','Owner'].includes(currentUser.role);
+  const thn = new Date().getFullYear();
+  const bulanOpts = '<option value="">Semua Bulan</option>'+['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===String(new Date().getMonth()+1).padStart(2,'0')?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
+  const tahunOpts = [thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
+  // Show skeleton/cached immediately
+  $('mainContent').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <h2 style="font-size:18px;font-weight:800;">📅 Jadwal Kunjungan</h2>
+        ${isAdminOwner ? `<button class="btn btn-sm btn-success" onclick="openJadwalAddModal()"><i class="fa-solid fa-plus"></i> Tambah</button>` : ''}
+      </div>
+      <div class="trx-filter-grid">
+        <input type="text" class="form-control" id="jadwalSearch" placeholder="Cari pelanggan..." oninput="filterJadwalTable()">
+        <select class="form-control" id="jadwalStatusFilter" onchange="filterJadwalTable()">
+          <option value="">Semua Status</option>
+          <option value="Open">Open</option>
+          <option value="On Progress">On Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <select class="form-control" id="jadwalBulanFilter" onchange="filterJadwalTable()">${bulanOpts}</select>
+        <select class="form-control" id="jadwalTahunFilter" onchange="filterJadwalTable()">${tahunOpts}</select>
+        <button class="btn btn-sm btn-outline" onclick="renderJadwalPage()" title="Refresh"><i class="fa-solid fa-refresh"></i></button>
+      </div>
+    </div>
+    <div class="card"><div class="card-body no-pad">
+      <div class="table-wrap desktop-table"><table><thead><tr><th>No</th><th>Tgl Schedule</th><th>Tgl Realisasi</th><th>Pelanggan</th><th>Jenis</th><th>Kategori</th><th>Periode</th><th>Status</th>${isAdminOwner?'<th>Aksi</th>':''}</tr></thead><tbody id="jadwalTableBody"></tbody></table>
+      <div class="pagination" id="jadwalPagination"></div></div>
+      <div class="mobile-card-view" id="jadwalCardContainer"></div>
+    </div></div>`;
+  // If cache exists, render immediately
+  if(jadwalCache.length) renderJadwalTableData();
+  // Fetch fresh data in background (no full-page loading spinner)
+  const [jRes, plgRes] = await Promise.all([
+    call('getJadwal', currentToken, 'all'),
+    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan', currentToken)
+  ]);
+  if(plgRes.status==='ok') pelangganCache = plgRes.data;
+  if(jRes.status==='ok') jadwalCache = jRes.data;
+  jadwalCache.sort((a,b)=>String(b.Tanggal_Schedule||b.Tanggal||'').localeCompare(String(a.Tanggal_Schedule||a.Tanggal||'')));
+  renderJadwalTableData();
+}
+
+let _jadwalFiltered = [];
+function filterJadwalTable(pg){
+  jadwalPage = pg || 1;
+  renderJadwalTableData();
+}
+function renderJadwalTableData(){
+  const q = ($('jadwalSearch')?.value||'').toLowerCase();
+  const sf = $('jadwalStatusFilter')?.value||'';
+  const bf = $('jadwalBulanFilter')?.value||'';
+  const tf = $('jadwalTahunFilter')?.value||'';
+  _jadwalFiltered = jadwalCache.filter(j=>{
+    const nama = (j.pelanggan?.Nama||j.Pelanggan_ID||'').toLowerCase();
+    const matchQ = !q || nama.includes(q) || (j.ID||'').toLowerCase().includes(q);
+    const matchS = !sf || j.Status===sf;
+    const tglStr = String(j.Tanggal_Schedule||j.Tanggal||'');
+    const matchB = !bf || tglStr.substring(5,7)===bf;
+    const matchT = !tf || tglStr.substring(0,4)===tf;
+    return matchQ && matchS && matchB && matchT;
+  });
+  const isAdminOwner = ['Admin','Owner'].includes(currentUser.role);
+  const start = (jadwalPage-1)*PAGE_SIZE;
+  const pageData = _jadwalFiltered.slice(start, start+PAGE_SIZE);
+  const tbody = $('jadwalTableBody');
+  if(tbody){
+    tbody.innerHTML = pageData.length
+      ? pageData.map((j,i)=>`
+        <tr class="row-clickable" onclick="openJadwalEditModal('${escHtml(j.ID)}')">
+          <td>${start+i+1}</td>
+          <td>${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</td>
+          <td>${j.Tanggal_Realisasi?'<span class="badge badge-green">'+fmtTgl(j.Tanggal_Realisasi)+'</span>':'<span class="badge badge-gray">—</span>'}</td>
+          <td><b>${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</b></td>
+          <td>${badgeJenis(j.Jenis_Layanan||'—')}</td>
+          <td><span class="badge badge-blue">${escHtml(j.Kategori_Layanan||'—')}</span></td>
+          <td>${escHtml(j.Periode||'—')}</td>
+          <td>${badgeJadwalStatus(j.Status)}</td>
+          ${isAdminOwner?`<td onclick="event.stopPropagation();">${getJadwalAdminBtns(j)}</td>`:''}
+        </tr>`).join('')
+      : `<tr><td colspan="${isAdminOwner?9:8}" class="empty-state">Belum ada jadwal</td></tr>`;
+  }
+  renderPagination('jadwalPagination', _jadwalFiltered.length, jadwalPage, 'filterJadwalTable');
+  // Mobile
+  const mc = $('jadwalCardContainer');
+  if(mc){
+    mc.innerHTML = pageData.map(j=>`
+      <div class="data-card" onclick="openJadwalEditModal('${escHtml(j.ID)}')">
+        <div class="card-header"><span class="card-title">${escHtml(j.pelanggan?.Nama||j.Pelanggan_ID)}</span>${badgeJadwalStatus(j.Status)}</div>
+        <div class="card-row"><span class="card-row-label">Tgl Schedule</span><span>${String(j.Tanggal_Schedule||j.Tanggal||'').substring(0,10)}</span></div>
+        ${j.Tanggal_Realisasi?`<div class="card-row"><span class="card-row-label">Realisasi</span><span class="badge badge-green">${fmtTgl(j.Tanggal_Realisasi)}</span></div>`:''}
+        <div class="card-row"><span class="card-row-label">Layanan</span><span>${badgeJenis(j.Jenis_Layanan||'—')}</span></div>
+        <div class="card-row"><span class="card-row-label">Kategori</span><span>${escHtml(j.Kategori_Layanan||'—')}</span></div>
+        ${isAdminOwner?`<div class="card-actions" onclick="event.stopPropagation();">${getJadwalAdminBtns(j)}</div>`:''}
+      </div>`).join('') || '<div class="empty-state">Belum ada jadwal</div>';
+  }
+}
+function getJadwalAdminBtns(j){
+  let b = '';
+  if(j.Transaksi_ID) b += `<button class="btn btn-xs btn-outline" title="Cetak Struk" onclick="event.stopPropagation();openPrintModal('${escHtml(j.Transaksi_ID)}')">🖨</button> `;
+  b += `<button class="btn btn-xs btn-danger" title="Hapus" onclick="event.stopPropagation();deleteJadwal('${escHtml(j.ID)}')"><i class="fa-solid fa-trash"></i></button>`;
+  return b;
+}
+
+// ==================== TAMBAH JADWAL MODAL (Admin/Owner) ====================
+async function openJadwalAddModal(){
+  await loadPelangganCache();
+  // Load params for info only
+  const html = `
+    <div id="jadwalAddOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+      <div class="modal">
+        <div class="modal-head"><h3>➕ Tambah Jadwal</h3><button class="modal-close" onclick="document.getElementById('jadwalAddOverlay').remove()">✕</button></div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Tanggal Schedule</label><input type="date" class="form-control" id="fAddTgl" value="${new Date().toISOString().slice(0,10)}"></div>
+            <div class="form-group"><label>Pelanggan</label>
+              <select class="form-control" id="fAddPlg">${pelangganCache.map(p=>`<option value="${escHtml(p.ID)}">${escHtml(p.Nama)}</option>`).join('')}</select>
+            </div>
+            <div class="form-group"><label>Jenis Layanan</label>
+              <select class="form-control" id="fAddJenis" onchange="onAddJenisChange()">
+                <option>Cleaning</option><option>Pest Control</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Kategori Layanan</label>
+              <select class="form-control" id="fAddKategori" onchange="onAddKategoriChange()">
+                <option value="">-- Pilih Kategori --</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Periode (opsional)</label>
+              <select class="form-control" id="fAddPeriode">
+                <option value="">-- Tanpa Periode --</option>
+                <option>Harian</option><option>Mingguan</option><option>Bulanan</option>
+              </select>
+            </div>
+          </div>
+          <!-- Parameter: info only (read-only chips) -->
+          <div id="addParamInfoBox"></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn btn-sm btn-outline" onclick="document.getElementById('jadwalAddOverlay').remove()">Batal</button>
+          <button class="btn btn-sm btn-success" onclick="saveJadwalAdd()">💾 Simpan</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  onAddJenisChange();
+}
+let _addParams = [];
+async function onAddJenisChange(){
+  const jenis = $('fAddJenis')?.value;
+  const katSel = $('fAddKategori'); if(!katSel) return;
+  const jenisKey = jenis==='Pest Control'?'pest':'cleaning';
+  katSel.innerHTML='<option value="">-- Memuat... --</option>';
+  const res = await call('getParameter', currentToken, jenisKey);
+  _addParams = res.status==='ok'?res.data:[];
   const kategoris=[...new Set(_addParams.map(p=>p.Kategori))];
   katSel.innerHTML='<option value="">-- Pilih Kategori --</option>'+kategoris.map(k=>`<option>${escHtml(k)}</option>`).join('');
   onAddKategoriChange();
