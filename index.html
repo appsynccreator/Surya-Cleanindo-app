@@ -346,6 +346,74 @@
     #pwaUpdateBar{display:none;position:fixed;top:52px;left:0;right:0;z-index:9980;background:#1d4ed8;color:white;padding:8px 16px;align-items:center;gap:10px;font-size:12px;font-weight:600;}
     #pwaUpdateBar.show{display:flex;}
     #pwaUpdateBar .btn-pwa-update{background:white;color:#1d4ed8;border:none;border-radius:6px;padding:5px 12px;font-weight:700;font-size:11px;cursor:pointer;margin-left:auto;}
+    /* ══════════════ TOPBAR ACTION BUTTONS ══════════════ */
+    .topbar-action-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:none;background:transparent;border-radius:10px;cursor:pointer;color:var(--gray-500);font-size:15px;transition:all .15s ease;position:relative;flex-shrink:0;}
+    .topbar-action-btn:hover{background:var(--gray-100);color:var(--green-700);}
+    .topbar-action-btn i{font-size:12px;}
+    .topbar-action-btn.spinning #refreshIcon{animation:spinOnce .55s cubic-bezier(.4,0,.2,1);}
+    @keyframes spinOnce{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+    /* ══════════════ NOTIF BADGE ══════════════ */
+    .notif-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;background:#ef4444;color:white;border-radius:99px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white;pointer-events:none;line-height:1;box-shadow:0 1px 4px rgba(239,68,68,.4);}
+    .notif-badge.hidden{display:none;}
+
+    /* ══════════════ NOTIF PANEL POPUP ══════════════ */
+    #notifPanel{
+      position:fixed;top:58px;right:12px;
+      width:310px;max-width:calc(100vw - 24px);
+      background:white;border-radius:14px;
+      box-shadow:0 12px 40px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.06);
+      z-index:99999;
+      visibility:hidden;opacity:0;pointer-events:none;
+      transform:translateY(-10px) scale(.96);
+      transition:opacity .18s,transform .18s,visibility 0s linear .18s;
+      overflow:hidden;border:1px solid var(--gray-200);}
+    #notifPanel.open{
+      visibility:visible;opacity:1;pointer-events:all;
+      transform:translateY(0) scale(1);
+      transition:opacity .18s,transform .18s,visibility 0s;}
+    .notif-head{padding:11px 14px 9px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;}
+    .notif-head-title{font-size:13px;font-weight:700;color:var(--gray-800);}
+    .notif-head-actions{display:flex;gap:4px;}
+    .notif-clear-btn{font-size:10px;color:var(--green-700);background:var(--green-50);border:none;cursor:pointer;font-weight:600;padding:3px 8px;border-radius:99px;transition:background .15s;}
+    .notif-clear-btn:hover{background:#bbf7d0;}
+    .notif-clear-btn.red{color:#dc2626;background:#fef2f2;}
+    .notif-clear-btn.red:hover{background:#fee2e2;}
+    .notif-list{overflow-y:auto;max-height:330px;}
+    .notif-item{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;border-bottom:1px solid var(--gray-50);cursor:pointer;transition:background .12s;}
+    .notif-item:last-child{border-bottom:none;}
+    .notif-item:hover{background:var(--gray-50);}
+    .notif-item.unread{background:#f0fdf4;}
+    .notif-item.unread:hover{background:#dcfce7;}
+    .notif-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;margin-top:6px;}
+    .notif-item.read .notif-dot{background:var(--gray-300);}
+    .notif-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+    .notif-icon.green{background:#dcfce7;}
+    .notif-icon.blue{background:#dbeafe;}
+    .notif-icon.orange{background:#ffedd5;}
+    .notif-icon.red{background:#fee2e2;}
+    .notif-content{flex:1;min-width:0;}
+    .notif-title{font-size:12px;font-weight:600;color:var(--gray-800);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .notif-desc{font-size:11px;color:var(--gray-500);line-height:1.4;margin-top:1px;}
+    .notif-time{font-size:10px;color:var(--gray-400);margin-top:2px;}
+    .notif-empty{padding:28px;text-align:center;color:var(--gray-400);font-size:12px;}
+
+    /* ══════════════ FLOAT NOTIF MELAYANG ══════════════ */
+    #floatNotif{position:fixed;top:66px;right:12px;z-index:99998;display:flex;flex-direction:column;gap:7px;width:290px;max-width:calc(100vw - 24px);pointer-events:none;}
+    .float-notif-item{background:white;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 12px;display:flex;gap:8px;align-items:flex-start;animation:floatSlideIn .25s cubic-bezier(.34,1.2,.64,1);pointer-events:all;border:1px solid var(--gray-100);border-top:3px solid #166534;}
+    .float-notif-item.orange{border-top-color:#f97316;}
+    .float-notif-item.red{border-top-color:#ef4444;}
+    .float-notif-item.blue{border-top-color:#3b82f6;}
+    @keyframes floatSlideIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+    .float-notif-icon{font-size:15px;flex-shrink:0;}
+    .float-notif-body{flex:1;min-width:0;}
+    .float-notif-title{font-size:11px;font-weight:700;color:var(--gray-800);}
+    .float-notif-desc{font-size:10px;color:var(--gray-500);margin-top:1px;line-height:1.4;}
+    .float-notif-close{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:11px;padding:0;line-height:1;flex-shrink:0;margin-top:1px;}
+    .float-notif-close:hover{color:var(--gray-700);}
+    .float-notif-bar{height:2px;background:var(--gray-100);border-radius:99px;margin-top:6px;overflow:hidden;}
+    .float-notif-bar-fill{height:100%;background:#22c55e;border-radius:99px;width:100%;transition:width 5s linear;}
+
   </style>
 </head>
 <body>
@@ -372,7 +440,16 @@
     <button class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
     <div class="brand"><div class="b-icon" style="background:transparent;overflow:visible;"><img src="data:image/png;base64,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" style="width:28px;height:28px;object-fit:contain;border-radius:5px;" alt="SC"></div><span>Surya Cleanindo</span></div>
     <div class="spacer"></div>
-    <div id="topbarClock" style="font-size:11px;font-weight:600;color:var(--gray-600);text-align:right;line-height:1.4;margin-right:10px;"></div>
+    <!-- Tombol Refresh -->
+    <button class="topbar-action-btn" id="btnRefresh" onclick="manualRefresh()" title="Refresh data">
+      <i class="fa-solid fa-arrows-rotate" id="refreshIcon"></i>
+    </button>
+    <!-- Tombol Notifikasi -->
+    <button class="topbar-action-btn notif-btn" id="btnNotif" onclick="toggleNotifPanel(event)" title="Notifikasi">
+      <i class="fa-solid fa-bell"></i>
+      <span class="notif-badge hidden" id="notifBadge">0</span>
+    </button>
+    <div id="topbarClock" style="display:none;"></div>
     <div class="user-info" style="position:relative;display:flex;align-items:center;gap:8px;">
       <div class="user-badge" onclick="toggleUserPopup()"><div class="avatar" id="topAvatar"></div><span id="topName">—</span><i class="fa-solid fa-chevron-down" style="font-size:9px;color:var(--gray-400);"></i></div>
       <button class="btn-logout btn-logout-desktop" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
@@ -463,8 +540,18 @@ const toast = (msg, type='success') => {
   el.innerHTML = `<i class="fa-solid fa-${type==='success'?'circle-check':type==='error'?'circle-xmark':'triangle-exclamation'}"></i> ${msg}<span class="toast-close" onclick="this.parentElement.remove()">✕</span>`;
   $('toastContainer').appendChild(el); setTimeout(()=>el.remove(), 4000);
 };
-function showLoading(){ const o=document.createElement('div'); o.id='_loader'; o.style.cssText='position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:9998;display:flex;align-items:center;justify-content:center;'; o.innerHTML='<div style="width:36px;height:36px;border:3px solid #dcfce7;border-top-color:#16a34a;border-radius:50%;animation:spin .7s linear infinite;"></div>'; document.body.appendChild(o); }
-function hideLoading(){ const el=document.getElementById('_loader'); if(el) el.remove(); }
+// showLoading/hideLoading: hanya spin icon refresh di topbar, tidak overlay penuh
+function showLoading(){
+  const icon = document.getElementById('refreshIcon');
+  if(icon){ icon.style.animation='spin .7s linear infinite'; }
+  // Simpan state loading
+  document._scmsLoading = true;
+}
+function hideLoading(){
+  const icon = document.getElementById('refreshIcon');
+  if(icon){ icon.style.animation=''; }
+  document._scmsLoading = false;
+}
 function openModal(id){ $(id).classList.add('open'); }
 function closeModal(id){ $(id).classList.remove('open'); }
 function toggleSidebar(){ $('sidebar').classList.toggle('open'); }
@@ -545,7 +632,12 @@ function initApp(){
   $('topName').textContent=currentUser.nama; $('topAvatar').textContent=currentUser.nama.charAt(0).toUpperCase(); $('topAvatar').className='avatar '+currentUser.role.toLowerCase();
   if($('popupName')) $('popupName').textContent=currentUser.nama;
   if($('popupRole')) $('popupRole').textContent=currentUser.role;
-  applyRoleUI(); startClock(); buildMoreDrawer(); navigate('dashboard');
+  applyRoleUI(); startClock();
+  startAutoRefresh();
+  updateNotifBadge();
+  renderNotifList();
+  // Notif selamat datang
+  setTimeout(() => addNotif('Selamat Datang 👋', 'Login sebagai ' + (currentUser.nama || currentUser.username), 'green'), 1000); buildMoreDrawer(); navigate('dashboard');
   document.querySelectorAll('.bottom-nav-item').forEach(el=>{
     if(el.classList.contains('nav-admin-owner-only') && !['Owner','Admin'].includes(currentUser.role)) el.style.display='none';
     if(el.classList.contains('nav-owner-only') && currentUser.role!=='Owner') el.style.display='none';
@@ -596,6 +688,7 @@ function toggleMoreDrawer(){
 }
 function closeMoreDrawer(){ $('moreDrawer').classList.remove('open'); $('moreDrawerOverlay').classList.remove('open'); }
 async function doLogout(){
+  stopAutoRefresh();
   showConfirm('Yakin ingin keluar dari sistem?', async ()=>{
     showLoading(); await call('logout',currentToken); hideLoading();
     currentUser=null; currentToken=null; localStorage.clear();
@@ -613,8 +706,10 @@ function applyRoleUI(){
 async function navigate(page){
   $('sidebar')?.classList.remove('open');
   closeMoreDrawer();
+  closeNotifPanel();
   // Role staff only allowed on dashboard & jadwal
   if(currentUser.role==='Staff' && !['dashboard','jadwal'].includes(page)) return;
+  _currentPageName = page;
   document.querySelectorAll('.nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
   document.querySelectorAll('.bottom-nav-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
   document.querySelectorAll('.more-item').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
@@ -627,6 +722,8 @@ async function navigate(page){
   else if(page==='pengeluaran') await renderPengeluaranPage();
   else if(page==='laporan') await renderLaporanPage();
   else if(page==='users') await renderUsersPage();
+  // Reset countdown refresh setiap pindah halaman
+  _refreshSecs = 60;
 }
 
 // ==================== CLOCK ====================
@@ -638,6 +735,244 @@ function startClock(){
     el.innerHTML=`<span style="font-size:10px;">${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}</span><br><span style="font-family:var(--mono);font-weight:800;color:var(--green-700);">${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}</span>`;
   }
   tick(); setInterval(tick,1000);
+}
+
+// ==================== AUTO REFRESH ====================
+let _autoRefreshInterval = null;
+let _refreshSecs = 60;
+let _refreshTimer = null;
+let _currentPageName = 'dashboard';
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+  _refreshSecs = 60;
+  updateRefreshCountdown();
+  _refreshTimer = setInterval(() => {
+    _refreshSecs--;
+    updateRefreshCountdown();
+    if (_refreshSecs <= 0) {
+      _refreshSecs = 60;
+      doAutoRefresh();
+    }
+  }, 1000);
+}
+
+function stopAutoRefresh() {
+  if (_refreshTimer) { clearInterval(_refreshTimer); _refreshTimer = null; }
+}
+
+function updateRefreshCountdown() { /* countdown hidden */ }
+
+async function doAutoRefresh() {
+  await refreshCurrentPage(false);
+}
+
+async function manualRefresh() {
+  const btn = document.getElementById('btnRefresh');
+  if (btn) btn.classList.add('spinning');
+  _refreshSecs = 60;
+  await refreshCurrentPage(true);
+  setTimeout(() => btn && btn.classList.remove('spinning'), 600);
+}
+
+async function refreshCurrentPage(showToast = false) {
+  try {
+    if (_currentPageName === 'dashboard') await renderDashboard();
+    else if (_currentPageName === 'jadwal') await renderJadwalPage();
+    else if (_currentPageName === 'transaksi') { await loadTransaksiData(); }
+    else if (_currentPageName === 'pelanggan') await renderPelangganPage();
+    else if (_currentPageName === 'pengeluaran') await renderPengeluaranPage();
+    else if (_currentPageName === 'laporan') await renderLaporanPage();
+    if (showToast) toast('Data diperbarui', 'success');
+    // Cek notifikasi saat refresh
+    await checkNotifications();
+  } catch(e) {
+    console.warn('[SCMS] Auto refresh error:', e);
+  }
+}
+
+// ==================== NOTIFIKASI ====================
+let _notifList = JSON.parse(localStorage.getItem('scms_notif') || '[]');
+let _notifPanelOpen = false;
+
+function saveNotif() {
+  // Simpan max 50 notif
+  _notifList = _notifList.slice(0, 50);
+  localStorage.setItem('scms_notif', JSON.stringify(_notifList));
+}
+
+function addNotif(title, desc, type = 'green', page = null) {
+  const notif = {
+    id: Date.now() + Math.random(),
+    title, desc, type, page,
+    time: new Date().toISOString(),
+    read: false
+  };
+  _notifList.unshift(notif);
+  saveNotif();
+  updateNotifBadge();
+  renderNotifList();
+  // Tampilkan float notif
+  showFloatNotif(notif);
+}
+
+function updateNotifBadge() {
+  const unread = _notifList.filter(n => !n.read).length;
+  const badge = document.getElementById('notifBadge');
+  if (!badge) return;
+  if (unread > 0) {
+    badge.textContent = unread > 99 ? '99+' : unread;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+function renderNotifList() {
+  const el = document.getElementById('notifList');
+  if (!el) return;
+  if (_notifList.length === 0) {
+    el.innerHTML = '<div class="notif-empty">🔕 Belum ada notifikasi</div>';
+    return;
+  }
+  const icons = { green: '✅', blue: '📋', orange: '⚠️', red: '🚨' };
+  el.innerHTML = _notifList.map(n => `
+    <div class="notif-item ${n.read ? 'read' : 'unread'}" onclick="notifClick('${n.id}')">
+      <div class="notif-dot"></div>
+      <div class="notif-icon ${n.type || 'green'}">${icons[n.type] || '🔔'}</div>
+      <div class="notif-content">
+        <div class="notif-title">${n.title}</div>
+        <div class="notif-desc">${n.desc}</div>
+        <div class="notif-time">${fmtTimeAgo(n.time)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function fmtTimeAgo(iso) {
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60) return 'Baru saja';
+  if (diff < 3600) return Math.floor(diff/60) + ' menit lalu';
+  if (diff < 86400) return Math.floor(diff/3600) + ' jam lalu';
+  return Math.floor(diff/86400) + ' hari lalu';
+}
+
+function notifClick(id) {
+  const n = _notifList.find(x => String(x.id) === String(id));
+  if (!n) return;
+  n.read = true;
+  saveNotif();
+  updateNotifBadge();
+  renderNotifList();
+  if (n.page) { closeNotifPanel(); navigate(n.page); }
+}
+
+function markAllRead() {
+  _notifList.forEach(n => n.read = true);
+  saveNotif();
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function clearAllNotif() {
+  _notifList = [];
+  saveNotif();
+  updateNotifBadge();
+  renderNotifList();
+}
+
+function toggleNotifPanel(e) {
+  if (e) e.stopPropagation();
+  const panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  _notifPanelOpen = !_notifPanelOpen;
+  panel.classList.toggle('open', _notifPanelOpen);
+  if (_notifPanelOpen) {
+    renderNotifList();
+    setTimeout(() => document.addEventListener('click', notifOutsideClick), 10);
+  } else {
+    document.removeEventListener('click', notifOutsideClick);
+  }
+}
+
+function closeNotifPanel() {
+  _notifPanelOpen = false;
+  document.getElementById('notifPanel')?.classList.remove('open');
+  document.removeEventListener('click', notifOutsideClick);
+}
+
+function notifOutsideClick(e) {
+  const panel = document.getElementById('notifPanel');
+  const btn = document.getElementById('btnNotif');
+  if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    closeNotifPanel();
+  }
+}
+
+// Float notifikasi melayang di smartphone
+function showFloatNotif(notif) {
+  const container = document.getElementById('floatNotif');
+  if (!container) return;
+  const icons = { green: '✅', blue: '📋', orange: '⚠️', red: '🚨' };
+  const div = document.createElement('div');
+  div.className = 'float-notif-item ' + (notif.type || 'green');
+  div.innerHTML = `
+    <span class="float-notif-icon">${icons[notif.type] || '🔔'}</span>
+    <div class="float-notif-body">
+      <div class="float-notif-title">${notif.title}</div>
+      <div class="float-notif-desc">${notif.desc}</div>
+      <div class="float-notif-bar"><div class="float-notif-bar-fill"></div></div>
+    </div>
+    <button class="float-notif-close" onclick="dismissFloat(this)">✕</button>`;
+  container.appendChild(div);
+  // Animasi progress bar habis dalam 5 detik
+  setTimeout(() => { const bar = div.querySelector('.float-notif-progress-bar'); if(bar) bar.style.width='0%'; }, 50);
+  // Auto dismiss
+  const timer = setTimeout(() => dismissFloatEl(div), 5000);
+  div._timer = timer;
+}
+
+function dismissFloat(btn) {
+  const div = btn.closest('.float-notif-item');
+  if (div) { clearTimeout(div._timer); dismissFloatEl(div); }
+}
+
+function dismissFloatEl(div) {
+  div.style.transition = 'opacity .3s, transform .3s';
+  div.style.opacity = '0';
+  div.style.transform = 'translateX(16px)';
+  setTimeout(() => div.remove(), 300);
+}
+
+// Cek notifikasi berdasarkan data terbaru
+let _lastDashData = null;
+async function checkNotifications() {
+  if (!currentToken) return;
+  try {
+    const res = await call('getDashboard', currentToken);
+    if (res.status !== 'ok') return;
+    const d = res.data;
+    if (!_lastDashData) { _lastDashData = d; return; } // Pertama kali, simpan tanpa notif
+
+    // Cek jadwal hari ini
+    const jadwalBaru = (d.jadwalHariIni || 0) - (_lastDashData.jadwalHariIni || 0);
+    if (jadwalBaru > 0) {
+      addNotif('Jadwal Baru', jadwalBaru + ' jadwal kunjungan baru hari ini', 'blue', 'jadwal');
+    }
+
+    // Cek invoice baru (berdasarkan total transaksi)
+    const txBaru = (d.totalTransaksi || 0) - (_lastDashData.totalTransaksi || 0);
+    if (txBaru > 0) {
+      addNotif('Invoice Baru', txBaru + ' invoice baru masuk', 'green', 'transaksi');
+    }
+
+    // Cek tunggakan bertambah
+    const tunggakanBaru = (d.totalTunggakan || 0) - (_lastDashData.totalTunggakan || 0);
+    if (tunggakanBaru > 0) {
+      addNotif('Tunggakan Bertambah', 'Ada ' + rupiah(tunggakanBaru) + ' tagihan belum lunas', 'orange', 'transaksi');
+    }
+
+    _lastDashData = d;
+  } catch(e) { /* silent */ }
 }
 
 // ==================== HELPERS ====================
@@ -677,13 +1012,11 @@ function renderPagination(containerId, total, currentPage, onPageChange){
 
 // ==================== DASHBOARD ====================
 async function renderDashboard(){
-  showLoading();
   const [dRes, trxRes, jRes] = await Promise.all([
     call('getDashboard', currentToken),
     call('getTransaksi', currentToken, {}),
     call('getJadwal', currentToken, new Date().toISOString().slice(0,10))
   ]);
-  hideLoading();
   const d = dRes.status==='ok'?dRes.data:{};
   const trx = trxRes.status==='ok'?trxRes.data:[];
   const jadwal = jRes.status==='ok'?jRes.data:[];
@@ -909,7 +1242,7 @@ async function saveJadwalAdd(){
     Periode: $('fAddPeriode')?.value||''
   };
   if(!data.Tanggal_Schedule||!data.Pelanggan_ID){ toast('Lengkapi data','error'); return; }
-  showLoading(); const res=await call('saveJadwal',currentToken,data); hideLoading();
+  const res=await call('saveJadwal',currentToken,data);
   if(res.status==='ok'){ toast('Jadwal ditambahkan'); document.getElementById('jadwalAddOverlay')?.remove(); renderJadwalPage(); }
   else toast(res.message,'error');
 }
@@ -927,15 +1260,13 @@ async function openJadwalEditModal(editId){
   if(isAdmin || isOwner){ openJadwalDetail(editId); return; }
 
   // Staff: load params & checklist
-  showLoading();
-  const jenis = j.Jenis_Layanan||'Cleaning';
+    const jenis = j.Jenis_Layanan||'Cleaning';
   const jenisKey = jenis==='Pest Control'?'pest':'cleaning';
   const [paramRes, chkRes] = await Promise.all([
     call('getParameter', currentToken, jenisKey),
     call('getJadwalChecklist', currentToken, editId)
   ]);
-  hideLoading();
-  const params = paramRes.status==='ok'?paramRes.data:[];
+    const params = paramRes.status==='ok'?paramRes.data:[];
   const existingChecklist = chkRes.status==='ok'?chkRes.data:{};
 
   // Group params by kategori (filtered by kategori layanan if set)
@@ -1279,7 +1610,6 @@ function applyTrxFilter(pg){
   renderTrxTableData();
 }
 async function loadTransaksiData(){
-  showLoading();
   const [trxRes, plgRes] = await Promise.all([
     call('getTransaksi',currentToken,{}),
     pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
@@ -1527,7 +1857,7 @@ async function invJenisChange(){
   const jenis=$('invJenis').value;
   const jenisKey={Laundry:'laundry',Cleaning:'cleaning','Pest Control':'pest'}[jenis];
   if(!jenisKey) return;
-  showLoading(); await loadPricelistCache(jenisKey); hideLoading();
+  await loadPricelistCache(jenisKey);
   const prices=pricelistCache[jenisKey]||[];
   window._invPrices=prices; _invKatCounter=0;
   renderInvDetailContainer(jenis,prices);
@@ -1611,7 +1941,7 @@ async function deletePrice(id){ showConfirm('Hapus item pricelist ini?', async()
 // ==================== PARAMETER ====================
 async function renderParameterPage(){
   const j=$('_paramJenis')?.value||'cleaning';
-  showLoading(); const res=await call('getParameter',currentToken,j); hideLoading();
+  const res=await call('getParameter',currentToken,j);
   const data=res.status==='ok'?res.data:[];
   $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><h2 style="font-size:18px;">⚙ Parameter Checklist</h2><div style="display:flex;gap:8px;"><select class="form-control" id="_paramJenis" onchange="renderParameterPage()"><option value="cleaning" ${j=='cleaning'?'selected':''}>Cleaning</option><option value="pest" ${j=='pest'?'selected':''}>Pest Control</option></select><button class="btn btn-sm btn-success" onclick="openParamForm()">+ Tambah</button></div></div>
   <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Kategori</th><th>Item</th><th>Aksi</th></tr></thead><tbody>${data.map(p=>`<tr><td><span class="badge badge-blue">${escHtml(p.Kategori)}</span></td><td>${escHtml(p.Item)}</td><td><button class="btn btn-xs btn-outline" onclick="openParamForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteParam('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')}</tbody></table></div>
@@ -1628,7 +1958,7 @@ async function renderPengeluaranPage(){
   const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
   const bulanOpts=['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
   const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
-  showLoading(); const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn}); hideLoading();
+  const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn});
   if(res.status!=='ok'){ toast('Error: '+res.message,'error'); }
   pengeluaranCache=res.status==='ok'?res.data:[];
   const totalKlr=pengeluaranCache.reduce((s,p)=>s+(Number(p.Jumlah)||0),0);
@@ -1652,7 +1982,7 @@ async function renderPengeluaranPage(){
     </div></div>`;
   renderKlrTable();
 }
-async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value||'',bulan:$('fKlrBulan')?.value||'',tahun:$('fKlrTahun')?.value||''}; showLoading(); const res=await call('getPengeluaran',currentToken,filter); hideLoading(); if(res.status!=='ok'){toast('Gagal load: '+res.message,'error');} pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
+async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value||'',bulan:$('fKlrBulan')?.value||'',tahun:$('fKlrTahun')?.value||''}; const res=await call('getPengeluaran',currentToken,filter); if(res.status!=='ok'){toast('Gagal load: '+res.message,'error');} pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
 function renderKlrTable(){
   const tb=$('klrTbody');
   if(tb) tb.innerHTML=pengeluaranCache.length?pengeluaranCache.map(p=>`<tr><td>${fmtTgl(p.Tanggal)}</td><td>${badgeJenis(p.Jenis)}</td><td>${escHtml(p.Keterangan||'—')}</td><td style="font-weight:700;color:#dc2626;">${rupiah(p.Jumlah)}</td><td><button class="btn btn-xs btn-outline" onclick="openKlrForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteKlr('${escHtml(p.ID)}')">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">Belum ada data</td></tr>';
@@ -1700,7 +2030,7 @@ async function loadLaporan(){
 
 // ==================== USERS ====================
 async function renderUsersPage(){
-  showLoading(); const res=await call('getUsers',currentToken); hideLoading();
+  const res=await call('getUsers',currentToken);
   const users=res.status==='ok'?res.data:[];
   $('mainContent').innerHTML=`<h2 style="font-size:18px;margin-bottom:12px;">👥 Manajemen User</h2><button class="btn btn-sm btn-success" onclick="openUserForm()" style="margin-bottom:8px;">+ Tambah</button>
   <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${users.map(u=>`<tr><td>${escHtml(u.Username)}</td><td>${escHtml(u.Nama_Lengkap)}</td><td>${u.Role}</td><td><button class="btn btn-xs btn-outline" onclick="openUserForm('${escHtml(u.ID)}')">✏️</button></td></tr>`).join('')}</tbody></table></div>
@@ -1869,5 +2199,18 @@ window.onload=()=>{
   window.addEventListener('resize',()=>{ if($('mainContent')&&currentUser){ const page=document.querySelector('.nav-item.active')?.dataset.page; if(page) navigate(page); } });
 };
 </script>
+  <!-- Panel Notifikasi (fixed popup) -->
+  <div id="notifPanel">
+    <div class="notif-head">
+      <span class="notif-head-title">Notifikasi</span>
+      <div class="notif-head-actions">
+        <button class="notif-clear-btn" onclick="markAllRead()">Baca semua</button>
+        <button class="notif-clear-btn red" onclick="clearAllNotif()">Hapus</button>
+      </div>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+  <!-- Float notifikasi melayang -->
+  <div id="floatNotif"></div>
 </body>
 </html>
