@@ -1,117 +1,105 @@
 // ============================================================
-//  SCMS Service Worker — Surya Cleanindo Management System  
-//  v3.0 — Fixed untuk GitHub Pages PWA Android
+//  SCMS Service Worker v4
+//  Surya Cleanindo Management System
 // ============================================================
 
-const CACHE_NAME = 'scms-v3';
+const CACHE_NAME = 'scms-v4';
 
-// BASE_PATH: folder tempat sw.js berada
-// Contoh: jika sw.js di https://user.github.io/scms/sw.js
-// maka BASE_PATH = '/scms'
-const BASE_PATH = self.location.pathname.replace(/\/sw\.js$/, '') || '';
+// Deteksi base path dari lokasi sw.js
+// Contoh: /scms/sw.js → BASE = '/scms/'
+const BASE = self.location.pathname.replace('sw.js', '');
 
-// Halaman utama yang di-cache
-const SHELL_FILES = [
-  BASE_PATH + '/',
-  BASE_PATH + '/index.html',
-  BASE_PATH + '/manifest.json',
-  BASE_PATH + '/icon-192.png',
-  BASE_PATH + '/icon-512.png',
-  BASE_PATH + '/favicon-32.png',
+const SHELL = [
+  BASE + 'index.html',
+  BASE + 'manifest.json',
+  BASE + 'icon-192.png',
+  BASE + 'icon-512.png',
 ];
 
 // ── INSTALL ──────────────────────────────────────────────────
-self.addEventListener('install', event => {
-  console.log('[SW v3] Installing, BASE_PATH:', BASE_PATH);
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      // Cache satu per satu, jangan gagal total jika ada yang missing
-      return Promise.allSettled(
-        SHELL_FILES.map(url =>
-          cache.add(url).catch(e => console.warn('[SW] Skip cache:', url))
-        )
-      );
-    })
-  );
-  // Langsung aktif tanpa tunggu tab lama ditutup
+self.addEventListener('install', e => {
   self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache =>
+      Promise.allSettled(SHELL.map(url =>
+        cache.add(url).catch(() => {}) // skip jika file tidak ada
+      ))
+    )
+  );
 });
 
 // ── ACTIVATE ─────────────────────────────────────────────────
-self.addEventListener('activate', event => {
-  console.log('[SW v3] Activating...');
-  event.waitUntil(
+self.addEventListener('activate', e => {
+  e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => {
-          console.log('[SW] Delete old cache:', k);
-          return caches.delete(k);
-        })
-      )
-    )
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 // ── FETCH ────────────────────────────────────────────────────
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
 
-  // Lewati semua request ke Google / GAS / CDN eksternal
-  const isExternal = (
+  // JANGAN intercept request ke GAS atau API eksternal
+  // Biarkan browser handle langsung tanpa cache
+  if (
     url.hostname.includes('script.google.com') ||
     url.hostname.includes('googleapis.com') ||
-    url.hostname.includes('gstatic.com') ||
-    url.hostname.includes('fonts.gstatic.com') ||
-    url.hostname.includes('fonts.googleapis.com') ||
-    url.hostname.includes('cdnjs.cloudflare.com')
-  );
+    url.hostname.includes('gstatic.com')
+  ) {
+    return; // biarkan browser handle
+  }
 
-  if (isExternal) {
-    // Untuk CDN/font: coba cache dulu, fallback ke network
-    event.respondWith(
-      caches.match(event.request).then(cached => {
+  // Untuk request ke CDN (fonts, icons) - cache tapi jangan block
+  if (
+    url.hostname.includes('fonts.googleapis.com') ||
+    url.hostname.includes('fonts.gstatic.com') ||
+    url.hostname.includes('cdnjs.cloudflare.com')
+  ) {
+    e.respondWith(
+      caches.match(e.request).then(cached => {
         if (cached) return cached;
-        return fetch(event.request).then(res => {
+        return fetch(e.request).then(res => {
           if (res && res.status === 200) {
             const clone = res.clone();
-            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+            caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
           }
           return res;
-        }).catch(() => cached || new Response('', { status: 408 }));
+        }).catch(() => cached || new Response('', {status: 503}));
       })
     );
     return;
   }
 
-  // Untuk file lokal: Cache First dengan Network Update
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      // Update cache di background
-      const networkFetch = fetch(event.request).then(res => {
-        if (res && res.status === 200 && res.type !== 'opaque') {
+  // Untuk file lokal (HTML, CSS, icons) - Network first, fallback ke cache
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        // Simpan ke cache jika sukses
+        if (res && res.status === 200) {
           const clone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
         }
         return res;
-      }).catch(() => null);
-
-      // Return cache langsung jika ada, otherwise tunggu network
-      return cached || networkFetch.then(res => res || offlineFallback());
-    })
+      })
+      .catch(() => {
+        // Offline: ambil dari cache
+        return caches.match(e.request).then(cached => {
+          if (cached) return cached;
+          // Fallback ke index.html
+          return caches.match(BASE + 'index.html').then(r => r ||
+            new Response(
+              '<meta charset="utf-8"><style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f9fafb}.box{text-align:center;padding:40px 24px}.logo{font-size:48px;margin-bottom:16px}h2{color:#166534;margin-bottom:8px}p{color:#6b7280;font-size:14px}button{margin-top:20px;padding:10px 24px;background:#166534;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer}</style><div class="box"><div class="logo">📶</div><h2>Tidak Ada Koneksi</h2><p>Buka kembali saat ada internet</p><button onclick="location.reload()">Coba Lagi</button></div>',
+              {headers:{'Content-Type':'text/html;charset=utf-8'}}
+            )
+          );
+        });
+      })
   );
 });
 
-function offlineFallback() {
-  return caches.match(BASE_PATH + '/index.html')
-    .then(r => r || caches.match(BASE_PATH + '/'))
-    .then(r => r || new Response(
-      '<meta charset="utf-8"><title>Offline</title><div style="font-family:sans-serif;text-align:center;padding:60px 20px"><h2>📶 Tidak ada koneksi</h2><p>Buka kembali saat ada internet</p><button onclick="location.reload()" style="margin-top:20px;padding:10px 24px;background:#166534;color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer">🔄 Coba Lagi</button></div>',
-      { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-    ));
-}
-
 // ── MESSAGE ──────────────────────────────────────────────────
-self.addEventListener('message', event => {
-  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
