@@ -11,17 +11,13 @@
   <link rel="shortcut icon" href="favicon.ico">
 
   <!-- ===================== PWA ========================= -->
-  <link rel="manifest" href="./manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#166534">
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#166534">
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14532d">
-  <!-- Android Chrome PWA -->
-  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- iOS / Safari PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="S'Clean">
+  <meta name="apple-mobile-web-app-title" content="Surya Cleanindo">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
@@ -32,7 +28,7 @@
   <meta name="msapplication-config" content="none">
 
   <!-- General SEO/social -->
-  <meta name="application-name" content="S'Clean">
+  <meta name="application-name" content="Surya Cleanindo">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -337,7 +333,7 @@
     .param-info-box .param-chip{background:white;border:1px solid var(--green-200);border-radius:99px;padding:2px 10px;font-size:11px;color:var(--gray-700);}
 
     /* ===================== PWA INSTALL BUTTON ===================== */
-    #pwaInstallBar{display:none;position:fixed;bottom:70px;left:8px;right:8px;border-radius:14px;z-index:9990;background:linear-gradient(135deg,#14532d,#166534);color:white;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.25);animation:slideUp .3s ease;}
+    #pwaInstallBar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:linear-gradient(135deg,#14532d,#166534);color:white;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.25);animation:slideUp .3s ease;}
     #pwaInstallBar.show{display:flex;}
     #pwaInstallBar .pwa-text{flex:1;font-size:13px;font-weight:600;}
     #pwaInstallBar .pwa-text small{display:block;font-size:10px;opacity:.8;font-weight:400;}
@@ -346,7 +342,6 @@
     #pwaInstallBar .btn-pwa-install:hover{background:#dcfce7;}
     #pwaInstallBar .btn-pwa-dismiss{background:transparent;border:1px solid rgba(255,255,255,.4);color:white;border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;flex-shrink:0;}
     #pwaInstallBar .btn-pwa-dismiss:hover{background:rgba(255,255,255,.15);}
-    @media(min-width:769px){#pwaInstallBar{bottom:0;left:0;right:0;border-radius:0;}}
     /* Update available banner */
     #pwaUpdateBar{display:none;position:fixed;top:52px;left:0;right:0;z-index:9980;background:#1d4ed8;color:white;padding:8px 16px;align-items:center;gap:10px;font-size:12px;font-weight:600;}
     #pwaUpdateBar.show{display:flex;}
@@ -386,7 +381,6 @@
           <div class="user-popup-name" id="popupName">—</div>
           <div class="user-popup-role" id="popupRole">—</div>
         </div>
-        <div class="user-popup-item" id="pwaInstallMenuItem" style="display:none;" onclick="pwaInstallFromMenu()"><i class="fa-solid fa-mobile-screen-button" style="color:#16a34a;"></i> Install Aplikasi</div>
         <div class="user-popup-item danger" onclick="closeUserPopup();doLogout();"><i class="fa-solid fa-right-from-bracket"></i> Keluar</div>
       </div>
     </div>
@@ -1721,11 +1715,7 @@ let _deferredPrompt = null;
 // Register service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Deteksi base path otomatis untuk GitHub Pages
-    const swBase = location.pathname.endsWith('/') 
-      ? location.pathname 
-      : location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1);
-    navigator.serviceWorker.register(swBase + 'sw.js', { scope: swBase })
+    navigator.serviceWorker.register('./sw.js')
       .then(reg => {
         console.log('[SCMS PWA] SW registered:', reg.scope);
         // Deteksi update tersedia
@@ -1747,16 +1737,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   _deferredPrompt = e;
-  // Tampilkan tombol install di menu
-  const menuItem = document.getElementById('pwaInstallMenuItem');
-  if (menuItem) menuItem.style.display = 'flex';
   // Tampilkan install bar hanya jika belum pernah dismiss
-  // Cek dismiss: reset setiap 7 hari
-  const dismissed = localStorage.getItem('pwa_dismissed');
-  const now = Date.now();
-  if (dismissed && (now - parseInt(dismissed)) > 7 * 24 * 60 * 60 * 1000) {
-    localStorage.removeItem('pwa_dismissed');
-  }
   if (!localStorage.getItem('pwa_dismissed')) {
     setTimeout(() => {
       document.getElementById('pwaInstallBar')?.classList.add('show');
@@ -1772,59 +1753,16 @@ window.addEventListener('appinstalled', () => {
 });
 
 async function pwaInstall() {
-  if (!_deferredPrompt) {
-    // Fallback: tampilkan instruksi manual
-    showPwaManualInstall();
-    return;
-  }
+  if (!_deferredPrompt) return;
   _deferredPrompt.prompt();
   const { outcome } = await _deferredPrompt.userChoice;
   console.log('[SCMS PWA] User choice:', outcome);
-  if (outcome === 'accepted') {
-    document.getElementById('pwaInstallBar')?.classList.remove('show');
-    document.getElementById('pwaInstallMenuItem') && (document.getElementById('pwaInstallMenuItem').style.display='none');
-  }
   _deferredPrompt = null;
-}
-
-async function pwaInstallFromMenu() {
-  document.getElementById('userPopup')?.classList.remove('open');
-  if (_deferredPrompt) {
-    await pwaInstall();
-  } else {
-    showPwaManualInstall();
-  }
-}
-
-function showPwaManualInstall() {
-  const isAndroid = /android/i.test(navigator.userAgent);
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  let msg = '';
-  if (isAndroid) {
-    msg = '<b>Cara install di Android:</b><br>1. Buka di <b>Chrome</b><br>2. Ketuk menu <b>⋮</b> (titik tiga) di kanan atas<br>3. Pilih <b>"Tambahkan ke layar utama"</b> atau <b>"Install aplikasi"</b>';
-  } else if (isIOS) {
-    msg = '<b>Cara install di iPhone/iPad:</b><br>1. Buka di <b>Safari</b><br>2. Ketuk tombol <b>Share</b> (kotak dengan panah atas)<br>3. Pilih <b>"Add to Home Screen"</b>';
-  } else {
-    msg = '<b>Cara install di Desktop:</b><br>1. Di Chrome/Edge, klik ikon <b>💻 Install</b> di address bar kanan<br>2. Atau buka menu ⋮ → "Install Surya Cleanindo"';
-  }
-  document.body.insertAdjacentHTML('beforeend', \`
-    <div id="pwaGuideModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
-      <div class="modal modal-sm">
-        <div class="modal-head"><h3>📲 Install Aplikasi</h3><button class="modal-close" onclick="document.getElementById('pwaGuideModal').remove()">✕</button></div>
-        <div class="modal-body" style="text-align:center;padding:24px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">📱</div>
-          <p style="font-size:13px;line-height:1.8;color:var(--gray-700);">\${msg}</p>
-          <div style="margin-top:16px;padding:10px;background:var(--green-50);border-radius:8px;font-size:11px;color:var(--green-700);">
-            <i class="fa-solid fa-circle-info"></i> Pastikan membuka URL ini di browser Chrome (Android) atau Safari (iOS)
-          </div>
-        </div>
-        <div class="modal-foot"><button class="btn btn-sm btn-success" onclick="document.getElementById('pwaGuideModal').remove()">Mengerti</button></div>
-      </div>
-    </div>\`);
+  document.getElementById('pwaInstallBar')?.classList.remove('show');
 }
 
 function pwaDismiss() {
-  localStorage.setItem('pwa_dismissed', String(Date.now()));
+  localStorage.setItem('pwa_dismissed', '1');
   document.getElementById('pwaInstallBar')?.classList.remove('show');
 }
 
