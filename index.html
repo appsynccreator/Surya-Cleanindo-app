@@ -352,6 +352,8 @@
     .topbar-action-btn i{font-size:12px;}
     .topbar-action-btn.spinning #refreshIcon{animation:spinOnce .55s cubic-bezier(.4,0,.2,1);}
     @keyframes spinOnce{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    /* Subtle pulse saat data loading di background */
+    #btnRefresh.loading #refreshIcon{animation:spin .8s linear infinite;opacity:.6;}
 
     /* ══════════════ NOTIF BADGE ══════════════ */
     .notif-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;background:#ef4444;color:white;border-radius:99px;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 3px;border:2px solid white;pointer-events:none;line-height:1;box-shadow:0 1px 4px rgba(239,68,68,.4);}
@@ -521,6 +523,27 @@
 // ==================== STATE ====================
 let currentUser = null, currentToken = null;
 let pelangganCache = [], pricelistCache = {}, parameterCache = {}, jadwalCache = [], transaksiCache = [];
+let usersCache = [], dashboardCache = null;
+
+// ── CACHE-FIRST HELPER ──────────────────────────────────────
+// Render konten cache segera, lalu fetch & re-render di background
+async function renderWithCache(renderFn, fetchFn, onFetched) {
+  // Step 1: render cache langsung (tidak await)
+  renderFn();
+  // Step 2: fetch di background
+  const fresh = await fetchFn();
+  if (fresh && fresh.status === 'ok') {
+    onFetched(fresh.data);
+    renderFn(); // re-render dengan data baru
+  }
+}
+
+// Tandai bagian konten sedang refresh (subtle indicator)
+function setRefreshIndicator(show) {
+  const btn = document.getElementById('btnRefresh');
+  if (!btn) return;
+  btn.classList.toggle('loading', show);
+}
 let jadwalPage = 1, transaksiPage = 1;
 const PAGE_SIZE = 10;
 
@@ -1027,11 +1050,15 @@ function renderPagination(containerId, total, currentPage, onPageChange){
 
 // ==================== DASHBOARD ====================
 async function renderDashboard(){
+  // Render cache dulu jika ada
+  if (dashboardCache) _renderDashboardHTML(dashboardCache);
+  setRefreshIndicator(true);
   const [dRes, trxRes, jRes] = await Promise.all([
     call('getDashboard', currentToken),
     call('getTransaksi', currentToken, {}),
     call('getJadwal', currentToken, new Date().toISOString().slice(0,10))
   ]);
+  setRefreshIndicator(false);
   const d = dRes.status==='ok'?dRes.data:{};
   const trx = trxRes.status==='ok'?trxRes.data:[];
   const jadwal = jRes.status==='ok'?jRes.data:[];
@@ -1107,13 +1134,15 @@ async function renderJadwalPage(pg){
       <div class="pagination" id="jadwalPagination"></div></div>
       <div class="mobile-card-view" id="jadwalCardContainer"></div>
     </div></div>`;
-  // If cache exists, render immediately
+  // Render cache dulu jika ada
   if(jadwalCache.length) renderJadwalTableData();
+  setRefreshIndicator(true);
   // Fetch fresh data in background (no full-page loading spinner)
   const [jRes, plgRes] = await Promise.all([
     call('getJadwal', currentToken, 'all'),
     pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan', currentToken)
   ]);
+  setRefreshIndicator(false);
   if(plgRes.status==='ok') pelangganCache = plgRes.data;
   if(jRes.status==='ok') jadwalCache = jRes.data;
   jadwalCache.sort((a,b)=>String(b.Tanggal_Schedule||b.Tanggal||'').localeCompare(String(a.Tanggal_Schedule||a.Tanggal||'')));
@@ -1598,10 +1627,12 @@ async function renderTransaksiPage(pg){
       <div class="mobile-card-view" id="trxCardContainer"></div>
     </div></div>`;
   if(transaksiCache.length){ _trxFiltered=transaksiCache; renderTrxTableData(); }
+  setRefreshIndicator(true);
   const [trxRes, plgRes] = await Promise.all([
     call('getTransaksi',currentToken,{}),
     pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
   ]);
+  setRefreshIndicator(false);
   if(plgRes.status==='ok') pelangganCache=plgRes.data;
   if(trxRes.status==='ok') transaksiCache=trxRes.data;
   transaksiCache.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
@@ -1924,7 +1955,15 @@ async function saveInv(){
 // ==================== PELANGGAN ====================
 async function loadPelangganCache(){ const res=await call('getPelanggan',currentToken); pelangganCache=res.status==='ok'?res.data:[]; }
 async function renderPelangganPage(){
-  await loadPelangganCache();
+  // Render cache dulu jika ada
+  if (pelangganCache.length) _renderPelangganHTML();
+  setRefreshIndicator(true);
+  const res = await call('getPelanggan', currentToken);
+  setRefreshIndicator(false);
+  if (res.status === 'ok') pelangganCache = res.data;
+  _renderPelangganHTML();
+}
+function _renderPelangganHTML(){
   $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2 style="font-size:18px;font-weight:800;">👥 Pelanggan</h2><button class="btn btn-sm btn-success" onclick="openPlgForm()">+ Tambah</button></div>
   <div class="card"><div class="card-body no-pad">
     <div class="table-wrap desktop-table"><table><thead><tr><th>Nama</th><th>Alamat</th><th>Telepon</th><th>Email</th><th>Aksi</th></tr></thead><tbody>${pelangganCache.map(p=>`<tr><td style="font-weight:600;">${escHtml(p.Nama)}</td><td>${escHtml(p.Alamat_Lengkap||'—')}</td><td>${escHtml(p.Telepon||'—')}</td><td>${escHtml(p.Email||'—')}</td><td><button class="btn btn-xs btn-outline" onclick="openPlgForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deletePlg('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Kosong</td></tr>'}</tbody></table></div>
@@ -1942,8 +1981,16 @@ async function deletePlg(id){ showConfirm('Hapus pelanggan ini?', async()=>{ sho
 // ==================== PRICELIST ====================
 async function renderPricelistPage(){
   const jenis=$('_priceJenis')?.value||'laundry';
-  showLoading(); const res=await call('getPricelist',currentToken,jenis); hideLoading();
+  // Cache-first: render cache dulu
+  if (pricelistCache[jenis]?.length) _renderPricelistHTML(jenis, pricelistCache[jenis]);
+  setRefreshIndicator(true);
+  const res=await call('getPricelist',currentToken,jenis);
+  setRefreshIndicator(false);
   const data=res.status==='ok'?res.data:[];
+  if (res.status==='ok') pricelistCache[jenis]=data;
+  _renderPricelistHTML(jenis, data || pricelistCache[jenis] || []);
+}
+function _renderPricelistHTML(jenis, data){
   $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><h2 style="font-size:18px;">🏷 Pricelist</h2><div style="display:flex;gap:8px;"><select class="form-control" id="_priceJenis" onchange="renderPricelistPage()"><option value="laundry" ${jenis=='laundry'?'selected':''}>Laundry</option><option value="cleaning" ${jenis=='cleaning'?'selected':''}>Cleaning</option><option value="pest" ${jenis=='pest'?'selected':''}>Pest Control</option></select><button class="btn btn-sm btn-success" onclick="openPriceForm()">+ Tambah</button></div></div>
   <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Nama</th><th>Harga</th><th>Satuan</th><th>Aksi</th></tr></thead><tbody>${data.map(p=>`<tr><td>${escHtml(p.Nama_Item||p.Nama_Paket)}</td><td>${rupiah(p.Harga_Satuan||p.Harga)}</td><td>${escHtml(p.Satuan||'—')}</td><td><button class="btn btn-xs btn-outline" onclick="openPriceForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deletePrice('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')}</tbody></table></div>
   <div class="mobile-card-view">${data.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Nama_Item||p.Nama_Paket)}</span></div><div class="card-row"><span class="card-row-label">Harga</span><span>${rupiah(p.Harga_Satuan||p.Harga)}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openPriceForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deletePrice('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')}</div></div></div>`;
@@ -1956,8 +2003,15 @@ async function deletePrice(id){ showConfirm('Hapus item pricelist ini?', async()
 // ==================== PARAMETER ====================
 async function renderParameterPage(){
   const j=$('_paramJenis')?.value||'cleaning';
+  if (parameterCache[j]) _renderParamHTML(j, parameterCache[j]);
+  setRefreshIndicator(true);
   const res=await call('getParameter',currentToken,j);
+  setRefreshIndicator(false);
   const data=res.status==='ok'?res.data:[];
+  parameterCache[j]=data;
+  _renderParamHTML(j, data);
+}
+function _renderParamHTML(j, data){
   $('mainContent').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:12px;"><h2 style="font-size:18px;">⚙ Parameter Checklist</h2><div style="display:flex;gap:8px;"><select class="form-control" id="_paramJenis" onchange="renderParameterPage()"><option value="cleaning" ${j=='cleaning'?'selected':''}>Cleaning</option><option value="pest" ${j=='pest'?'selected':''}>Pest Control</option></select><button class="btn btn-sm btn-success" onclick="openParamForm()">+ Tambah</button></div></div>
   <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Kategori</th><th>Item</th><th>Aksi</th></tr></thead><tbody>${data.map(p=>`<tr><td><span class="badge badge-blue">${escHtml(p.Kategori)}</span></td><td>${escHtml(p.Item)}</td><td><button class="btn btn-xs btn-outline" onclick="openParamForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteParam('${escHtml(p.ID)}')">🗑</button></td></tr>`).join('')}</tbody></table></div>
   <div class="mobile-card-view">${data.map(p=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(p.Kategori)}</span></div><div class="card-row"><span class="card-row-label">Item</span><span>${escHtml(p.Item)}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openParamForm('${escHtml(p.ID)}')">Edit</button><button class="btn btn-xs btn-danger" onclick="deleteParam('${escHtml(p.ID)}')">Hapus</button></div></div>`).join('')}</div></div></div>`;
@@ -1971,6 +2025,8 @@ async function deleteParam(id){ showConfirm('Hapus parameter ini?', async()=>{ s
 let pengeluaranCache=[];
 async function renderPengeluaranPage(){
   const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
+  // Render cache dulu
+  if (pengeluaranCache.length) renderKlrTable();
   const bulanOpts=['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
   const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
   const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn});
@@ -2045,8 +2101,15 @@ async function loadLaporan(){
 
 // ==================== USERS ====================
 async function renderUsersPage(){
+  if (usersCache.length) _renderUsersHTML(usersCache);
+  setRefreshIndicator(true);
   const res=await call('getUsers',currentToken);
-  const users=res.status==='ok'?res.data:[];
+  setRefreshIndicator(false);
+  if(res.status==='ok') usersCache=res.data;
+  _renderUsersHTML(usersCache);
+}
+function _renderUsersHTML(users){
+  window._userData=users;
   $('mainContent').innerHTML=`<h2 style="font-size:18px;margin-bottom:12px;">👥 Manajemen User</h2><button class="btn btn-sm btn-success" onclick="openUserForm()" style="margin-bottom:8px;">+ Tambah</button>
   <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>Username</th><th>Nama</th><th>Role</th><th>Aksi</th></tr></thead><tbody>${users.map(u=>`<tr><td>${escHtml(u.Username)}</td><td>${escHtml(u.Nama_Lengkap)}</td><td>${u.Role}</td><td><button class="btn btn-xs btn-outline" onclick="openUserForm('${escHtml(u.ID)}')">✏️</button></td></tr>`).join('')}</tbody></table></div>
   <div class="mobile-card-view">${users.map(u=>`<div class="data-card"><div class="card-header"><span class="card-title">${escHtml(u.Username)}</span></div><div class="card-row"><span class="card-row-label">Nama</span><span>${escHtml(u.Nama_Lengkap)}</span></div><div class="card-row"><span class="card-row-label">Role</span><span>${u.Role}</span></div><div class="card-actions"><button class="btn btn-xs btn-outline" onclick="openUserForm('${escHtml(u.ID)}')">Edit</button></div></div>`).join('')}</div></div></div>`;
