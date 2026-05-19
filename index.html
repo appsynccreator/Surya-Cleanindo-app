@@ -2408,75 +2408,213 @@ async function generateInvoicePdfBlob(txId){
   const JSPDF = getJsPDF();
 
   if(isLaundry){
-    // ── THERMAL: 58mm wide (57mm + 1mm bleed), portrait ──────
-    // jsPDF unit: mm. Paper: 58 x 120mm (auto-extend nanti)
-    const W = 58, MARGIN = 3;
-    const doc = new JSPDF({ unit:'mm', format:[W,200], orientation:'portrait' });
-    let y = MARGIN;
-    const lineH = 4;
-    const center = x => (W/2);
+    // ── THERMAL: 58mm wide, tinggi dinamis ───────────────────
+    // Hitung estimasi tinggi dulu, baru buat dokumen dengan ukuran tepat
+    const W = 58, MARGIN = 4;
+    const lh = 5.5; // line height mm
 
-    // Helpers
-    const txt = (s,x,yy,opts={}) => { doc.text(String(s||''),x,yy,opts); };
-    const line = (yy) => { doc.setDrawColor(180); doc.line(MARGIN,yy,W-MARGIN,yy); };
+    // Estimasi baris konten
+    let estLines = 10; // header + info dasar
+    if(tx.Tanggal_Selesai) estLines += 1;
+    estLines += 2; // separator + items header
+    estLines += Math.max(details.length * 1.5, 1);
+    estLines += 6; // total + status + footer
+    const estH = MARGIN + (estLines * lh) + MARGIN + 10;
+    const pageH = Math.max(80, Math.ceil(estH));
+
+    const doc = new JSPDF({ unit:'mm', format:[W, pageH], orientation:'portrait' });
+    let y = MARGIN + 3; // mulai sedikit turun dari atas
+
     const bold = (on) => doc.setFont('helvetica', on?'bold':'normal');
     const size = (s) => doc.setFontSize(s);
+    const centerX = W / 2;
 
-    // === Header ===
-    size(10); bold(true); doc.setTextColor(20,83,45);
-    txt('SURYA CLEANINDO', center(), y, {align:'center'}); y+=lineH;
-    size(7); bold(false); doc.setTextColor(100,100,100);
-    txt('Laundry • Cleaning • Pest Control', center(), y, {align:'center'}); y+=lineH+1;
+    // Helper teks (selalu string)
+    const txt = (s, x, yy, opts={}) => {
+      const str = String(s == null ? '' : s);
+      if(str) doc.text(str, x, yy, opts);
+    };
+    const hLine = (yy) => {
+      doc.setDrawColor(160,160,160);
+      doc.setLineWidth(0.2);
+      doc.line(MARGIN, yy, W-MARGIN, yy);
+    };
+    const dLine = (yy) => {
+      // garis putus-putus
+      doc.setDrawColor(160,160,160);
+      doc.setLineWidth(0.2);
+      for(let x=MARGIN; x<W-MARGIN; x+=2){
+        doc.line(x, yy, Math.min(x+1, W-MARGIN), yy);
+      }
+    };
+
+    // === HEADER ===
+    bold(true); size(11); doc.setTextColor(20,83,45);
+    txt('SURYA CLEANINDO', centerX, y, {align:'center'}); y += lh;
+    bold(false); size(7); doc.setTextColor(100,100,100);
+    txt('Laundry • Cleaning • Pest Control', centerX, y, {align:'center'}); y += lh;
     doc.setTextColor(0,0,0);
 
-    line(y); y+=2;
+    dLine(y); y += 3;
 
-    size(7); bold(false);
-    txt('No  : '+tx.ID, MARGIN, y); y+=lineH;
-    txt('Tgl : '+String(tx.Tanggal_Masuk||'').substring(0,10), MARGIN, y); y+=lineH;
-    if(tx.Tanggal_Selesai) { txt('Selesai: '+fmtTgl(tx.Tanggal_Selesai), MARGIN, y); y+=lineH; }
-    bold(true);
-    txt('Plg : '+(plgFull.Nama||tx.Pelanggan_ID||'—'), MARGIN, y); y+=lineH;
-    bold(false);
-    txt('Layanan: '+tx.Jenis, MARGIN, y); y+=lineH;
+    // === INFO ===
+    size(8); bold(false);
 
-    line(y); y+=2;
+    const infoLeft  = MARGIN;
+    const infoRight = W - MARGIN;
 
-    // === Detail Items ===
-    size(7); bold(true);
-    txt('Item', MARGIN, y); txt('Subtotal', W-MARGIN, y, {align:'right'}); y+=lineH;
-    bold(false); line(y); y+=2;
+    const rowInfo = (label, val) => {
+      bold(false); doc.setTextColor(100,100,100); size(7);
+      txt(label, infoLeft, y);
+      bold(true); doc.setTextColor(0,0,0); size(8);
+      // wrap val jika panjang
+      const maxW = infoRight - infoLeft - 18;
+      const lines = doc.splitTextToSize(String(val||'—'), maxW);
+      lines.forEach((ln, i) => {
+        txt(ln, infoRight, y + (i * lh), {align:'right'});
+      });
+      y += Math.max(lh, lines.length * lh);
+    };
 
-    details.forEach(d=>{
-      const label = d.Nama_Item+' x'+d.Jumlah;
-      // wrap long label
-      const wrapped = doc.splitTextToSize(label, W-MARGIN-22);
-      wrapped.forEach((ln,i)=>{ txt(ln, MARGIN, y); if(i===0) txt(rupiahPdf(d.Subtotal), W-MARGIN, y, {align:'right'}); y+=lineH; });
-    });
-    if(!details.length){ txt('(tidak ada item)', MARGIN, y); y+=lineH; }
+    rowInfo('No.', tx.ID);
+    rowInfo('Tanggal', String(tx.Tanggal_Masuk||'').substring(0,10));
+    if(tx.Tanggal_Selesai) rowInfo('Selesai', fmtTgl(tx.Tanggal_Selesai));
+    rowInfo('Pelanggan', plgFull.Nama||tx.Pelanggan_ID||'—');
+    rowInfo('Layanan', tx.Jenis||'—');
 
-    line(y); y+=2;
+    dLine(y); y += 3;
 
-    // === Total ===
-    bold(true); size(9);
-    txt('TOTAL', MARGIN, y); txt(rupiahPdf(tx.Total), W-MARGIN, y, {align:'right'}); y+=lineH;
-    bold(false); size(7);
-    doc.setTextColor(tx.Status_Bayar==='Lunas'?22:220, tx.Status_Bayar==='Lunas'?163:38, tx.Status_Bayar==='Lunas'?74:38);
-    txt('Status: '+tx.Status_Bayar, MARGIN, y); y+=lineH;
+    // === HEADER ITEMS ===
+    bold(true); size(7.5); doc.setTextColor(0,0,0);
+    txt('Item', infoLeft, y);
+    txt('Subtotal', infoRight, y, {align:'right'});
+    y += lh;
+    hLine(y); y += 2.5;
+
+    // === ITEMS ===
+    bold(false); size(8);
+    if(details.length){
+      details.forEach(d => {
+        const label = (d.Nama_Item||'—') + ' x' + (d.Jumlah||1);
+        const maxItemW = (W - 2*MARGIN) * 0.6;
+        const wrapped = doc.splitTextToSize(label, maxItemW);
+        wrapped.forEach((ln, i) => {
+          doc.setTextColor(0,0,0);
+          txt(ln, infoLeft, y + (i * lh));
+        });
+        // Subtotal di sebelah kanan, rata kanan, sejajar baris pertama
+        bold(true); doc.setTextColor(20,83,45);
+        txt(rupiahPdf(d.Subtotal), infoRight, y, {align:'right'});
+        bold(false); doc.setTextColor(0,0,0);
+        y += wrapped.length * lh + 1;
+      });
+    } else {
+      doc.setTextColor(150,150,150);
+      txt('(tidak ada item)', centerX, y, {align:'center'});
+      y += lh;
+      doc.setTextColor(0,0,0);
+    }
+
+    dLine(y); y += 3;
+
+    // === TOTAL ===
+    bold(true); size(10); doc.setTextColor(0,0,0);
+    txt('TOTAL', infoLeft, y);
+    doc.setTextColor(20,83,45);
+    txt(rupiahPdf(tx.Total), infoRight, y, {align:'right'});
+    y += lh + 1;
+
+    // Status
+    const isLunas = tx.Status_Bayar === 'Lunas';
+    bold(false); size(8);
+    doc.setTextColor(isLunas ? 22 : 220, isLunas ? 163 : 38, isLunas ? 74 : 38);
+    txt('● ' + (tx.Status_Bayar||'—'), centerX, y, {align:'center'});
+    y += lh;
     doc.setTextColor(0,0,0);
 
-    line(y); y+=2;
+    dLine(y); y += 3;
 
-    // === Footer ===
-    size(6); doc.setTextColor(120,120,120);
-    txt('Terima kasih!', center(), y, {align:'center'}); y+=lineH;
-    txt(new Date().toLocaleDateString('id-ID'), center(), y, {align:'center'}); y+=lineH;
+    // === FOOTER ===
+    size(7); doc.setTextColor(120,120,120); bold(false);
+    txt('Terima kasih telah mempercayai kami!', centerX, y, {align:'center'}); y += lh;
+    txt(new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'}), centerX, y, {align:'center'}); y += lh + 2;
 
-    // Trim paper height
-    const finalH = y+MARGIN;
-    doc.internal.pageSize.height = finalH;
+    // Potong halaman tepat di y saat ini (recreate dengan tinggi final)
+    // jsPDF v2 tidak mendukung resize setelah dibuat, jadi kita pakai trick:
+    // buat ulang dokumen dengan ukuran yang tepat
+    const finalH = Math.ceil(y + MARGIN);
+    const doc2 = new JSPDF({ unit:'mm', format:[W, finalH], orientation:'portrait' });
 
-    return doc.output('blob');
+    // Salin semua halaman dari doc ke doc2
+    // Cara termudah: export internal pages
+    const pages = doc.internal.pages;
+    // Karena jsPDF internal API bervariasi, gunakan pendekatan: render ulang konten ke doc2
+    // Reset dan render ulang ke doc2
+    let y2 = MARGIN + 3;
+
+    const bold2 = (on) => doc2.setFont('helvetica', on?'bold':'normal');
+    const size2 = (s) => doc2.setFontSize(s);
+    const txt2 = (s, x, yy, opts={}) => { const str=String(s==null?'':s); if(str) doc2.text(str,x,yy,opts); };
+    const dLine2 = (yy) => { doc2.setDrawColor(160,160,160); doc2.setLineWidth(0.2); for(let x=MARGIN;x<W-MARGIN;x+=2){doc2.line(x,yy,Math.min(x+1,W-MARGIN),yy);} };
+    const hLine2 = (yy) => { doc2.setDrawColor(160,160,160); doc2.setLineWidth(0.2); doc2.line(MARGIN,yy,W-MARGIN,yy); };
+
+    bold2(true); size2(11); doc2.setTextColor(20,83,45);
+    txt2('SURYA CLEANINDO', centerX, y2, {align:'center'}); y2+=lh;
+    bold2(false); size2(7); doc2.setTextColor(100,100,100);
+    txt2('Laundry • Cleaning • Pest Control', centerX, y2, {align:'center'}); y2+=lh;
+    doc2.setTextColor(0,0,0);
+    dLine2(y2); y2+=3;
+
+    const rowInfo2 = (label, val) => {
+      bold2(false); doc2.setTextColor(100,100,100); size2(7);
+      txt2(label, MARGIN, y2);
+      bold2(true); doc2.setTextColor(0,0,0); size2(8);
+      const lines = doc2.splitTextToSize(String(val||'—'), (W-MARGIN)*0.55);
+      lines.forEach((ln,i) => txt2(ln, W-MARGIN, y2+(i*lh), {align:'right'}));
+      y2 += Math.max(lh, lines.length*lh);
+    };
+    rowInfo2('No.', tx.ID);
+    rowInfo2('Tanggal', String(tx.Tanggal_Masuk||'').substring(0,10));
+    if(tx.Tanggal_Selesai) rowInfo2('Selesai', fmtTgl(tx.Tanggal_Selesai));
+    rowInfo2('Pelanggan', plgFull.Nama||tx.Pelanggan_ID||'—');
+    rowInfo2('Layanan', tx.Jenis||'—');
+    dLine2(y2); y2+=3;
+
+    bold2(true); size2(7.5); doc2.setTextColor(0,0,0);
+    txt2('Item', MARGIN, y2); txt2('Subtotal', W-MARGIN, y2, {align:'right'}); y2+=lh;
+    hLine2(y2); y2+=2.5;
+
+    bold2(false); size2(8);
+    if(details.length){
+      details.forEach(d=>{
+        const label=(d.Nama_Item||'—')+' x'+(d.Jumlah||1);
+        const maxItemW=(W-2*MARGIN)*0.6;
+        const wrapped=doc2.splitTextToSize(label,maxItemW);
+        wrapped.forEach((ln,i)=>{ doc2.setTextColor(0,0,0); txt2(ln,MARGIN,y2+(i*lh)); });
+        bold2(true); doc2.setTextColor(20,83,45);
+        txt2(rupiahPdf(d.Subtotal),W-MARGIN,y2,{align:'right'});
+        bold2(false); doc2.setTextColor(0,0,0);
+        y2+=wrapped.length*lh+1;
+      });
+    } else {
+      doc2.setTextColor(150,150,150); txt2('(tidak ada item)',centerX,y2,{align:'center'}); y2+=lh; doc2.setTextColor(0,0,0);
+    }
+    dLine2(y2); y2+=3;
+
+    bold2(true); size2(10); doc2.setTextColor(0,0,0);
+    txt2('TOTAL',MARGIN,y2);
+    doc2.setTextColor(20,83,45); txt2(rupiahPdf(tx.Total),W-MARGIN,y2,{align:'right'}); y2+=lh+1;
+    bold2(false); size2(8);
+    doc2.setTextColor(isLunas?22:220, isLunas?163:38, isLunas?74:38);
+    txt2('● '+(tx.Status_Bayar||'—'),centerX,y2,{align:'center'}); y2+=lh;
+    doc2.setTextColor(0,0,0);
+    dLine2(y2); y2+=3;
+
+    size2(7); doc2.setTextColor(120,120,120); bold2(false);
+    txt2('Terima kasih telah mempercayai kami!',centerX,y2,{align:'center'}); y2+=lh;
+    txt2(new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}),centerX,y2,{align:'center'});
+
+    return doc2.output('blob');
 
   } else {
     // ── A4 INVOICE (Cleaning / Pest Control) ─────────────────
