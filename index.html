@@ -551,20 +551,59 @@ let currentUser = null, currentToken = null;
 let pelangganCache = [], pricelistCache = {}, parameterCache = {}, jadwalCache = [], transaksiCache = [];
 let usersCache = [], dashboardCache = null;
 
+// ══════════════════════════════════════════════════════════════
+//  CACHE LAYER — localStorage + in-memory, stale-while-revalidate
+//  Prinsip: tampilkan data lama LANGSUNG, fetch baru di background
+// ══════════════════════════════════════════════════════════════
+const CACHE_TTL = 5 * 60 * 1000; // 5 menit
+
+function lsKey(k){ return 'scms_' + (currentUser?.id||'anon') + '_' + k; }
+
+function lsSave(key, data){
+  try { localStorage.setItem(lsKey(key), JSON.stringify({ ts: Date.now(), data })); } catch(_){}
+}
+function lsLoad(key){
+  try {
+    const raw = localStorage.getItem(lsKey(key));
+    if(!raw) return null;
+    const obj = JSON.parse(raw);
+    if(!obj || !obj.data) return null;
+    return obj; // { ts, data }
+  } catch(_){ return null; }
+}
+function lsClear(key){ try{ localStorage.removeItem(lsKey(key)); }catch(_){} }
+
+// Hydrate semua cache dari localStorage saat startup (sebelum fetch)
+function hydrateFromStorage(){
+  const trx = lsLoad('transaksi');
+  if(trx) transaksiCache = trx.data;
+  const plg = lsLoad('pelanggan');
+  if(plg) pelangganCache = plg.data;
+  const jdw = lsLoad('jadwal');
+  if(jdw) jadwalCache = jdw.data;
+}
+
+// Background fetch + simpan ke cache, lalu callback
+async function bgFetch(key, apiFn, callback){
+  try {
+    const res = await apiFn();
+    if(res && res.status === 'ok'){
+      lsSave(key, res.data);
+      callback(res.data);
+    }
+  } catch(_){}
+}
+
 // ── CACHE-FIRST HELPER ──────────────────────────────────────
-// Render konten cache segera, lalu fetch & re-render di background
 async function renderWithCache(renderFn, fetchFn, onFetched) {
-  // Step 1: render cache langsung (tidak await)
   renderFn();
-  // Step 2: fetch di background
   const fresh = await fetchFn();
   if (fresh && fresh.status === 'ok') {
     onFetched(fresh.data);
-    renderFn(); // re-render dengan data baru
+    renderFn();
   }
 }
 
-// Tandai bagian konten sedang refresh (subtle indicator)
 function setRefreshIndicator(show) {
   const btn = document.getElementById('btnRefresh');
   if (!btn) return;
@@ -697,16 +736,16 @@ function initApp(){
   if($('popupName')) $('popupName').textContent=currentUser.nama;
   if($('popupRole')) $('popupRole').textContent=currentUser.role;
   applyRoleUI(); startClock();
+  // Hydrate cache dari localStorage SEBELUM render apapun
+  hydrateFromStorage();
   startAutoRefresh();
   updateNotifBadge();
   renderNotifList();
-  // Notif selamat datang
   setTimeout(() => addNotif('Selamat Datang 👋', 'Login sebagai ' + (currentUser.nama || currentUser.username), 'green'), 1000); buildMoreDrawer(); navigate('dashboard');
   document.querySelectorAll('.bottom-nav-item').forEach(el=>{
     if(el.classList.contains('nav-admin-owner-only') && !['Owner','Admin'].includes(currentUser.role)) el.style.display='none';
     if(el.classList.contains('nav-owner-only') && currentUser.role!=='Owner') el.style.display='none';
   });
-  // Close user popup on outside click
   document.addEventListener('click', e=>{
     const popup=$('userPopup'); const badge=document.querySelector('.user-badge');
     if(popup&&badge&&!popup.contains(e.target)&&!badge.contains(e.target)) popup.classList.remove('open');
@@ -1160,19 +1199,26 @@ async function renderJadwalPage(pg){
       <div class="pagination" id="jadwalPagination"></div></div>
       <div class="mobile-card-view" id="jadwalCardContainer"></div>
     </div></div>`;
-  // Render cache dulu jika ada
+  // ── Step 1: tampilkan cache in-memory atau localStorage LANGSUNG ──
+  if(!jadwalCache.length){ const s=lsLoad('jadwal'); if(s) jadwalCache=s.data; }
+  if(!pelangganCache.length){ const s=lsLoad('pelanggan'); if(s) pelangganCache=s.data; }
   if(jadwalCache.length) renderJadwalTableData();
   setRefreshIndicator(true);
-  // Fetch fresh data in background (no full-page loading spinner)
+  // ── Step 2: fetch fresh di background ──
   const [jRes, plgRes] = await Promise.all([
     call('getJadwal', currentToken, 'all'),
     pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan', currentToken)
   ]);
   setRefreshIndicator(false);
-  if(plgRes.status==='ok') pelangganCache = plgRes.data;
-  if(jRes.status==='ok') jadwalCache = jRes.data;
-  jadwalCache.sort((a,b)=>String(b.Tanggal_Schedule||b.Tanggal||'').localeCompare(String(a.Tanggal_Schedule||a.Tanggal||'')));
-  renderJadwalTableData();
+  if(plgRes.status==='ok'){ pelangganCache=plgRes.data; lsSave('pelanggan',pelangganCache); }
+  if(jRes.status==='ok'){
+    const nd=jRes.data;
+    nd.sort((a,b)=>String(b.Tanggal_Schedule||b.Tanggal||'').localeCompare(String(a.Tanggal_Schedule||a.Tanggal||'')));
+    lsSave('jadwal',nd);
+    const sameLen=nd.length===jadwalCache.length, sameFirst=nd[0]?.ID===jadwalCache[0]?.ID;
+    jadwalCache=nd;
+    if(!sameLen||!sameFirst) renderJadwalTableData();
+  }
 }
 
 let _jadwalFiltered = [];
@@ -1651,7 +1697,7 @@ async function renderTransaksiPage(pg){
         <select class="form-control" id="fStatus" onchange="applyTrxFilter()"><option value="">Semua Status</option><option>Belum Bayar</option><option>Lunas</option></select>
         <select class="form-control" id="fBulan" onchange="applyTrxFilter()">${bulanOpts}</select>
         <select class="form-control" id="fTahun" onchange="applyTrxFilter()">${tahunOpts}</select>
-        <button class="btn btn-sm btn-outline" onclick="loadTransaksiData()" title="Refresh data"><i class="fa-solid fa-refresh"></i></button>
+        <button class="btn btn-sm btn-outline" onclick="loadTransaksiData(true)" title="Refresh data"><i class="fa-solid fa-refresh"></i></button>
       </div>
     </div>
     <div class="card"><div class="card-body no-pad">
@@ -1659,17 +1705,14 @@ async function renderTransaksiPage(pg){
       <div class="pagination" id="trxPagination"></div></div>
       <div class="mobile-card-view" id="trxCardContainer"></div>
     </div></div>`;
-  if(transaksiCache.length){ _trxFiltered=transaksiCache; renderTrxTableData(); }
+  // ── Step 1: tampilkan cache in-memory atau localStorage LANGSUNG ──
+  if(!transaksiCache.length){ const s=lsLoad('transaksi'); if(s) transaksiCache=s.data; }
+  if(!pelangganCache.length){ const s=lsLoad('pelanggan'); if(s) pelangganCache=s.data; }
+  if(transaksiCache.length) applyTrxFilter();
+  // ── Step 2: fetch baru di background ──
   setRefreshIndicator(true);
-  const [trxRes, plgRes] = await Promise.all([
-    call('getTransaksi',currentToken,{}),
-    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
-  ]);
+  await loadTransaksiData(false);
   setRefreshIndicator(false);
-  if(plgRes.status==='ok') pelangganCache=plgRes.data;
-  if(trxRes.status==='ok') transaksiCache=trxRes.data;
-  transaksiCache.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
-  applyTrxFilter();
 }
 let _trxFiltered=[];
 function applyTrxFilter(pg){
@@ -1688,16 +1731,21 @@ function applyTrxFilter(pg){
   });
   renderTrxTableData();
 }
-async function loadTransaksiData(){
-  const [trxRes, plgRes] = await Promise.all([
-    call('getTransaksi',currentToken,{}),
-    pelangganCache.length ? Promise.resolve({status:'ok',data:pelangganCache}) : call('getPelanggan',currentToken)
-  ]);
+async function loadTransaksiData(forceRefresh=false){
+  const plgProm = (!pelangganCache.length||forceRefresh)
+    ? call('getPelanggan',currentToken)
+    : Promise.resolve({status:'ok',data:pelangganCache});
+  const [trxRes, plgRes] = await Promise.all([call('getTransaksi',currentToken,{}), plgProm]);
   hideLoading();
-  if(plgRes.status==='ok') pelangganCache=plgRes.data;
-  if(trxRes.status==='ok') transaksiCache=trxRes.data;
-  transaksiCache.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
-  applyTrxFilter();
+  if(plgRes.status==='ok'){ pelangganCache=plgRes.data; lsSave('pelanggan',pelangganCache); }
+  if(trxRes.status==='ok'){
+    const nd=trxRes.data;
+    nd.sort((a,b)=>String(b.Tanggal_Masuk||'').localeCompare(String(a.Tanggal_Masuk||'')));
+    lsSave('transaksi',nd);
+    const sameLen=nd.length===transaksiCache.length, sameFirst=nd[0]?.ID===transaksiCache[0]?.ID;
+    transaksiCache=nd;
+    if(!sameLen||!sameFirst||forceRefresh||!_trxFiltered.length) applyTrxFilter();
+  }
 }
 function renderTrxTableData(pg){
   transaksiPage = pg||transaksiPage||1;
@@ -2043,19 +2091,24 @@ async function saveInv(){
   showLoading();
   const res=txData.Jadwal_ID?await call('createInvoiceFromJadwal',currentToken,txData,details):await call('saveTransaksi',currentToken,txData,details);
   hideLoading();
-  if(res.status==='ok'){ toast('Invoice disimpan'); document.getElementById('invModalOverlay')?.remove(); if(jadwalId) renderJadwalPage(); else loadTransaksiData(); }
+  if(res.status==='ok'){
+    toast('Invoice disimpan');
+    document.getElementById('invModalOverlay')?.remove();
+    lsClear('transaksi'); // invalidasi cache agar data terbaru langsung di-fetch
+    if(jadwalId){ lsClear('jadwal'); renderJadwalPage(); } else loadTransaksiData(true);
+  }
   else toast(res.message,'error');
 }
 
 // ==================== PELANGGAN ====================
-async function loadPelangganCache(){ const res=await call('getPelanggan',currentToken); pelangganCache=res.status==='ok'?res.data:[]; }
+async function loadPelangganCache(){ const s=lsLoad('pelanggan'); if(s) pelangganCache=s.data; const res=await call('getPelanggan',currentToken); if(res.status==='ok'){ pelangganCache=res.data; lsSave('pelanggan',pelangganCache); } }
 async function renderPelangganPage(){
-  // Render cache dulu jika ada
-  if (pelangganCache.length) _renderPelangganHTML();
+  if(!pelangganCache.length){ const s=lsLoad('pelanggan'); if(s) pelangganCache=s.data; }
+  if(pelangganCache.length) _renderPelangganHTML();
   setRefreshIndicator(true);
   const res = await call('getPelanggan', currentToken);
   setRefreshIndicator(false);
-  if (res.status === 'ok') pelangganCache = res.data;
+  if(res.status==='ok'){ pelangganCache=res.data; lsSave('pelanggan',pelangganCache); }
   _renderPelangganHTML();
 }
 function _renderPelangganHTML(){
@@ -2070,19 +2123,19 @@ function openPlgForm(id=null){
   const html=`<div id="plgModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Pelanggan</h3><button class="modal-close" onclick="document.getElementById('plgModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fPlgId" value="${p.ID||''}"><div class="form-grid"><div class="form-group"><label>Nama</label><input class="form-control" id="fPlgNama" value="${escHtml(p.Nama||'')}"></div><div class="form-group"><label>Telepon</label><input class="form-control" id="fPlgTelepon" value="${escHtml(p.Telepon||'')}"></div></div><div class="form-group"><label>Email</label><input class="form-control" type="email" id="fPlgEmail" value="${escHtml(p.Email||'')}"></div><div class="form-group"><label>Alamat</label><textarea class="form-control" id="fPlgAlamat">${escHtml(p.Alamat_Lengkap||'')}</textarea></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('plgModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="savePlg()">💾 Simpan</button></div></div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
 }
-async function savePlg(){ const d={ID:$('fPlgId').value,Nama:$('fPlgNama').value,Telepon:$('fPlgTelepon').value,Email:$('fPlgEmail').value,Alamat_Lengkap:$('fPlgAlamat').value}; showLoading(); const res=await call('savePelanggan',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('plgModal')?.remove(); renderPelangganPage(); } else toast(res.message,'error'); }
-async function deletePlg(id){ showConfirm('Hapus pelanggan ini?', async()=>{ showLoading(); await call('deletePelanggan',currentToken,id); hideLoading(); renderPelangganPage(); }, {title:'Hapus Pelanggan', yesLabel:'Hapus', danger:true}); }
+async function savePlg(){ const d={ID:$('fPlgId').value,Nama:$('fPlgNama').value,Telepon:$('fPlgTelepon').value,Email:$('fPlgEmail').value,Alamat_Lengkap:$('fPlgAlamat').value}; showLoading(); const res=await call('savePelanggan',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('plgModal')?.remove(); lsClear('pelanggan'); renderPelangganPage(); } else toast(res.message,'error'); }
+async function deletePlg(id){ showConfirm('Hapus pelanggan ini?', async()=>{ showLoading(); await call('deletePelanggan',currentToken,id); hideLoading(); lsClear('pelanggan'); renderPelangganPage(); }, {title:'Hapus Pelanggan', yesLabel:'Hapus', danger:true}); }
 
 // ==================== PRICELIST ====================
 async function renderPricelistPage(){
   const jenis=$('_priceJenis')?.value||'laundry';
-  // Cache-first: render cache dulu
-  if (pricelistCache[jenis]?.length) _renderPricelistHTML(jenis, pricelistCache[jenis]);
+  if(!pricelistCache[jenis]?.length){ const s=lsLoad('pricelist_'+jenis); if(s) pricelistCache[jenis]=s.data; }
+  if(pricelistCache[jenis]?.length) _renderPricelistHTML(jenis, pricelistCache[jenis]);
   setRefreshIndicator(true);
   const res=await call('getPricelist',currentToken,jenis);
   setRefreshIndicator(false);
   const data=res.status==='ok'?res.data:[];
-  if (res.status==='ok') pricelistCache[jenis]=data;
+  if(res.status==='ok'){ pricelistCache[jenis]=data; lsSave('pricelist_'+jenis, data); }
   _renderPricelistHTML(jenis, data || pricelistCache[jenis] || []);
 }
 function _renderPricelistHTML(jenis, data){
@@ -2092,18 +2145,19 @@ function _renderPricelistHTML(jenis, data){
   window._priceJenis=jenis; window._priceData=data;
 }
 function openPriceForm(id=null){ const p=id?(window._priceData||[]).find(x=>x.ID===id):{}; const html=`<div id="priceModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Item</h3><button class="modal-close" onclick="document.getElementById('priceModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fPriceId" value="${p.ID||''}"><div class="form-group"><label>Nama</label><input class="form-control" id="fPriceNama" value="${escHtml(p.Nama_Item||p.Nama_Paket||'')}"></div><div class="form-group"><label>Harga</label><input class="form-control" type="number" id="fPriceHarga" value="${p.Harga_Satuan||p.Harga||''}"></div><div class="form-group"><label>Satuan</label><input class="form-control" id="fPriceSatuan" value="${escHtml(p.Satuan||'')}"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('priceModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="savePrice()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); }
-async function savePrice(){ const j=window._priceJenis||'laundry'; const d={ID:$('fPriceId').value,Nama_Item:$('fPriceNama').value,Nama_Paket:$('fPriceNama').value,Harga_Satuan:$('fPriceHarga').value,Harga:$('fPriceHarga').value,Satuan:$('fPriceSatuan').value}; showLoading(); const res=await call('savePricelist',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('priceModal')?.remove(); renderPricelistPage(); } else toast(res.message,'error'); }
-async function deletePrice(id){ showConfirm('Hapus item pricelist ini?', async()=>{ showLoading(); await call('deletePricelist',currentToken,window._priceJenis||'laundry',id); hideLoading(); renderPricelistPage(); }, {title:'Hapus Item', yesLabel:'Hapus', danger:true}); }
+async function savePrice(){ const j=window._priceJenis||'laundry'; const d={ID:$('fPriceId').value,Nama_Item:$('fPriceNama').value,Nama_Paket:$('fPriceNama').value,Harga_Satuan:$('fPriceHarga').value,Harga:$('fPriceHarga').value,Satuan:$('fPriceSatuan').value}; showLoading(); const res=await call('savePricelist',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('priceModal')?.remove(); lsClear('pricelist_'+j); renderPricelistPage(); } else toast(res.message,'error'); }
+async function deletePrice(id){ showConfirm('Hapus item pricelist ini?', async()=>{ showLoading(); await call('deletePricelist',currentToken,window._priceJenis||'laundry',id); hideLoading(); lsClear('pricelist_'+(window._priceJenis||'laundry')); renderPricelistPage(); }, {title:'Hapus Item', yesLabel:'Hapus', danger:true}); }
 
 // ==================== PARAMETER ====================
 async function renderParameterPage(){
   const j=$('_paramJenis')?.value||'cleaning';
-  if (parameterCache[j]) _renderParamHTML(j, parameterCache[j]);
+  if(!parameterCache[j]){ const s=lsLoad('param_'+j); if(s) parameterCache[j]=s.data; }
+  if(parameterCache[j]) _renderParamHTML(j, parameterCache[j]);
   setRefreshIndicator(true);
   const res=await call('getParameter',currentToken,j);
   setRefreshIndicator(false);
   const data=res.status==='ok'?res.data:[];
-  parameterCache[j]=data;
+  if(res.status==='ok'){ parameterCache[j]=data; lsSave('param_'+j, data); }
   _renderParamHTML(j, data);
 }
 function _renderParamHTML(j, data){
@@ -2113,21 +2167,19 @@ function _renderParamHTML(j, data){
   window._paramJenis=j; window._paramData=data;
 }
 function openParamForm(id=null){ const p=id?(window._paramData||[]).find(x=>x.ID===id):{}; const html=`<div id="paramModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Parameter</h3><button class="modal-close" onclick="document.getElementById('paramModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fParamId" value="${p.ID||''}"><div class="form-group"><label>Kategori</label><input class="form-control" id="fParamKat" value="${escHtml(p.Kategori||'')}" placeholder="misal: Jenis, Metode, Hama"></div><div class="form-group"><label>Item</label><input class="form-control" id="fParamItem" value="${escHtml(p.Item||'')}"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('paramModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveParam()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); }
-async function saveParam(){ const j=window._paramJenis||'cleaning'; const d={ID:$('fParamId').value,Kategori:$('fParamKat').value,Item:$('fParamItem').value}; showLoading(); const res=await call('saveParameter',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('paramModal')?.remove(); renderParameterPage(); } else toast(res.message,'error'); }
-async function deleteParam(id){ showConfirm('Hapus parameter ini?', async()=>{ showLoading(); await call('deleteParameter',currentToken,window._paramJenis||'cleaning',id); hideLoading(); renderParameterPage(); }, {title:'Hapus Parameter', yesLabel:'Hapus', danger:true}); }
+async function saveParam(){ const j=window._paramJenis||'cleaning'; const d={ID:$('fParamId').value,Kategori:$('fParamKat').value,Item:$('fParamItem').value}; showLoading(); const res=await call('saveParameter',currentToken,j,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('paramModal')?.remove(); lsClear('param_'+j); renderParameterPage(); } else toast(res.message,'error'); }
+async function deleteParam(id){ showConfirm('Hapus parameter ini?', async()=>{ showLoading(); await call('deleteParameter',currentToken,window._paramJenis||'cleaning',id); hideLoading(); lsClear('param_'+(window._paramJenis||'cleaning')); renderParameterPage(); }, {title:'Hapus Parameter', yesLabel:'Hapus', danger:true}); }
 
 // ==================== PENGELUARAN ====================
 let pengeluaranCache=[];
 async function renderPengeluaranPage(){
   const bln=String(new Date().getMonth()+1).padStart(2,'0'), thn=new Date().getFullYear();
-  // Render cache dulu
-  if (pengeluaranCache.length) renderKlrTable();
   const bulanOpts=['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('');
   const tahunOpts=[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('');
-  const res=await call('getPengeluaran',currentToken,{bulan:bln,tahun:thn});
-  if(res.status!=='ok'){ toast('Error: '+res.message,'error'); }
-  pengeluaranCache=res.status==='ok'?res.data:[];
-  const totalKlr=pengeluaranCache.reduce((s,p)=>s+(Number(p.Jumlah)||0),0);
+  // Tampilkan cache localStorage dulu jika ada
+  if(!pengeluaranCache.length){ const s=lsLoad('pengeluaran'); if(s) pengeluaranCache=s.data; }
+  const totalKlrCache=pengeluaranCache.reduce((s,p)=>s+(Number(p.Jumlah)||0),0);
+  const totalKlr=totalKlrCache;
   $('mainContent').innerHTML=`
     <div style="margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
@@ -2146,9 +2198,14 @@ async function renderPengeluaranPage(){
       <div class="table-wrap desktop-table"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th>Aksi</th></tr></thead><tbody id="klrTbody"></tbody></table></div>
       <div class="mobile-card-view" id="klrCards"></div>
     </div></div>`;
-  renderKlrTable();
+  // Step 1: tampilkan cache langsung
+  if(pengeluaranCache.length) renderKlrTable();
+  // Step 2: fetch di background
+  setRefreshIndicator(true);
+  await loadPengeluaran(false);
+  setRefreshIndicator(false);
 }
-async function loadPengeluaran(){ const filter={jenis:$('fKlrJenis')?.value||'',bulan:$('fKlrBulan')?.value||'',tahun:$('fKlrTahun')?.value||''}; const res=await call('getPengeluaran',currentToken,filter); if(res.status!=='ok'){toast('Gagal load: '+res.message,'error');} pengeluaranCache=res.status==='ok'?res.data:[]; renderKlrTable(); }
+async function loadPengeluaran(showInd=true){ if(showInd) setRefreshIndicator(true); const filter={jenis:$('fKlrJenis')?.value||'',bulan:$('fKlrBulan')?.value||'',tahun:$('fKlrTahun')?.value||''}; const res=await call('getPengeluaran',currentToken,filter); if(showInd) setRefreshIndicator(false); if(res.status!=='ok'){toast('Gagal load: '+res.message,'error'); return;} pengeluaranCache=res.status==='ok'?res.data:[]; lsSave('pengeluaran',pengeluaranCache); renderKlrTable(); }
 function renderKlrTable(){
   const tb=$('klrTbody');
   if(tb) tb.innerHTML=pengeluaranCache.length?pengeluaranCache.map(p=>`<tr><td>${fmtTgl(p.Tanggal)}</td><td>${badgeJenis(p.Jenis)}</td><td>${escHtml(p.Keterangan||'—')}</td><td style="font-weight:700;color:#dc2626;">${rupiah(p.Jumlah)}</td><td><button class="btn btn-xs btn-outline" onclick="openKlrForm('${escHtml(p.ID)}')">✏️</button> <button class="btn btn-xs btn-danger" onclick="deleteKlr('${escHtml(p.ID)}')">🗑</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">Belum ada data</td></tr>';
@@ -2160,8 +2217,8 @@ function openKlrForm(id=null){
   const today=new Date().toISOString().slice(0,10);
   document.body.insertAdjacentHTML('beforeend',`<div id="klrModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} Pengeluaran</h3><button class="modal-close" onclick="document.getElementById('klrModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fKlrId" value="${p?.ID||''}"><div class="form-group"><label>Tanggal</label><input type="date" class="form-control" id="fKlrTgl" value="${p?.Tanggal?String(p.Tanggal).substring(0,10):today}"></div><div class="form-group"><label>Jenis Layanan</label><select class="form-control" id="fKlrJenisForm">${['Laundry','Cleaning','Pest Control'].map(v=>`<option ${p?.Jenis===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="form-group"><label>Keterangan</label><input class="form-control" id="fKlrKet" value="${escHtml(p?.Keterangan||'')}" placeholder="mis: Beli detergen..."></div><div class="form-group"><label>Jumlah (Rp)</label><input type="number" class="form-control" id="fKlrJml" value="${p?.Jumlah||''}" min="0"></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('klrModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveKlr()">💾 Simpan</button></div></div></div>`);
 }
-async function saveKlr(){ const d={ID:$('fKlrId').value,Tanggal:$('fKlrTgl').value,Jenis:$('fKlrJenisForm').value,Keterangan:$('fKlrKet').value,Jumlah:Number($('fKlrJml').value)||0}; if(!d.Jumlah||d.Jumlah<=0){toast('Jumlah harus diisi','error');return;} showLoading(); const res=await call('savePengeluaran',currentToken,d); hideLoading(); if(res.status==='ok'){toast('Disimpan');document.getElementById('klrModal')?.remove();loadPengeluaran();}else toast(res.message,'error'); }
-async function deleteKlr(id){ showConfirm('Hapus data pengeluaran ini?', async()=>{ showLoading(); await call('deletePengeluaran',currentToken,id); hideLoading(); loadPengeluaran(); }, {title:'Hapus Pengeluaran', yesLabel:'Hapus', danger:true}); }
+async function saveKlr(){ const d={ID:$('fKlrId').value,Tanggal:$('fKlrTgl').value,Jenis:$('fKlrJenisForm').value,Keterangan:$('fKlrKet').value,Jumlah:Number($('fKlrJml').value)||0}; if(!d.Jumlah||d.Jumlah<=0){toast('Jumlah harus diisi','error');return;} showLoading(); const res=await call('savePengeluaran',currentToken,d); hideLoading(); if(res.status==='ok'){toast('Disimpan');document.getElementById('klrModal')?.remove();lsClear('pengeluaran');loadPengeluaran();}else toast(res.message,'error'); }
+async function deleteKlr(id){ showConfirm('Hapus data pengeluaran ini?', async()=>{ showLoading(); await call('deletePengeluaran',currentToken,id); hideLoading(); lsClear('pengeluaran'); loadPengeluaran(); }, {title:'Hapus Pengeluaran', yesLabel:'Hapus', danger:true}); }
 
 // ==================== LAPORAN ====================
 async function renderLaporanPage(){
@@ -2170,18 +2227,28 @@ async function renderLaporanPage(){
     <select class="form-control" id="fLapBulan" style="max-width:110px;">${['01','02','03','04','05','06','07','08','09','10','11','12'].map((m,i)=>`<option value="${m}" ${m===bln?'selected':''}>${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'][i]}</option>`).join('')}</select>
     <select class="form-control" id="fLapTahun" style="max-width:90px;">${[thn-1,thn].map(y=>`<option value="${y}" ${y===thn?'selected':''}>${y}</option>`).join('')}</select>
     <button class="btn btn-sm btn-success" onclick="loadLaporan()"><i class="fa-solid fa-search"></i> Tampilkan</button>
-  </div></div><div id="laporanContent"><div class="empty-state"><i class="fa-solid fa-chart-bar"></i><p>Klik Tampilkan</p></div></div>`;
+  </div></div><div id="laporanContent"><div class="empty-state"><i class="fa-solid fa-chart-bar"></i><p>Memuat...</p></div></div>`;
   await loadLaporan();
 }
 async function loadLaporan(){
   const bln=$('fLapBulan')?.value||String(new Date().getMonth()+1).padStart(2,'0');
   const thn=$('fLapTahun')?.value||new Date().getFullYear();
-  showLoading(); const res=await call('getLaporan',currentToken,bln,thn); hideLoading();
+  const cacheKey='laporan_'+thn+'_'+bln;
+  // Tampilkan cache dulu jika ada
+  const cached=lsLoad(cacheKey);
+  if(cached) renderLaporanContent(cached.data);
+  setRefreshIndicator(true);
+  const res=await call('getLaporan',currentToken,bln,thn);
+  setRefreshIndicator(false);
   const d=res.status==='ok'?res.data:{perJenis:[]};
+  if(res.status==='ok') lsSave(cacheKey, d);
+  renderLaporanContent(d);
+}
+function renderLaporanContent(d){
   const colorMap={Laundry:{bg:'#ede9fe',tc:'#7c3aed'},Cleaning:{bg:'#dbeafe',tc:'#2563eb'},'Pest Control':{bg:'#fee2e2',tc:'#dc2626'}};
   const pctBar=(pct)=>{ const c=pct>=0?'#16a34a':'#dc2626'; const w=Math.min(Math.abs(pct),100); return `<div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:#f3f4f6;border-radius:99px;height:8px;overflow:hidden;"><div style="width:${w}%;background:${c};height:100%;border-radius:99px;"></div></div><span style="font-size:11px;font-weight:700;color:${c};">${pct>=0?'+':''}${pct}%</span></div>`; };
   const perJenisHtml=(d.perJenis||[]).map(j=>{ const c=colorMap[j.jenis]||{bg:'#f3f4f6',tc:'#374151'}; return `<div style="border:1px solid var(--gray-200);border-radius:10px;padding:14px;background:white;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="padding:4px 12px;background:${c.bg};color:${c.tc};border-radius:99px;font-size:12px;font-weight:700;">${j.jenis}</span><span style="font-size:11px;color:var(--gray-500);">${j.jumlahTrx} transaksi</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;"><div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">PENDAPATAN</div><div style="font-size:14px;font-weight:800;color:#16a34a;">${rupiah(j.pendapatan)}</div><div style="font-size:10px;color:var(--gray-400);">Lunas: ${rupiah(j.lunas)}</div></div><div style="background:var(--gray-50);border-radius:6px;padding:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;">PENGELUARAN</div><div style="font-size:14px;font-weight:800;color:#dc2626;">${rupiah(j.pengeluaran)}</div></div></div><div style="border-top:1px solid var(--gray-100);padding-top:8px;"><div style="font-size:10px;color:var(--gray-500);font-weight:600;margin-bottom:4px;">UNTUNG / RUGI</div><div style="font-size:15px;font-weight:800;color:${j.untungRugi>=0?'#16a34a':'#dc2626'};margin-bottom:4px;">${j.untungRugi>=0?'+':''}${rupiah(j.untungRugi)}</div>${pctBar(j.persen)}</div></div>`; }).join('');
-  $('laporanContent').innerHTML=`
+  const html=`
     <div class="stats-row" style="margin-bottom:12px;">
       <div class="mini-stat"><div class="ms-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-coins"></i></div><div><div class="ms-val" style="font-size:13px;">${rupiah(d.totalPendapatan||0)}</div><div class="ms-label">Total Pendapatan</div></div></div>
       <div class="mini-stat"><div class="ms-icon" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-arrow-trend-down"></i></div><div><div class="ms-val" style="font-size:13px;">${rupiah(d.totalPengeluaran||0)}</div><div class="ms-label">Total Pengeluaran</div></div></div>
@@ -2192,15 +2259,17 @@ async function loadLaporan(){
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:14px;">${perJenisHtml}</div>
     <h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">🧾 Detail Transaksi</h3>
     <div class="card"><div class="card-body no-pad"><div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Tgl</th><th>Jenis</th><th>Total</th><th>Status</th></tr></thead><tbody>${(d.detail||[]).map(t=>`<tr><td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td><td>${fmtTgl(t.Tanggal_Masuk)}</td><td>${badgeJenis(t.Jenis)}</td><td>${rupiah(t.Total)}</td><td>${badgeStatus(t.Status_Bayar)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty-state">Kosong</td></tr>'}</tbody></table></div></div></div>`;
+  if($('laporanContent')) $('laporanContent').innerHTML=html;
 }
 
 // ==================== USERS ====================
 async function renderUsersPage(){
-  if (usersCache.length) _renderUsersHTML(usersCache);
+  if(!usersCache.length){ const s=lsLoad('users'); if(s) usersCache=s.data; }
+  if(usersCache.length) _renderUsersHTML(usersCache);
   setRefreshIndicator(true);
   const res=await call('getUsers',currentToken);
   setRefreshIndicator(false);
-  if(res.status==='ok') usersCache=res.data;
+  if(res.status==='ok'){ usersCache=res.data; lsSave('users',usersCache); }
   _renderUsersHTML(usersCache);
 }
 function _renderUsersHTML(users){
@@ -2211,7 +2280,7 @@ function _renderUsersHTML(users){
   window._userData=users;
 }
 function openUserForm(id=null){ const u=id?(window._userData||[]).find(x=>x.ID===id):{}; const html=`<div id="userModal" class="modal-overlay open" onclick="if(event.target===this)this.remove()"><div class="modal modal-sm"><div class="modal-head"><h3>${id?'Edit':'Tambah'} User</h3><button class="modal-close" onclick="document.getElementById('userModal').remove()">✕</button></div><div class="modal-body"><input type="hidden" id="fUserId" value="${u.ID||''}"><div class="form-group"><label>Username</label><input class="form-control" id="fUserUsername" value="${escHtml(u.Username||'')}"></div><div class="form-group"><label>Password</label><input class="form-control" type="password" id="fUserPass" placeholder="${id?'Kosongkan jika tidak diubah':''}"></div><div class="form-group"><label>Nama</label><input class="form-control" id="fUserNama" value="${escHtml(u.Nama_Lengkap||'')}"></div><div class="form-group"><label>Role</label><select class="form-control" id="fUserRole"><option>Staff</option><option>Admin</option><option>Owner</option></select></div></div><div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('userModal').remove()">Batal</button><button class="btn btn-sm btn-success" onclick="saveUser()">💾 Simpan</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend',html); if(u.Role) $('fUserRole').value=u.Role; }
-async function saveUser(){ const d={ID:$('fUserId').value,Username:$('fUserUsername').value,Password:$('fUserPass').value,Nama_Lengkap:$('fUserNama').value,Role:$('fUserRole').value}; showLoading(); const res=await call('saveUser',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('userModal')?.remove(); renderUsersPage(); } else toast(res.message,'error'); }
+async function saveUser(){ const d={ID:$('fUserId').value,Username:$('fUserUsername').value,Password:$('fUserPass').value,Nama_Lengkap:$('fUserNama').value,Role:$('fUserRole').value}; showLoading(); const res=await call('saveUser',currentToken,d); hideLoading(); if(res.status==='ok'){ toast('Disimpan'); document.getElementById('userModal')?.remove(); lsClear('users'); renderUsersPage(); } else toast(res.message,'error'); }
 
 // ==================== PRINT & EMAIL ====================
 async function openPrintModal(txId){
