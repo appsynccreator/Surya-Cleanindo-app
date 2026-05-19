@@ -34,6 +34,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- jsPDF untuk generate PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2canvas untuk render HTML ke PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --green-900: #0d3b22; --green-800: #14532d; --green-700: #166534; --green-600: #16a34a;
@@ -54,10 +58,19 @@
       --font: 'Plus Jakarta Sans', sans-serif; --mono: 'JetBrains Mono', monospace;
       --transition: all .2s ease;
     }
-    *{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);font-size:13.5px;line-height:1.5;}
-    input,select,textarea,button{font-family:inherit;font-size:inherit;}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);font-size:13.5px;line-height:1.5;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;}
+    input,select,textarea,button{font-family:inherit;font-size:inherit;-webkit-appearance:none;border-radius:0;}
+    input[type="date"],input[type="time"],select{-webkit-appearance:none;appearance:none;}
+    button{touch-action:manipulation;cursor:pointer;}
     a{text-decoration:none;color:inherit;}
+    /* iOS safe area support */
+    .bottom-nav{padding-bottom:calc(6px + env(safe-area-inset-bottom));padding-bottom:calc(6px + constant(safe-area-inset-bottom));}
+    .main-content{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important;}
+    /* Prevent scroll bounce on iOS */
+    .modal-overlay{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .modal-body{-webkit-overflow-scrolling:touch;}
+    .main-content{-webkit-overflow-scrolling:touch;}
     ::-webkit-scrollbar{width:4px;height:4px;}
     ::-webkit-scrollbar-track{background:transparent;}
     ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
@@ -134,12 +147,12 @@
     .nav-item i.c-cyan{color:#0891b2;}
 
     /* Bottom nav */
-    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--gray-200);padding:6px 4px;justify-content:space-around;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
-    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:5px 8px;font-size:9px;font-weight:600;color:var(--gray-500);transition:var(--transition);cursor:pointer;border-radius:10px;min-width:52px;}
+    .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--gray-200);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+    .bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;padding:5px 8px;font-size:9px;font-weight:600;color:var(--gray-500);transition:var(--transition);cursor:pointer;border-radius:10px;min-width:52px;-webkit-tap-highlight-color:transparent;}
     .bottom-nav-item i{font-size:19px;}
     .bottom-nav-item.active{color:var(--green-600);background:var(--green-50);}
     /* More menu drawer */
-    .more-drawer{display:none;position:fixed;bottom:70px;left:0;right:0;background:white;border-top:1px solid var(--gray-200);border-radius:20px 20px 0 0;z-index:300;padding:16px 12px 8px;box-shadow:0 -8px 32px rgba(0,0,0,0.12);animation:slideUp .2s ease;}
+    .more-drawer{display:none;position:fixed;bottom:70px;left:0;right:0;background:white;border-top:1px solid var(--gray-200);border-radius:20px 20px 0 0;z-index:300;padding:16px 12px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -8px 32px rgba(0,0,0,0.12);animation:slideUp .2s ease;}
     .more-drawer.open{display:block;}
     .more-drawer-overlay{display:none;position:fixed;inset:0;z-index:299;}
     .more-drawer-overlay.open{display:block;}
@@ -151,8 +164,15 @@
     @media(max-width:768px){
       .sidebar{display:none !important;}
       .bottom-nav{display:flex;}
-      .main-content{padding-bottom:76px !important;}
+      .main-content{padding-bottom:calc(76px + env(safe-area-inset-bottom)) !important;}
       .topbar .menu-toggle{display:none !important;}
+      /* iOS fix: prevent double-tap zoom on buttons */
+      button,label,.btn{touch-action:manipulation;}
+      /* Fix input zoom on iOS (min font-size 16px prevents auto-zoom) */
+      input,select,textarea{font-size:16px !important;}
+      /* Restore desktop font for non-input elements */
+      .form-group label,.badge,.btn{font-size:12px !important;}
+      .btn-xs{font-size:10px !important;}
     }
     .sidebar-section{padding:10px 12px 2px;font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.8px;margin-top:6px;}
     .nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;margin:1px 8px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--gray-600);font-weight:500;font-size:13px;}
@@ -331,6 +351,12 @@
     .param-info-box .param-kat{font-weight:700;font-size:11px;color:var(--green-700);margin-bottom:4px;}
     .param-info-box .param-items{display:flex;flex-wrap:wrap;gap:4px;}
     .param-info-box .param-chip{background:white;border:1px solid var(--green-200);border-radius:99px;padding:2px 10px;font-size:11px;color:var(--gray-700);}
+
+    /* ── PRINT GLOBAL ── */
+    @media print {
+      /* Hide everything except printOverlay content */
+      #loginPage,#appShell,#toastContainer,#pwaInstallBar,#pwaUpdateBar,#notifPanel,#floatNotif { display:none !important; }
+    }
 
     /* ===================== PWA INSTALL BUTTON ===================== */
     #pwaInstallBar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;background:linear-gradient(135deg,#14532d,#166534);color:white;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.25);animation:slideUp .3s ease;}
@@ -1205,6 +1231,7 @@ function renderJadwalTableData(){
 }
 function getJadwalAdminBtns(j){
   let b = '';
+  b += `<button class="btn btn-xs btn-outline" title="Bagikan PDF" onclick="event.stopPropagation();shareJadwal('${escHtml(j.ID)}')"><i class="fa-solid fa-file-pdf"></i></button> `;
   if(j.Transaksi_ID) b += `<button class="btn btn-xs btn-outline" title="Cetak Struk" onclick="event.stopPropagation();openPrintModal('${escHtml(j.Transaksi_ID)}')">🖨</button> `;
   b += `<button class="btn btn-xs btn-danger" title="Hapus" onclick="event.stopPropagation();deleteJadwal('${escHtml(j.ID)}')"><i class="fa-solid fa-trash"></i></button>`;
   return b;
@@ -1341,10 +1368,12 @@ async function openJadwalEditModal(editId){
   const fotoSection=`
     <div style="margin-top:12px;">
       <div style="font-weight:700;font-size:13px;margin-bottom:6px;">📷 Foto Dokumentasi</div>
-      ${j.Foto_Dokumentasi?`<div style="margin-bottom:6px;"><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline">🔗 Lihat Foto</a></div>`:''}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <label class="btn btn-xs btn-outline" style="cursor:pointer;"><i class="fa-solid fa-camera"></i> Kamera<input type="file" accept="image/*" capture="environment" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
-        <label class="btn btn-xs btn-outline" style="cursor:pointer;"><i class="fa-solid fa-image"></i> Galeri<input type="file" accept="image/*" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
+      <div id="fotoPreviewInline" style="margin-bottom:8px;">
+        ${j.Foto_Dokumentasi?`<img src="${j.Foto_Dokumentasi}" style="max-width:100%;max-height:180px;border-radius:8px;object-fit:cover;display:block;" onerror="this.style.display='none'"><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline" style="margin-top:4px;display:inline-flex;">🔗 Lihat Full</a>`:'<div style="color:var(--gray-400);font-size:11px;">Belum ada foto</div>'}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <label class="btn btn-xs btn-success" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;"><i class="fa-solid fa-camera"></i> Kamera<input type="file" accept="image/*" capture="environment" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
+        <label class="btn btn-xs btn-outline" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px;"><i class="fa-solid fa-image"></i> Galeri<input type="file" accept="image/*" style="display:none" onchange="uploadFotoDetail('${escHtml(editId)}',this)"></label>
       </div>
       <div id="fotoUploadStatus" style="font-size:11px;color:var(--gray-500);margin-top:4px;"></div>
     </div>`;
@@ -1402,6 +1431,7 @@ async function openJadwalEditModal(editId){
         </div>
         <div class="modal-foot">
           <button class="btn btn-sm btn-outline" onclick="document.getElementById('jadwalEditOverlay').remove()">Tutup</button>
+          <button class="btn btn-sm btn-outline" onclick="shareJadwal('${editId}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
           ${isCompleted?`<button class="btn btn-sm btn-teal" onclick="kirimEmailJadwal('${editId}')"><i class="fa-solid fa-envelope"></i> Kirim Email</button>`:''}
           ${isOnProgress?`<button class="btn btn-sm btn-success" onclick="saveChecklistAndComplete('${editId}')"><i class="fa-solid fa-check-circle"></i> Simpan & Selesai</button>`:''}
         </div>
@@ -1520,8 +1550,10 @@ async function openJadwalDetail(jId){
     checklistHtml+='</div>';
     if(checklist['__catatan__']) checklistHtml+=`<div style="margin-top:8px;"><b>Catatan:</b><p style="font-size:12px;">${escHtml(checklist['__catatan__'])}</p></div>`;
   }
-  const fotoSection=j.Foto_Dokumentasi?`<div style="margin-top:8px;"><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline">🔗 Lihat Foto Dokumentasi</a></div>`:'';
+  const fotoSection=j.Foto_Dokumentasi?`<div style="margin-top:8px;"><b style="font-size:12px;font-weight:700;">📷 Foto Dokumentasi</b><div style="margin-top:6px;"><img src="${j.Foto_Dokumentasi}" style="max-width:100%;max-height:200px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'"><br><a href="${j.Foto_Dokumentasi}" target="_blank" class="btn btn-xs btn-outline" style="margin-top:6px;display:inline-flex;">🔗 Lihat Full</a></div></div>`:'';
   const isCompleted=j.Status==='Completed';
+  // Share function inline
+  const shareBtn=`<button class="btn btn-sm btn-outline" onclick="shareJadwal('${jId}')" style="display:inline-flex;align-items:center;gap:5px;"><i class="fa-solid fa-file-pdf"></i> PDF</button>`;
   const html=`
     <div id="detailJadwalOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
       <div class="modal modal-sm">
@@ -1543,6 +1575,7 @@ async function openJadwalDetail(jId){
         </div>
         <div class="modal-foot">
           <button class="btn btn-sm btn-outline" onclick="document.getElementById('detailJadwalOverlay').remove()">Tutup</button>
+          ${shareBtn}
           ${isCompleted?`<button class="btn btn-sm btn-teal" onclick="kirimEmailJadwal('${jId}')"><i class="fa-solid fa-envelope"></i> Kirim Email</button>`:''}
         </div>
       </div>
@@ -1622,7 +1655,7 @@ async function renderTransaksiPage(pg){
       </div>
     </div>
     <div class="card"><div class="card-body no-pad">
-      <div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Tgl</th><th>Pelanggan</th><th>Jenis</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="trxTableBody"></tbody></table>
+      <div class="table-wrap desktop-table"><table><thead><tr><th>ID</th><th>Tgl Masuk</th><th>Tgl Selesai</th><th>Pelanggan</th><th>Jenis</th><th>Total</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="trxTableBody"></tbody></table>
       <div class="pagination" id="trxPagination"></div></div>
       <div class="mobile-card-view" id="trxCardContainer"></div>
     </div></div>`;
@@ -1675,9 +1708,11 @@ function renderTrxTableData(pg){
     tbody.innerHTML=pageData.length
       ?pageData.map(t=>{
         const isPaid=t.Status_Bayar==='Lunas';
+        const isLaundry=t.Jenis==='Laundry';
         return `<tr class="row-clickable" onclick="showTransaksiDetail('${escHtml(t.ID)}')">
           <td style="font-family:var(--mono);font-size:10px;">${escHtml(t.ID)}</td>
           <td>${fmtTgl(t.Tanggal_Masuk)}</td>
+          ${isLaundry&&t.Tanggal_Selesai?`<td><span class="badge badge-green">${fmtTgl(t.Tanggal_Selesai)}</span></td>`:`<td style="color:var(--gray-400);">—</td>`}
           <td>${escHtml(getPlgName(t.Pelanggan_ID))}</td>
           <td>${badgeJenis(t.Jenis)}</td>
           <td style="font-weight:700;">${rupiah(t.Total)}</td>
@@ -1687,7 +1722,7 @@ function renderTrxTableData(pg){
             ${!isPaid?`<button class="btn btn-xs btn-info" onclick="toggleBayar('${escHtml(t.ID)}','${escHtml(t.Status_Bayar)}')">💰</button>`:''}
             <button class="btn btn-xs btn-danger" onclick="deleteTx('${escHtml(t.ID)}')">🗑</button>
           </td></tr>`;}).join('')
-      :'<tr><td colspan="7" class="empty-state">Tidak ada transaksi</td></tr>';
+      :'<tr><td colspan="8" class="empty-state">Tidak ada transaksi</td></tr>';
   }
   renderPagination('trxPagination',_trxFiltered.length,transaksiPage,'renderTrxTableData');
   const cards=$('trxCardContainer');
@@ -1695,7 +1730,8 @@ function renderTrxTableData(pg){
     cards.innerHTML=pageData.map(t=>`
       <div class="data-card" onclick="showTransaksiDetail('${escHtml(t.ID)}')">
         <div class="card-header"><span class="card-title">${escHtml(t.ID)}</span><span class="card-badge">${badgeJenis(t.Jenis)}</span></div>
-        <div class="card-row"><span class="card-row-label">Tanggal</span><span>${fmtTgl(t.Tanggal_Masuk)}</span></div>
+        <div class="card-row"><span class="card-row-label">Tgl Masuk</span><span>${fmtTgl(t.Tanggal_Masuk)}</span></div>
+        ${t.Jenis==='Laundry'&&t.Tanggal_Selesai?`<div class="card-row"><span class="card-row-label">Tgl Selesai</span><span class="badge badge-green">${fmtTgl(t.Tanggal_Selesai)}</span></div>`:''}
         <div class="card-row"><span class="card-row-label">Pelanggan</span><span>${escHtml(getPlgName(t.Pelanggan_ID))}</span></div>
         <div class="card-row"><span class="card-row-label">Total</span><span>${rupiah(t.Total)}</span></div>
         <div class="card-row"><span class="card-row-label">Status</span><span>${badgeStatus(t.Status_Bayar)}</span></div>
@@ -1712,34 +1748,85 @@ async function deleteTx(id){ showConfirm('Hapus invoice ini? Data tidak bisa dik
 
 // ---- Detail Transaksi ----
 async function showTransaksiDetail(txId){
-  const tx=transaksiCache.find(t=>t.ID===txId); if(!tx) return;
-  showLoading(); const detRes=await call('getTransaksiDetail',currentToken,txId); hideLoading();
-  const details=detRes.status==='ok'?detRes.data:[];
-  const plg=pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{};
-  const html=`
+  // Gunakan cache dulu (langsung tampil skeleton), baru fetch detail
+  const tx=transaksiCache.find(t=>t.ID===txId);
+  const plg=tx?pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{}:{};
+  
+  // Render skeleton modal langsung tanpa tunggu network
+  if(tx){
+    const skeletonHtml=`
     <div id="txDetailOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
       <div class="modal modal-sm">
         <div class="modal-head"><h3>Detail Transaksi</h3><button class="modal-close" onclick="document.getElementById('txDetailOverlay').remove()">✕</button></div>
-        <div class="modal-body">
+        <div class="modal-body" id="txDetailBody">
           <p><b>ID:</b> <span style="font-family:var(--mono);font-size:11px;">${escHtml(tx.ID)}</span></p>
-          <p><b>Tanggal:</b> ${String(tx.Tanggal_Masuk).substring(0,10)}</p>
+          <p><b>Tanggal:</b> ${String(tx.Tanggal_Masuk||'').substring(0,10)}</p>
           <p><b>Pelanggan:</b> ${escHtml(plg.Nama||tx.Pelanggan_ID)}</p>
           <p><b>Jenis:</b> ${badgeJenis(tx.Jenis)}</p>
           <p><b>Total:</b> <span style="font-weight:700;color:var(--green-700);">${rupiah(tx.Total)}</span></p>
           <p><b>Status:</b> ${badgeStatus(tx.Status_Bayar)}</p>
+          ${tx.Tanggal_Selesai?`<p><b>Tgl Selesai:</b> <span class="badge badge-green">${fmtTgl(tx.Tanggal_Selesai)}</span></p>`:''}
           <p><b>Catatan:</b> ${escHtml(tx.Catatan||'—')}</p>
           <hr style="margin:10px 0;"><b>Detail Item:</b>
-          <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Jml</th><th>Harga</th><th>Subtotal</th></tr></thead><tbody>
-            ${details.map(d=>`<tr><td>${escHtml(d.Nama_Item)}</td><td>${d.Jumlah}</td><td>${rupiah(d.Harga)}</td><td>${rupiah(d.Subtotal)}</td></tr>`).join('')}
-          </tbody></table>
+          <div style="text-align:center;padding:12px;color:var(--gray-400);font-size:12px;"><i class="fa-solid fa-spinner fa-spin"></i> Memuat detail...</div>
         </div>
         <div class="modal-foot">
           <button class="btn btn-sm btn-outline" onclick="document.getElementById('txDetailOverlay').remove()">Tutup</button>
           <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email Invoice</button>
+          <button class="btn btn-sm btn-success" onclick="openPrintModal('${txId}')">🖨 Cetak</button>
         </div>
       </div>
     </div>`;
-  document.body.insertAdjacentHTML('beforeend', html);
+    document.body.insertAdjacentHTML('beforeend', skeletonHtml);
+  }
+  
+  // Fetch detail di background
+  const detRes=await call('getTransaksiDetail',currentToken,txId);
+  const details=detRes.status==='ok'?detRes.data:[];
+  
+  const detailBody = $('txDetailBody');
+  if(detailBody && tx){
+    detailBody.innerHTML=`
+      <p><b>ID:</b> <span style="font-family:var(--mono);font-size:11px;">${escHtml(tx.ID)}</span></p>
+      <p><b>Tanggal:</b> ${String(tx.Tanggal_Masuk||'').substring(0,10)}</p>
+      <p><b>Pelanggan:</b> ${escHtml(plg.Nama||tx.Pelanggan_ID)}</p>
+      <p><b>Jenis:</b> ${badgeJenis(tx.Jenis)}</p>
+      <p><b>Total:</b> <span style="font-weight:700;color:var(--green-700);">${rupiah(tx.Total)}</span></p>
+      <p><b>Status:</b> ${badgeStatus(tx.Status_Bayar)}</p>
+      ${tx.Tanggal_Selesai?`<p><b>Tgl Selesai:</b> <span class="badge badge-green">${fmtTgl(tx.Tanggal_Selesai)}</span></p>`:''}
+      <p><b>Catatan:</b> ${escHtml(tx.Catatan||'—')}</p>
+      <hr style="margin:10px 0;"><b>Detail Item:</b>
+      <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Jml</th><th>Harga</th><th>Subtotal</th></tr></thead><tbody>
+        ${details.map(d=>`<tr><td>${escHtml(d.Nama_Item)}</td><td>${d.Jumlah}</td><td>${rupiah(d.Harga)}</td><td>${rupiah(d.Subtotal)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty-state">Tidak ada item</td></tr>'}
+      </tbody></table>`;
+  } else if(!tx){
+    // Fallback jika tidak ada di cache
+    const txRes=await call('getTransaksi',currentToken,{});
+    const txFallback=(txRes.status==='ok'?txRes.data:[]).find(t=>t.ID===txId);
+    if(!txFallback){ toast('Tidak ditemukan','error'); return; }
+    const plgFallback=pelangganCache.find(p=>p.ID===txFallback.Pelanggan_ID)||{};
+    const html=`
+      <div id="txDetailOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+        <div class="modal modal-sm">
+          <div class="modal-head"><h3>Detail Transaksi</h3><button class="modal-close" onclick="document.getElementById('txDetailOverlay').remove()">✕</button></div>
+          <div class="modal-body">
+            <p><b>ID:</b> <span style="font-family:var(--mono);font-size:11px;">${escHtml(txFallback.ID)}</span></p>
+            <p><b>Pelanggan:</b> ${escHtml(plgFallback.Nama||txFallback.Pelanggan_ID)}</p>
+            <p><b>Total:</b> <span style="font-weight:700;color:var(--green-700);">${rupiah(txFallback.Total)}</span></p>
+            <hr style="margin:10px 0;"><b>Detail Item:</b>
+            <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Jml</th><th>Harga</th><th>Subtotal</th></tr></thead><tbody>
+              ${details.map(d=>`<tr><td>${escHtml(d.Nama_Item)}</td><td>${d.Jumlah}</td><td>${rupiah(d.Harga)}</td><td>${rupiah(d.Subtotal)}</td></tr>`).join('')}
+            </tbody></table>
+          </div>
+          <div class="modal-foot">
+            <button class="btn btn-sm btn-outline" onclick="document.getElementById('txDetailOverlay').remove()">Tutup</button>
+            <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email Invoice</button>
+            <button class="btn btn-sm btn-success" onclick="openPrintModal('${txId}')">🖨 Cetak</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.insertAdjacentHTML('beforeend', html);
+  }
 }
 
 // ---- Transaksi Form ----
@@ -1776,6 +1863,12 @@ async function openInvModal(jadwalId=null){
             </div>
             <div class="form-group"><label>Status Bayar</label>
               <select class="form-control" id="invStatus"><option value="Belum Bayar">Belum Bayar</option><option value="Lunas">Lunas</option></select>
+            </div>
+          </div>
+          <!-- Tanggal Selesai khusus Laundry -->
+          <div id="invTglSelesaiSection" style="${defaultJenis==='Laundry'?'':'display:none;'}">
+            <div class="form-group"><label>Tanggal Selesai <span style="font-weight:400;color:var(--gray-400)">(Laundry)</span></label>
+              <input type="date" class="form-control" id="invTglSelesai" value="${new Date().toISOString().slice(0,10)}">
             </div>
           </div>
           <!-- Ref jadwal untuk Cleaning/Pest -->
@@ -1860,7 +1953,9 @@ async function tarikDataJadwal(){
 function renderInvDetailContainer(jenis,prices){
   const cont=$('invDetailContainer'); if(!cont) return;
   const refSection=$('invRefScheduleSection');
+  const tglSection=$('invTglSelesaiSection');
   if(refSection) refSection.style.display=jenis==='Laundry'?'none':'';
+  if(tglSection) tglSection.style.display=jenis==='Laundry'?'':'none';
   if(jenis==='Laundry'){
     cont.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><b>Item Laundry</b><button class="btn btn-xs btn-success" onclick="addInvRow()" type="button"><i class="fa-solid fa-plus"></i> Tambah Item</button></div>
       <table class="laundry-detail-table"><thead><tr><th>Item</th><th>Harga</th><th>Jml</th><th>Subtotal</th><th></th></tr></thead><tbody id="invDetailTbody"></tbody></table>`;
@@ -1944,7 +2039,7 @@ async function saveInv(){
     $('invKategoriList')?.querySelectorAll('div[id^="invKat_"]').forEach(div=>{ const nama=div.querySelector('.inv-kat-nama')?.value?.trim(); const harga=parseFloat(div.querySelector('.inv-kat-harga')?.value)||0; if(nama&&harga>0) details.push({Nama_Item:nama,Harga:harga,Jumlah:1,Subtotal:harga}); });
     if(!details.length){ toast('Tambahkan kategori layanan','error'); return; }
   }
-  const txData={Pelanggan_ID:pelangganId,Jenis:jenis,Total:$('invTotal').value,Status_Bayar:$('invStatus').value,Catatan:$('invCatatan').value,Jadwal_ID:jadwalId||$('invRefJadwalId')?.value?.trim()};
+  const txData={Pelanggan_ID:pelangganId,Jenis:jenis,Total:$('invTotal').value,Status_Bayar:$('invStatus').value,Catatan:$('invCatatan').value,Jadwal_ID:jadwalId||$('invRefJadwalId')?.value?.trim(),Tanggal_Selesai:jenis==='Laundry'?($('invTglSelesai')?.value||''):'',Jadwal_Ref_ID:jadwalId||$('invRefJadwalId')?.value?.trim()||''};
   showLoading();
   const res=txData.Jadwal_ID?await call('createInvoiceFromJadwal',currentToken,txData,details):await call('saveTransaksi',currentToken,txData,details);
   hideLoading();
@@ -2120,29 +2215,582 @@ async function saveUser(){ const d={ID:$('fUserId').value,Username:$('fUserUsern
 
 // ==================== PRINT & EMAIL ====================
 async function openPrintModal(txId){
-  showLoading();
-  const [txRes,detRes]=await Promise.all([call('getTransaksi',currentToken,{}),call('getTransaksiDetail',currentToken,txId)]);
-  hideLoading();
-  const tx=(txRes.status==='ok'?txRes.data:[]).find(t=>t.ID===txId);
-  if(!tx){ toast('Tidak ditemukan','error'); return; }
-  const plg=pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{};
-  const details=detRes.status==='ok'?detRes.data:[];
-  const detailList=details.map(d=>`<tr><td>${d.Nama_Item}</td><td>${d.Jumlah} x ${rupiah(d.Harga)}</td><td align="right">${rupiah(d.Subtotal)}</td></tr>`).join('');
-  const html=`<div id="printOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
+  // Cari dari cache dulu agar modal cepat tampil
+  let tx = transaksiCache.find(t=>t.ID===txId);
+  const plg = tx ? pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||{} : {};
+  
+  // Render skeleton cepat
+  document.body.insertAdjacentHTML('beforeend',`<div id="printOverlay" class="modal-overlay open" onclick="if(event.target===this)this.remove()">
     <div class="modal modal-sm">
-      <div class="modal-head"><h3>🧾 Struk Invoice</h3><button class="modal-close" onclick="document.getElementById('printOverlay').remove()">✕</button></div>
-      <div class="modal-body">
-        <div id="thermalPrint" style="display:block;font-family:monospace;font-size:11px;max-width:300px;margin:0 auto;">
-          <div style="text-align:center;"><b>🧹 SURYA CLEANINDO</b><br><span style="font-size:9px;">Laundry • Cleaning • Pest Control</span><br><br>${tx.ID}<br>${String(tx.Tanggal_Masuk).substring(0,16)}</div>
-          <hr>Pelanggan: ${escHtml(plg.Nama||tx.Pelanggan_ID)}<br>Layanan: ${tx.Jenis}
-          ${detailList?`<br><br><b>Detail:</b><table width="100%">${detailList}</table>`:''}
-          <hr><b>Total: ${rupiah(tx.Total)}</b><br>Status: ${tx.Status_Bayar}
-          <hr><small>Terima kasih!</small>
+      <div class="modal-head"><h3>🧾 Invoice</h3><button class="modal-close" onclick="document.getElementById('printOverlay').remove()">✕</button></div>
+      <div class="modal-body" id="printModalBody"><div style="text-align:center;padding:24px;color:var(--gray-400);"><i class="fa-solid fa-spinner fa-spin"></i> Memuat...</div></div>
+      <div class="modal-foot" id="printModalFoot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button></div>
+    </div></div>`);
+  
+  // Fetch detail
+  const detRes = await call('getTransaksiDetail',currentToken,txId);
+  if(!tx){
+    const txRes = await call('getTransaksi',currentToken,{});
+    tx = (txRes.status==='ok'?txRes.data:[]).find(t=>t.ID===txId);
+  }
+  if(!tx){ toast('Tidak ditemukan','error'); document.getElementById('printOverlay')?.remove(); return; }
+  const details = detRes.status==='ok'?detRes.data:[];
+  const plgFull = pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||plg;
+  const jenis = tx.Jenis||'';
+  const isLaundry = jenis==='Laundry';
+  const tglSelesai = tx.Tanggal_Selesai ? fmtTgl(tx.Tanggal_Selesai) : '—';
+
+  const bodyEl = document.getElementById('printModalBody');
+  const footEl = document.getElementById('printModalFoot');
+  if(!bodyEl) return;
+
+  if(isLaundry){
+    // ── THERMAL 57mm x sesuai konten (LAUNDRY) ──
+    const itemRows = details.map(d=>`
+      <div style="display:flex;justify-content:space-between;margin:1px 0;font-size:9px;">
+        <span>${d.Nama_Item} x${d.Jumlah}</span>
+        <span>${rupiah(d.Subtotal)}</span>
+      </div>`).join('');
+    bodyEl.innerHTML=`
+      <div id="thermalPrint" style="width:215px;min-height:auto;font-family:'Courier New',Courier,monospace;font-size:9px;line-height:1.3;background:white;padding:4px 6px;margin:0 auto;border:1px dashed #ccc;">
+        <div style="text-align:center;border-bottom:1px dashed #000;padding-bottom:3px;margin-bottom:3px;">
+          <div style="font-size:11px;font-weight:bold;">SURYA CLEANINDO</div>
+          <div style="font-size:8px;">Laundry • Cleaning • Pest Control</div>
+          <div style="font-size:8px;">${String(tx.Tanggal_Masuk||'').substring(0,16)}</div>
+        </div>
+        <div style="margin-bottom:3px;">
+          <div><b>No:</b> ${tx.ID}</div>
+          <div><b>Pelanggan:</b> ${escHtml(plgFull.Nama||tx.Pelanggan_ID)}</div>
+          <div><b>Layanan:</b> ${jenis}</div>
+          <div><b>Tgl Masuk:</b> ${fmtTgl(tx.Tanggal_Masuk)}</div>
+          ${tglSelesai!=='—'?`<div><b>Tgl Selesai:</b> ${tglSelesai}</div>`:''}
+        </div>
+        <div style="border-top:1px dashed #000;padding-top:3px;margin-bottom:3px;">${itemRows}</div>
+        <div style="border-top:1px dashed #000;padding-top:3px;margin-bottom:3px;">
+          <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:10px;"><span>TOTAL</span><span>${rupiah(tx.Total)}</span></div>
+          <div style="font-size:8px;">Status: ${tx.Status_Bayar}</div>
+        </div>
+        <div style="text-align:center;font-size:8px;border-top:1px dashed #000;padding-top:3px;">Terima kasih!</div>
+      </div>
+      <style>
+        @media print {
+          body > *:not(#printOverlay) { display:none !important; }
+          #printOverlay { position:fixed;inset:0;background:white;display:flex;align-items:flex-start;justify-content:center; }
+          .modal { box-shadow:none;max-height:100%;border:none; }
+          .modal-head, .modal-foot { display:none !important; }
+          #thermalPrint { border:none !important; width:57mm !important; margin:0 !important; padding:2mm !important; }
+        }
+      </style>`;
+    footEl.innerHTML=`
+      <button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button>
+      <button class="btn btn-sm btn-outline" onclick="shareInvoice('${txId}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+      <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email</button>
+      <button class="btn btn-sm btn-success" onclick="window.print()">🖨 Cetak</button>`;
+  } else {
+    // ── INVOICE A4 (CLEANING / PEST CONTROL) ──
+    const itemRows = details.map((d,i)=>`
+      <tr>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;">${i+1}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;">${escHtml(d.Nama_Item)}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:center;">${d.Jumlah}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right;">${rupiah(d.Harga)}</td>
+        <td style="padding:7px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700;">${rupiah(d.Subtotal)}</td>
+      </tr>`).join('');
+    bodyEl.innerHTML=`
+      <div id="a4Print" style="background:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;padding:24px;max-height:60vh;overflow-y:auto;">
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #166534;">
+          <div>
+            <div style="font-size:20px;font-weight:800;color:#14532d;">SURYA CLEANINDO</div>
+            <div style="font-size:11px;color:#6b7280;margin-top:2px;">Laundry • Cleaning • Pest Control</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:20px;font-weight:800;color:#166534;">INVOICE</div>
+            <div style="font-size:11px;color:#6b7280;font-family:monospace;">${tx.ID}</div>
+          </div>
+        </div>
+        <!-- Client & Date info -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+          <div>
+            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Tagihan Kepada</div>
+            <div style="font-weight:700;font-size:14px;">${escHtml(plgFull.Nama||tx.Pelanggan_ID)}</div>
+            ${plgFull.Alamat_Lengkap?`<div style="font-size:11px;color:#6b7280;margin-top:2px;">${escHtml(plgFull.Alamat_Lengkap)}</div>`:''}
+            ${plgFull.Telepon?`<div style="font-size:11px;color:#6b7280;">📞 ${escHtml(plgFull.Telepon)}</div>`:''}
+            ${plgFull.Email?`<div style="font-size:11px;color:#6b7280;">✉️ ${escHtml(plgFull.Email)}</div>`:''}
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Detail Invoice</div>
+            <div style="font-size:11px;"><b>Tanggal:</b> ${fmtTgl(tx.Tanggal_Masuk)}</div>
+            <div style="font-size:11px;"><b>Jenis:</b> ${jenis}</div>
+            <div style="font-size:11px;"><b>Status:</b> <span style="color:${tx.Status_Bayar==='Lunas'?'#16a34a':'#dc2626'};font-weight:700;">${tx.Status_Bayar}</span></div>
+          </div>
+        </div>
+        <!-- Table -->
+        <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+          <thead>
+            <tr style="background:#f0fdf4;">
+              <th style="padding:8px 10px;text-align:left;font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;border-bottom:2px solid #16a34a;">#</th>
+              <th style="padding:8px 10px;text-align:left;font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;border-bottom:2px solid #16a34a;">Deskripsi</th>
+              <th style="padding:8px 10px;text-align:center;font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;border-bottom:2px solid #16a34a;">Qty</th>
+              <th style="padding:8px 10px;text-align:right;font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;border-bottom:2px solid #16a34a;">Harga</th>
+              <th style="padding:8px 10px;text-align:right;font-size:10px;color:#6b7280;font-weight:700;text-transform:uppercase;border-bottom:2px solid #16a34a;">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>${itemRows}</tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="padding:10px;text-align:right;font-weight:700;font-size:13px;">TOTAL</td>
+              <td style="padding:10px;text-align:right;font-weight:800;font-size:14px;color:#166534;">${rupiah(tx.Total)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        ${tx.Catatan?`<div style="padding:10px;background:#f0fdf4;border-radius:6px;font-size:11px;margin-bottom:12px;"><b>Catatan:</b> ${escHtml(tx.Catatan)}</div>`:''}
+        <!-- Footer -->
+        <div style="border-top:1px solid #e5e7eb;padding-top:12px;text-align:center;font-size:10px;color:#9ca3af;">
+          Terima kasih telah menggunakan layanan Surya Cleanindo<br>
+          Invoice ini dicetak pada ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
         </div>
       </div>
-      <div class="modal-foot"><button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button><button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email</button><button class="btn btn-sm btn-success" onclick="window.print()">🖨 Cetak</button></div>
-    </div></div>`;
-  document.body.insertAdjacentHTML('beforeend',html);
+      <style>
+        @media print {
+          body > *:not(#printOverlay) { display:none !important; }
+          #printOverlay { position:fixed;inset:0;background:white;display:flex;align-items:flex-start;justify-content:center; }
+          .modal { box-shadow:none;max-height:100%;border:none;max-width:100% !important;width:100% !important; }
+          .modal-head, .modal-foot { display:none !important; }
+          #a4Print { max-height:none !important;overflow:visible !important;padding:15mm !important; }
+          @page { size:A4;margin:0; }
+        }
+      </style>`;
+    footEl.innerHTML=`
+      <button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button>
+      <button class="btn btn-sm btn-outline" onclick="shareInvoice('${txId}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+      <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email</button>
+      <button class="btn btn-sm btn-success" onclick="window.print()">🖨 Cetak A4</button>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PDF SHARE FUNCTIONS
+//  – generateInvoicePdfBlob : buat PDF invoice (Laundry thermal /
+//                              Pest-Cleaning A4) → Blob
+//  – generateJadwalPdfBlob  : buat PDF jadwal kunjungan → Blob
+//  – shareOrDownloadPdf     : share (Web Share API) / fallback download
+// ══════════════════════════════════════════════════════════════
+
+// ── Pembantu: pastikan jsPDF sudah dimuat ─────────────────────
+function getJsPDF(){
+  if(typeof window.jspdf !== 'undefined') return window.jspdf.jsPDF;
+  if(typeof jsPDF !== 'undefined') return jsPDF;
+  throw new Error('jsPDF belum dimuat. Periksa koneksi internet.');
+}
+
+// ── Format rupiah singkat untuk PDF (agar tidak terpotong) ───
+function rupiahPdf(n){ return 'Rp '+Number(n||0).toLocaleString('id-ID'); }
+
+// ─────────────────────────────────────────────────────────────
+//  INVOICE PDF
+// ─────────────────────────────────────────────────────────────
+async function generateInvoicePdfBlob(txId){
+  let tx = transaksiCache.find(t=>t.ID===txId);
+  const plg = pelangganCache.find(p=>p.ID===tx?.Pelanggan_ID)||{};
+
+  // Fetch detail item
+  const detRes = await call('getTransaksiDetail', currentToken, txId);
+  if(!tx){
+    const txRes = await call('getTransaksi', currentToken, {});
+    tx = (txRes.status==='ok'?txRes.data:[]).find(t=>t.ID===txId);
+  }
+  if(!tx) throw new Error('Data transaksi tidak ditemukan.');
+  const details = detRes.status==='ok'?detRes.data:[];
+  const plgFull = pelangganCache.find(p=>p.ID===tx.Pelanggan_ID)||plg;
+  const isLaundry = tx.Jenis==='Laundry';
+
+  const JSPDF = getJsPDF();
+
+  if(isLaundry){
+    // ── THERMAL: 58mm wide (57mm + 1mm bleed), portrait ──────
+    // jsPDF unit: mm. Paper: 58 x 120mm (auto-extend nanti)
+    const W = 58, MARGIN = 3;
+    const doc = new JSPDF({ unit:'mm', format:[W,200], orientation:'portrait' });
+    let y = MARGIN;
+    const lineH = 4;
+    const center = x => (W/2);
+
+    // Helpers
+    const txt = (s,x,yy,opts={}) => { doc.text(String(s||''),x,yy,opts); };
+    const line = (yy) => { doc.setDrawColor(180); doc.line(MARGIN,yy,W-MARGIN,yy); };
+    const bold = (on) => doc.setFont('helvetica', on?'bold':'normal');
+    const size = (s) => doc.setFontSize(s);
+
+    // === Header ===
+    size(10); bold(true); doc.setTextColor(20,83,45);
+    txt('SURYA CLEANINDO', center(), y, {align:'center'}); y+=lineH;
+    size(7); bold(false); doc.setTextColor(100,100,100);
+    txt('Laundry • Cleaning • Pest Control', center(), y, {align:'center'}); y+=lineH+1;
+    doc.setTextColor(0,0,0);
+
+    line(y); y+=2;
+
+    size(7); bold(false);
+    txt('No  : '+tx.ID, MARGIN, y); y+=lineH;
+    txt('Tgl : '+String(tx.Tanggal_Masuk||'').substring(0,10), MARGIN, y); y+=lineH;
+    if(tx.Tanggal_Selesai) { txt('Selesai: '+fmtTgl(tx.Tanggal_Selesai), MARGIN, y); y+=lineH; }
+    bold(true);
+    txt('Plg : '+(plgFull.Nama||tx.Pelanggan_ID||'—'), MARGIN, y); y+=lineH;
+    bold(false);
+    txt('Layanan: '+tx.Jenis, MARGIN, y); y+=lineH;
+
+    line(y); y+=2;
+
+    // === Detail Items ===
+    size(7); bold(true);
+    txt('Item', MARGIN, y); txt('Subtotal', W-MARGIN, y, {align:'right'}); y+=lineH;
+    bold(false); line(y); y+=2;
+
+    details.forEach(d=>{
+      const label = d.Nama_Item+' x'+d.Jumlah;
+      // wrap long label
+      const wrapped = doc.splitTextToSize(label, W-MARGIN-22);
+      wrapped.forEach((ln,i)=>{ txt(ln, MARGIN, y); if(i===0) txt(rupiahPdf(d.Subtotal), W-MARGIN, y, {align:'right'}); y+=lineH; });
+    });
+    if(!details.length){ txt('(tidak ada item)', MARGIN, y); y+=lineH; }
+
+    line(y); y+=2;
+
+    // === Total ===
+    bold(true); size(9);
+    txt('TOTAL', MARGIN, y); txt(rupiahPdf(tx.Total), W-MARGIN, y, {align:'right'}); y+=lineH;
+    bold(false); size(7);
+    doc.setTextColor(tx.Status_Bayar==='Lunas'?22:220, tx.Status_Bayar==='Lunas'?163:38, tx.Status_Bayar==='Lunas'?74:38);
+    txt('Status: '+tx.Status_Bayar, MARGIN, y); y+=lineH;
+    doc.setTextColor(0,0,0);
+
+    line(y); y+=2;
+
+    // === Footer ===
+    size(6); doc.setTextColor(120,120,120);
+    txt('Terima kasih!', center(), y, {align:'center'}); y+=lineH;
+    txt(new Date().toLocaleDateString('id-ID'), center(), y, {align:'center'}); y+=lineH;
+
+    // Trim paper height
+    const finalH = y+MARGIN;
+    doc.internal.pageSize.height = finalH;
+
+    return doc.output('blob');
+
+  } else {
+    // ── A4 INVOICE (Cleaning / Pest Control) ─────────────────
+    const doc = new JSPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+    const W = 210, H = 297, M = 15;
+    let y = M;
+    const lineH = 6;
+    const bold = (on) => doc.setFont('helvetica', on?'bold':'normal');
+    const size = (s) => doc.setFontSize(s);
+    const txt = (s,x,yy,opts={}) => doc.text(String(s||''),x,yy,opts);
+    const colorGreen = () => doc.setTextColor(22,101,52);
+    const colorBlack = () => doc.setTextColor(0,0,0);
+    const colorGray  = () => doc.setTextColor(107,114,128);
+
+    // === Header bar ===
+    doc.setFillColor(22,101,52);
+    doc.rect(0,0,W,22,'F');
+    doc.setTextColor(255,255,255); bold(true); size(16);
+    txt('SURYA CLEANINDO', M, 10);
+    size(8); bold(false);
+    txt('Laundry • Cleaning • Pest Control', M, 16);
+    // Invoice label kanan
+    bold(true); size(20);
+    txt('INVOICE', W-M, 13, {align:'right'});
+    colorBlack();
+
+    y = 30;
+
+    // === Info bar ===
+    // Kiri: Tagihan kepada
+    colorGray(); size(8); bold(false);
+    txt('TAGIHAN KEPADA', M, y); y+=5;
+    colorBlack(); bold(true); size(11);
+    txt(plgFull.Nama||tx.Pelanggan_ID||'—', M, y); y+=5;
+    bold(false); size(8); colorGray();
+    if(plgFull.Alamat_Lengkap){ const lines=doc.splitTextToSize(plgFull.Alamat_Lengkap, 80); lines.forEach(l=>{txt(l,M,y);y+=4;}); }
+    if(plgFull.Telepon){ txt('Telp: '+plgFull.Telepon, M, y); y+=4; }
+    if(plgFull.Email){ txt('Email: '+plgFull.Email, M, y); y+=4; }
+
+    // Kanan: Detail invoice
+    const rx = W-M-70;
+    let ry = 30;
+    colorGray(); size(8); bold(false);
+    txt('DETAIL INVOICE', rx, ry); ry+=5;
+    colorBlack(); size(9);
+    const infoRows = [
+      ['No. Invoice', tx.ID],
+      ['Tanggal', String(tx.Tanggal_Masuk||'').substring(0,10)],
+      ['Jenis Layanan', tx.Jenis],
+      ['Status', tx.Status_Bayar],
+    ];
+    infoRows.forEach(([k,v])=>{
+      bold(false); colorGray(); txt(k+' :', rx, ry);
+      bold(true);
+      if(k==='Status'){
+        tx.Status_Bayar==='Lunas' ? doc.setTextColor(22,163,74) : doc.setTextColor(220,38,38);
+      } else { colorBlack(); }
+      txt(v||'—', rx+35, ry); ry+=5;
+    });
+    colorBlack();
+
+    y = Math.max(y, ry) + 6;
+
+    // === Divider ===
+    doc.setDrawColor(22,101,52); doc.setLineWidth(0.5);
+    doc.line(M,y,W-M,y); y+=6;
+
+    // === Table Header ===
+    doc.setFillColor(240,253,244);
+    doc.rect(M,y-4,W-2*M,7,'F');
+    doc.setDrawColor(22,101,52); doc.setLineWidth(0.3);
+    doc.rect(M,y-4,W-2*M,7,'S');
+    colorGray(); size(8); bold(true);
+    txt('#', M+2, y);
+    txt('Deskripsi', M+10, y);
+    txt('Qty', M+105, y, {align:'center'});
+    txt('Harga', M+130, y, {align:'right'});
+    txt('Subtotal', W-M-2, y, {align:'right'});
+    y+=6;
+
+    // === Table Rows ===
+    bold(false); size(9); colorBlack();
+    details.forEach((d,i)=>{
+      if(i%2===0){ doc.setFillColor(249,250,251); doc.rect(M,y-4,W-2*M,6,'F'); }
+      txt(String(i+1), M+2, y);
+      const dLabel = doc.splitTextToSize(d.Nama_Item||'', 88);
+      dLabel.forEach((ln,li)=>{ txt(ln, M+10, y+(li*4)); });
+      const rowH = Math.max(6, dLabel.length*4+2);
+      txt(String(d.Jumlah), M+105, y, {align:'center'});
+      txt(rupiahPdf(d.Harga), M+130, y, {align:'right'});
+      bold(true); txt(rupiahPdf(d.Subtotal), W-M-2, y, {align:'right'}); bold(false);
+      y+=rowH;
+    });
+    if(!details.length){ colorGray(); txt('Tidak ada item', M+10, y); colorBlack(); y+=6; }
+
+    // === Total box ===
+    y+=2;
+    doc.setDrawColor(22,101,52); doc.setLineWidth(0.5);
+    doc.line(M,y,W-M,y); y+=4;
+    doc.setFillColor(240,253,244);
+    doc.rect(W-M-65,y-3,65,10,'F');
+    bold(true); size(10); colorGreen();
+    txt('TOTAL', W-M-67, y+4);
+    bold(true); size(12);
+    txt(rupiahPdf(tx.Total), W-M-2, y+4, {align:'right'}); y+=14;
+    colorBlack();
+
+    // === Catatan ===
+    if(tx.Catatan){
+      size(8); bold(false); colorGray(); txt('Catatan:', M, y); y+=4;
+      colorBlack(); const cLines=doc.splitTextToSize(tx.Catatan,W-2*M); cLines.forEach(l=>{txt(l,M,y);y+=4;});
+      y+=2;
+    }
+
+    // === Footer ===
+    doc.setDrawColor(220,220,220); doc.setLineWidth(0.3);
+    doc.line(M,H-20,W-M,H-20);
+    colorGray(); size(8); bold(false);
+    txt('Terima kasih telah menggunakan layanan Surya Cleanindo', W/2, H-15, {align:'center'});
+    txt('Dicetak: '+new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}), W/2, H-10, {align:'center'});
+
+    return doc.output('blob');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  JADWAL PDF
+// ─────────────────────────────────────────────────────────────
+async function generateJadwalPdfBlob(jadwalId){
+  const j = jadwalCache.find(x=>x.ID===jadwalId)||{};
+  const plgName = j.pelanggan?.Nama||j.Pelanggan_ID||'—';
+  const alamat = j.pelanggan?.Alamat_Lengkap||'';
+
+  // Ambil checklist jika ada
+  let checklist = {};
+  try {
+    const chkRes = await call('getJadwalChecklist', currentToken, jadwalId);
+    if(chkRes.status==='ok') checklist = chkRes.data||{};
+  } catch(_){}
+
+  const JSPDF = getJsPDF();
+  const doc = new JSPDF({ unit:'mm', format:'a5', orientation:'portrait' });
+  const W=148, H=210, M=12;
+  let y = M;
+  const bold = (on) => doc.setFont('helvetica', on?'bold':'normal');
+  const size = (s) => doc.setFontSize(s);
+  const txt = (s,x,yy,opts={}) => doc.text(String(s||''),x,yy,opts);
+  const colorGreen  = () => doc.setTextColor(22,101,52);
+  const colorBlack  = () => doc.setTextColor(0,0,0);
+  const colorGray   = () => doc.setTextColor(107,114,128);
+
+  // === Header ===
+  doc.setFillColor(22,101,52);
+  doc.rect(0,0,W,18,'F');
+  doc.setTextColor(255,255,255); bold(true); size(13);
+  txt('JADWAL KUNJUNGAN', M, 9);
+  bold(false); size(8);
+  txt('Surya Cleanindo', M, 14);
+  // Status badge kanan
+  const stColor = j.Status==='Completed'?[22,163,74]:j.Status==='On Progress'?[217,119,6]:[234,88,12];
+  doc.setFillColor(...stColor);
+  doc.roundedRect(W-M-30,3,30,12,2,2,'F');
+  doc.setTextColor(255,255,255); size(8); bold(true);
+  txt(j.Status||'Open', W-M-15, 10, {align:'center'});
+  colorBlack();
+  y = 24;
+
+  // === Info Jadwal ===
+  const infoRows = [
+    ['No. Jadwal', j.ID||'—'],
+    ['Tgl Schedule', String(j.Tanggal_Schedule||'').substring(0,10)],
+    ['Tgl Realisasi', j.Tanggal_Realisasi?fmtTgl(j.Tanggal_Realisasi):'—'],
+    ['Pelanggan', plgName],
+    ['Jenis Layanan', j.Jenis_Layanan||'—'],
+    ['Kategori', j.Kategori_Layanan||'—'],
+    ['Periode', j.Periode||'Tanpa Periode'],
+  ];
+
+  // Box latar
+  doc.setFillColor(240,253,244);
+  doc.roundedRect(M,y-3,W-2*M,infoRows.length*6+4,2,2,'F');
+  doc.setDrawColor(187,247,208); doc.setLineWidth(0.3);
+  doc.roundedRect(M,y-3,W-2*M,infoRows.length*6+4,2,2,'S');
+
+  infoRows.forEach(([k,v])=>{
+    colorGray(); size(7); bold(false); txt(k, M+3, y);
+    colorBlack(); size(8); bold(true);
+    const vLines = doc.splitTextToSize(String(v), W-2*M-42);
+    vLines.forEach((ln,i)=>txt(ln, M+42, y+(i*4)));
+    y += Math.max(6, vLines.length*4+2);
+  });
+  y+=4;
+
+  // Alamat
+  if(alamat){
+    colorGray(); size(7); bold(false); txt('Alamat', M, y); y+=4;
+    colorBlack(); size(8);
+    const aLines = doc.splitTextToSize('📍 '+alamat, W-2*M);
+    aLines.forEach(ln=>{ txt(ln,M,y); y+=4; }); y+=2;
+  }
+
+  // === Divider ===
+  doc.setDrawColor(187,247,208); doc.setLineWidth(0.4);
+  doc.line(M,y,W-M,y); y+=6;
+
+  // === Checklist ===
+  const chkEntries = Object.entries(checklist).filter(([k])=>k!=='__catatan__');
+  if(chkEntries.length){
+    bold(true); colorGreen(); size(9); txt('CHECKLIST PARAMETER', M, y); y+=5;
+    colorBlack();
+    chkEntries.forEach(([kat,items])=>{
+      bold(true); size(8); colorGray(); txt(kat.toUpperCase(), M, y); y+=4;
+      bold(false); colorBlack(); size(8);
+      if(Array.isArray(items)){
+        items.forEach(item=>{ txt('✓  '+item, M+3, y); y+=4.5; });
+      }
+      y+=1;
+    });
+  }
+
+  // Catatan
+  const catatan = checklist['__catatan__']||'';
+  if(catatan){
+    doc.setDrawColor(220,220,220); doc.line(M,y,W-M,y); y+=4;
+    bold(true); size(8); colorGray(); txt('CATATAN', M, y); y+=4;
+    bold(false); colorBlack();
+    const cLines=doc.splitTextToSize(catatan,W-2*M);
+    cLines.forEach(ln=>{txt(ln,M,y);y+=4;});
+    y+=2;
+  }
+
+  // Foto dokumentasi (jika ada dan berupa URL bisa di-embed, skip base64 besar)
+  if(j.Foto_Dokumentasi && j.Foto_Dokumentasi.startsWith('data:')){
+    try {
+      const remaining = H-M-y;
+      if(remaining>20){
+        doc.setDrawColor(220,220,220); doc.line(M,y,W-M,y); y+=4;
+        bold(true); size(8); colorGray(); txt('FOTO DOKUMENTASI', M, y); y+=4;
+        const imgH = Math.min(remaining-10, 50);
+        const imgW = imgH * (4/3);
+        doc.addImage(j.Foto_Dokumentasi,'JPEG',M,y,Math.min(imgW,W-2*M),imgH);
+        y+=imgH+4;
+      }
+    } catch(_){}
+  }
+
+  // === Footer ===
+  doc.setDrawColor(200,200,200); doc.setLineWidth(0.2);
+  doc.line(M,H-12,W-M,H-12);
+  colorGray(); size(7); bold(false);
+  txt('Surya Cleanindo  •  Laundry • Cleaning • Pest Control', W/2, H-7, {align:'center'});
+  txt('Dicetak: '+new Date().toLocaleDateString('id-ID'), W/2, H-3, {align:'center'});
+
+  return doc.output('blob');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SHARE / DOWNLOAD PDF
+// ─────────────────────────────────────────────────────────────
+async function shareOrDownloadPdf(blob, filename, title){
+  // Coba Web Share API dengan files (Android Chrome ≥ 89, iOS Safari ≥ 15.1)
+  const file = new File([blob], filename, {type:'application/pdf'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({ files:[file], title, text:'Dibagikan dari Surya Cleanindo' });
+      return;
+    } catch(e){
+      if(e.name==='AbortError') return; // User batal, jangan download
+    }
+  }
+  // Fallback: download langsung
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+  toast('PDF berhasil diunduh');
+}
+
+// ─────────────────────────────────────────────────────────────
+//  PUBLIC ENTRY POINTS (dipanggil dari tombol)
+// ─────────────────────────────────────────────────────────────
+async function shareInvoice(txId){
+  const btn = event?.currentTarget||event?.target;
+  const origHtml = btn?.innerHTML;
+  if(btn){ btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; }
+  try{
+    toast('Membuat PDF...');
+    const blob = await generateInvoicePdfBlob(txId);
+    const tx = transaksiCache.find(t=>t.ID===txId)||{};
+    const filename = `Invoice_${tx.ID||txId}_${new Date().toISOString().slice(0,10)}.pdf`;
+    await shareOrDownloadPdf(blob, filename, 'Invoice Surya Cleanindo - '+(tx.ID||txId));
+  } catch(e){
+    toast('Gagal buat PDF: '+e.message,'error');
+  } finally {
+    if(btn){ btn.disabled=false; btn.innerHTML=origHtml; }
+  }
+}
+
+async function shareJadwal(jadwalId){
+  const btn = event?.currentTarget||event?.target;
+  const origHtml = btn?.innerHTML;
+  if(btn){ btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; }
+  try{
+    toast('Membuat PDF jadwal...');
+    const blob = await generateJadwalPdfBlob(jadwalId);
+    const j = jadwalCache.find(x=>x.ID===jadwalId)||{};
+    const plgName = (j.pelanggan?.Nama||j.Pelanggan_ID||'Jadwal').replace(/\s+/g,'_');
+    const filename = `Jadwal_${plgName}_${String(j.Tanggal_Schedule||'').substring(0,10)||new Date().toISOString().slice(0,10)}.pdf`;
+    await shareOrDownloadPdf(blob, filename, 'Jadwal Kunjungan - '+(j.pelanggan?.Nama||jadwalId));
+  } catch(e){
+    toast('Gagal buat PDF: '+e.message,'error');
+  } finally {
+    if(btn){ btn.disabled=false; btn.innerHTML=origHtml; }
+  }
 }
 async function sendEmail(txId){ showLoading(); const res=await call('kirimEmailStruk',currentToken,txId); hideLoading(); toast(res.status==='ok'?res.data:res.message, res.status==='ok'?'success':'error'); }
 
