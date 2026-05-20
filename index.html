@@ -2314,46 +2314,106 @@ async function openPrintModal(txId){
   if(!bodyEl) return;
 
   if(isLaundry){
-    // ── THERMAL 57mm x sesuai konten (LAUNDRY) ──
+    // ── THERMAL 57mm — font lebih besar, bisa disimpan sebagai gambar ──
     const itemRows = details.map(d=>`
-      <div style="display:flex;justify-content:space-between;margin:1px 0;font-size:9px;">
-        <span>${d.Nama_Item} x${d.Jumlah}</span>
-        <span>${rupiah(d.Subtotal)}</span>
+      <div style="display:flex;justify-content:space-between;margin:3px 0;">
+        <span style="max-width:60%;">${escHtml(d.Nama_Item)} x${d.Jumlah}</span>
+        <span style="font-weight:700;">${rupiah(d.Subtotal)}</span>
       </div>`).join('');
+
     bodyEl.innerHTML=`
-      <div id="thermalPrint" style="width:215px;min-height:auto;font-family:'Courier New',Courier,monospace;font-size:9px;line-height:1.3;background:white;padding:4px 6px;margin:0 auto;border:1px dashed #ccc;">
-        <div style="text-align:center;border-bottom:1px dashed #000;padding-bottom:3px;margin-bottom:3px;">
-          <div style="font-size:11px;font-weight:bold;">SURYA CLEANINDO</div>
-          <div style="font-size:8px;">Laundry • Cleaning • Pest Control</div>
-          <div style="font-size:8px;">${String(tx.Tanggal_Masuk||'').substring(0,16)}</div>
+      <!-- Preview struk di layar -->
+      <div style="overflow-y:auto;max-height:55vh;padding:8px 0;">
+        <div id="thermalPrint" style="
+          width:215px;
+          font-family:'Courier New',Courier,monospace;
+          font-size:13px;
+          line-height:1.6;
+          background:white;
+          padding:10px 8px;
+          margin:0 auto;
+          border:1px dashed #aaa;
+          color:#000;
+        ">
+          <!-- HEADER -->
+          <div style="text-align:center;margin-bottom:6px;">
+            <div style="font-size:16px;font-weight:900;letter-spacing:1px;">SURYA CLEANINDO</div>
+            <div style="font-size:11px;">Laundry • Cleaning • Pest Control</div>
+            <div style="font-size:11px;">${String(tx.Tanggal_Masuk||'').substring(0,16)}</div>
+          </div>
+          <div style="border-top:2px dashed #000;margin:4px 0;"></div>
+
+          <!-- INFO -->
+          <div style="font-size:12px;margin-bottom:4px;">
+            <div><b>No  :</b> ${escHtml(tx.ID)}</div>
+            <div><b>Plg :</b> ${escHtml(plgFull.Nama||tx.Pelanggan_ID)}</div>
+            <div><b>Lyr :</b> ${jenis}</div>
+            <div><b>Masuk :</b> ${fmtTgl(tx.Tanggal_Masuk)}</div>
+            ${tglSelesai!=='—'?`<div><b>Selesai:</b> ${tglSelesai}</div>`:''}
+          </div>
+          <div style="border-top:1px dashed #000;margin:4px 0;"></div>
+
+          <!-- ITEMS -->
+          <div style="font-size:12px;margin-bottom:4px;">
+            <div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:2px;">
+              <span>Item</span><span>Subtotal</span>
+            </div>
+            ${itemRows||'<div style="color:#666;font-style:italic;">Tidak ada item</div>'}
+          </div>
+          <div style="border-top:2px dashed #000;margin:4px 0;"></div>
+
+          <!-- TOTAL -->
+          <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:900;margin-bottom:3px;">
+            <span>TOTAL</span><span>${rupiah(tx.Total)}</span>
+          </div>
+          <div style="font-size:12px;margin-bottom:4px;">
+            Status: <b style="color:${tx.Status_Bayar==='Lunas'?'#16a34a':'#dc2626'};">${tx.Status_Bayar}</b>
+          </div>
+          ${tx.Catatan?`<div style="font-size:11px;font-style:italic;">Catatan: ${escHtml(tx.Catatan)}</div>`:''}
+          <div style="border-top:1px dashed #000;margin:4px 0;"></div>
+
+          <!-- FOOTER -->
+          <div style="text-align:center;font-size:12px;">
+            <div>Terima kasih!</div>
+            <div style="font-size:10px;color:#555;">Dicetak ${new Date().toLocaleDateString('id-ID')}</div>
+          </div>
         </div>
-        <div style="margin-bottom:3px;">
-          <div><b>No:</b> ${tx.ID}</div>
-          <div><b>Pelanggan:</b> ${escHtml(plgFull.Nama||tx.Pelanggan_ID)}</div>
-          <div><b>Layanan:</b> ${jenis}</div>
-          <div><b>Tgl Masuk:</b> ${fmtTgl(tx.Tanggal_Masuk)}</div>
-          ${tglSelesai!=='—'?`<div><b>Tgl Selesai:</b> ${tglSelesai}</div>`:''}
-        </div>
-        <div style="border-top:1px dashed #000;padding-top:3px;margin-bottom:3px;">${itemRows}</div>
-        <div style="border-top:1px dashed #000;padding-top:3px;margin-bottom:3px;">
-          <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:10px;"><span>TOTAL</span><span>${rupiah(tx.Total)}</span></div>
-          <div style="font-size:8px;">Status: ${tx.Status_Bayar}</div>
-        </div>
-        <div style="text-align:center;font-size:8px;border-top:1px dashed #000;padding-top:3px;">Terima kasih!</div>
       </div>
+
+      <!-- Tip cara cetak tanpa watermark -->
+      <div style="margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px;font-size:11px;color:#92400e;">
+        <b>💡 Cetak tanpa watermark app pihak ketiga:</b><br>
+        Klik <b>"Simpan Gambar"</b> → gambar PNG struk tersimpan → buka di galeri → cetak via app thermal (RawBT, PrintHand, Bluetooth Print, dll).<br>
+        App akan cetak gambar langsung tanpa menambah teks apapun.
+      </div>
+
       <style>
         @media print {
-          body > *:not(#printOverlay) { display:none !important; }
-          #printOverlay { position:fixed;inset:0;background:white;display:flex;align-items:flex-start;justify-content:center; }
-          .modal { box-shadow:none;max-height:100%;border:none; }
-          .modal-head, .modal-foot { display:none !important; }
-          #thermalPrint { border:none !important; width:57mm !important; margin:0 !important; padding:2mm !important; }
+          /* Sembunyikan SEMUA elemen kecuali struk */
+          body > * { display:none !important; }
+          #printOverlay { display:block !important; position:fixed; inset:0; background:white; }
+          #printOverlay .modal { box-shadow:none; max-width:100%; width:100%; max-height:100%; border:none; border-radius:0; }
+          #printOverlay .modal-head,
+          #printOverlay .modal-foot,
+          #printOverlay > * > .modal-body > div:last-child { display:none !important; }
+          #thermalPrint {
+            display:block !important;
+            border:none !important;
+            width:57mm !important;
+            max-width:57mm !important;
+            margin:0 auto !important;
+            padding:2mm 1mm !important;
+            font-size:12pt !important;
+            line-height:1.5 !important;
+          }
+          @page { size:57mm auto; margin:2mm; }
         }
       </style>`;
+
     footEl.innerHTML=`
       <button class="btn btn-sm btn-outline" onclick="document.getElementById('printOverlay').remove()">Tutup</button>
       <button class="btn btn-sm btn-outline" onclick="shareInvoice('${txId}')"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-      <button class="btn btn-sm btn-teal" onclick="sendEmail('${txId}')">📧 Email</button>
+      <button class="btn btn-sm btn-info" id="btnSimpanGambar" onclick="simpanStrukGambar()">🖼 Simpan Gambar</button>
       <button class="btn btn-sm btn-success" onclick="window.print()">🖨 Cetak</button>`;
   } else {
     // ── INVOICE A4 (CLEANING / PEST CONTROL) ──
@@ -2963,8 +3023,70 @@ async function shareOrDownloadPdf(blob, filename, title){
 }
 
 // ─────────────────────────────────────────────────────────────
-//  PUBLIC ENTRY POINTS (dipanggil dari tombol)
+//  SIMPAN STRUK SEBAGAI GAMBAR PNG (tanpa watermark app pihak ketiga)
+//  Pakai html2canvas untuk render #thermalPrint → canvas → PNG blob
 // ─────────────────────────────────────────────────────────────
+async function simpanStrukGambar(){
+  const btn = document.getElementById('btnSimpanGambar');
+  const origHtml = btn?.innerHTML;
+  if(btn){ btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; }
+
+  try {
+    const el = document.getElementById('thermalPrint');
+    if(!el) throw new Error('Elemen struk tidak ditemukan');
+
+    // Pastikan html2canvas sudah dimuat
+    if(typeof html2canvas === 'undefined') throw new Error('html2canvas belum dimuat');
+
+    toast('Membuat gambar struk...');
+
+    // Render elemen ke canvas — scale 3x untuk resolusi tinggi (printer thermal butuh DPI tinggi)
+    const canvas = await html2canvas(el, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+      windowWidth: el.offsetWidth + 40,
+    });
+
+    // Konversi canvas ke blob PNG
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+    if(!blob) throw new Error('Gagal membuat gambar');
+
+    const filename = 'Struk_Laundry_' + new Date().toISOString().slice(0,10) + '.png';
+    const file = new File([blob], filename, { type: 'image/png' });
+
+    // Coba Web Share API dengan file (Android/iOS native share → bisa langsung kirim ke app cetak)
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Struk Laundry Surya Cleanindo',
+          text: 'Struk laundry siap dicetak'
+        });
+        return;
+      } catch(e){
+        if(e.name === 'AbortError') return; // user batal
+      }
+    }
+
+    // Fallback: download langsung sebagai PNG
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast('Gambar struk tersimpan — buka di galeri lalu cetak via app thermal');
+
+  } catch(e){
+    toast('Gagal buat gambar: ' + e.message, 'error');
+  } finally {
+    if(btn){ btn.disabled=false; btn.innerHTML=origHtml; }
+  }
+}
 async function shareInvoice(txId){
   const btn = event?.currentTarget||event?.target;
   const origHtml = btn?.innerHTML;
